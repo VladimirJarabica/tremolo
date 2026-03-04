@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { getUser } from "@/app/actions/auth";
-import { UserMenu } from "./user-menu";
 import { NewSheetButton } from "./sheet-editor";
+import { UserMenu } from "./user-menu";
 
 export async function Header(): Promise<React.JSX.Element> {
   const user = await getUser();

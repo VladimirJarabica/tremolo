@@ -6,6 +6,7 @@ export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export type Sheet = {
     id: Generated<string>;
+    slug: string;
     title: Generated<string>;
     content: string;
     userId: string;

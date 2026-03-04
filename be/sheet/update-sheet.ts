@@ -8,10 +8,11 @@ import {
   type ApiResponse,
   type ApiResponseData,
 } from "@/be/response";
+import { createSheetSlug } from "./create-sheet-slug";
 
 export async function updateSheet(
   input: UpdateSheetInput,
-): Promise<ApiResponse<{ id: string }>> {
+): Promise<ApiResponse<{ id: string; slug: string }>> {
   const { user } = await requireSheetOwnership(input.sheetId);
 
   const parsed = updateSheetSchema.safeParse(input);
@@ -22,16 +23,35 @@ export async function updateSheet(
   const { sheetId, content, title, tagIds } = parsed.data;
 
   try {
+    // Get current sheet to check if title changed
+    const currentSheet = await db
+      .selectFrom("Sheet")
+      .select(["title", "slug"])
+      .where("id", "=", sheetId)
+      .executeTakeFirst();
+
+    if (!currentSheet) {
+      return apiError(ApiErrorCode.NOT_FOUND);
+    }
+
+    // Only regenerate slug if title changed
+    const newTitle = title ?? currentSheet.title;
+    const newSlug =
+      title !== undefined && title !== currentSheet.title
+        ? await createSheetSlug(newTitle)
+        : currentSheet.slug;
+
     const sheet = await db
       .updateTable("Sheet")
       .set({
         ...(content !== undefined && { content }),
-        ...(title !== undefined && { title }),
+        ...(title !== undefined && { title: newTitle }),
+        slug: newSlug,
         updatedAt: new Date(),
       })
       .where("id", "=", sheetId)
       .where("userId", "=", user.id)
-      .returning(["id"])
+      .returning(["id", "slug"])
       .executeTakeFirst();
 
     if (!sheet) {
@@ -49,7 +69,7 @@ export async function updateSheet(
       }
     }
 
-    return apiSuccess({ id: sheet.id });
+    return apiSuccess({ id: sheet.id, slug: sheet.slug });
   } catch {
     return apiError(ApiErrorCode.FAILED_TO_UPDATE);
   }

@@ -39,11 +39,7 @@ const linkInvitedUser = async (authId: string, email?: string) => {
   return { ...invitedUser, authId };
 };
 
-const createUserFromAuthUser = async (
-  authId: string,
-  email?: string,
-  userName?: string,
-) => {
+const createUserFromAuthUser = async (authId: string, email?: string) => {
   if (!email) {
     return null;
   }
@@ -90,11 +86,7 @@ export const getCurrentUser = async () => {
     return invitedUser;
   }
 
-  const createdUser = await createUserFromAuthUser(
-    authUser.id,
-    authUser.email,
-    authUser.user_metadata?.userName as string | undefined,
-  );
+  const createdUser = await createUserFromAuthUser(authUser.id, authUser.email);
 
   if (createdUser) {
     return createdUser;

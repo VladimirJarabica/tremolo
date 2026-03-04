@@ -1,13 +1,20 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 export function SheetList({
   sheets,
-  selectedId,
 }: {
-  sheets: { id: string; title: string; createdAt: Date }[];
-  selectedId?: string;
+  sheets: { id: string; slug: string; title: string; createdAt: Date }[];
 }): React.JSX.Element {
+  const pathname = usePathname();
+  const currentSlug = pathname.startsWith("/sheet/")
+    ? pathname.replace("/sheet/", "")
+    : undefined;
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-auto">
@@ -20,10 +27,10 @@ export function SheetList({
             {sheets.map((sheet) => (
               <SheetListItem
                 key={sheet.id}
-                id={sheet.id}
+                slug={sheet.slug}
                 title={sheet.title}
                 createdAt={sheet.createdAt}
-                isActive={sheet.id === selectedId}
+                isActive={sheet.slug === currentSlug}
               />
             ))}
           </ul>
@@ -34,12 +41,12 @@ export function SheetList({
 }
 
 function SheetListItem({
-  id,
+  slug,
   title,
   createdAt,
   isActive,
 }: {
-  id: string;
+  slug: string;
   title: string;
   createdAt: Date;
   isActive: boolean;
@@ -47,17 +54,17 @@ function SheetListItem({
   return (
     <li>
       <Link
-        href={`/?sheetId=${id}`}
+        href={`/sheet/${slug}`}
         className={cn(
           "block rounded-lg px-3 py-2 text-sm transition-colors",
           isActive
             ? "bg-zinc-100 text-zinc-900"
-            : "text-zinc-600 hover:bg-zinc-50"
+            : "text-zinc-600 hover:bg-zinc-50",
         )}
       >
         <div className="truncate font-medium">{title || "Untitled"}</div>
         <div className="text-xs text-zinc-400">
-          {createdAt.toLocaleDateString()}
+          {format(createdAt, "d. MMMM yyyy")}
         </div>
       </Link>
     </li>

@@ -24,12 +24,13 @@ model Tag {
 
 model Sheet {
   id      String @id @default(dbgenerated("gen_random_uuid()"))
+  slug    String @unique
   tags    Tag[]
   title   String @default("Untitled")
   content String
 
   userId String
-  user   User  @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   deletedAt DateTime?
 

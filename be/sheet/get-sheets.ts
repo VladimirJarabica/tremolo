@@ -1,12 +1,11 @@
 import { db } from "@/be/db";
-import { getSheetsSchema, type GetSheetsInput } from "./validation-schema";
 import {
   apiError,
   ApiErrorCode,
   apiSuccess,
-  type ApiResponse,
   type ApiResponseData,
 } from "@/be/response";
+import { getSheetsSchema, type GetSheetsInput } from "./validation-schema";
 
 export async function getSheets(input?: GetSheetsInput) {
   const parsed = getSheetsSchema.safeParse(input ?? {});
@@ -17,7 +16,15 @@ export async function getSheets(input?: GetSheetsInput) {
   try {
     let query = db
       .selectFrom("Sheet")
-      .select(["id", "title", "content", "userId", "createdAt", "updatedAt"])
+      .select([
+        "id",
+        "slug",
+        "title",
+        "content",
+        "userId",
+        "createdAt",
+        "updatedAt",
+      ])
       .where("deletedAt", "is", null);
 
     if (parsed.data.tagId) {

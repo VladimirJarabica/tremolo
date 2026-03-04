@@ -1,40 +1,35 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSheet } from "@/app/actions/create-sheet";
 import { updateSheet } from "@/app/actions/update-sheet";
 import { deleteSheet } from "@/app/actions/delete-sheet";
 import { createTag } from "@/app/actions/create-tag";
 import { TagSelector } from "./tag-selector";
+import type { SheetBySlug } from "@/be/sheet/get-sheet-by-slug";
+import { useState } from "react";
 
 export function SheetEditor({
-  sheetId,
-  initialContent,
-  initialTitle,
-  initialTagIds,
+  sheet,
+  updateContent,
+  updateTitle,
+  onCancel,
   allTags,
   isEditing,
   setIsEditing,
-  editingContent,
-  setEditingContent,
-  editingTitle,
-  setEditingTitle,
 }: {
-  sheetId: string;
-  initialContent: string;
-  initialTitle: string;
-  initialTagIds: string[];
+  sheet: SheetBySlug;
   allTags: { id: string; name: string }[];
   isEditing: boolean;
   setIsEditing: (value: boolean) => void;
-  editingContent: string;
-  setEditingContent: (content: string) => void;
-  editingTitle: string;
-  setEditingTitle: (title: string) => void;
+  updateContent: (content: string) => void;
+  updateTitle: (title: string) => void;
+  onCancel: () => void;
 }): React.JSX.Element {
   const router = useRouter();
-  const [selectedTagIds, setSelectedTagIds] = useState<string[]>(initialTagIds);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
+    sheet.tags.map((t) => t.id),
+  );
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -42,14 +37,19 @@ export function SheetEditor({
     setIsSaving(true);
     try {
       const result = await updateSheet({
-        sheetId,
-        content: editingContent,
-        title: editingTitle,
+        sheetId: sheet.id,
+        content: sheet.content,
+        title: sheet.title,
         tagIds: selectedTagIds,
       });
       if (result.success) {
         setIsEditing(false);
-        router.refresh();
+        const newSlug = result.data.slug;
+        if (newSlug !== sheet.slug) {
+          router.push(`/sheet/${newSlug}`);
+        } else {
+          router.refresh();
+        }
       } else {
         alert("Failed to save: " + result.error.code);
       }
@@ -64,7 +64,7 @@ export function SheetEditor({
     }
     setIsDeleting(true);
     try {
-      const result = await deleteSheet({ sheetId });
+      const result = await deleteSheet({ sheetId: sheet.id });
       if (result.success) {
         router.push("/");
         router.refresh();
@@ -77,9 +77,8 @@ export function SheetEditor({
   }
 
   function handleCancel(): void {
-    setEditingContent(initialContent);
-    setEditingTitle(initialTitle);
-    setSelectedTagIds(initialTagIds);
+    onCancel();
+    setSelectedTagIds(sheet.tags.map((t) => t.id));
     setIsEditing(false);
   }
 
@@ -115,14 +114,14 @@ export function SheetEditor({
     <div className="space-y-4">
       <input
         type="text"
-        value={editingTitle}
-        onChange={(e) => setEditingTitle(e.target.value)}
+        value={sheet.title}
+        onChange={(e) => updateTitle(e.target.value)}
         className="w-full rounded-lg border border-zinc-300 p-3 text-lg font-medium"
         placeholder="Title"
       />
       <textarea
-        value={editingContent}
-        onChange={(e) => setEditingContent(e.target.value)}
+        value={sheet.content}
+        onChange={(e) => updateContent(e.target.value)}
         className="h-48 w-full rounded-lg border border-zinc-300 p-3 font-mono text-sm"
         placeholder="Enter ABC notation here (without T: line)..."
       />
@@ -167,7 +166,7 @@ K:C
         title: "New Tune",
       });
       if (result.success) {
-        router.push(`/?sheetId=${result.data.id}`);
+        router.push(`/sheet/${result.data.slug}`);
         router.refresh();
       } else {
         alert("Failed to create sheet: " + result.error.code);

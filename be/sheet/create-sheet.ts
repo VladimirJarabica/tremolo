@@ -11,10 +11,11 @@ import {
   type ApiResponse,
   type ApiResponseData,
 } from "@/be/response";
+import { createSheetSlug } from "./create-sheet-slug";
 
 export async function createSheet(
   input: CreateSheetInput,
-): Promise<ApiResponse<{ id: string }>> {
+): Promise<ApiResponse<{ id: string; slug: string }>> {
   const { user } = await getUserContext();
 
   const parsed = createSheetSchema.safeParse(input);
@@ -23,12 +24,15 @@ export async function createSheet(
   }
 
   const { content, title, tagIds } = parsed.data;
+  const sheetTitle = title ?? "Untitled";
 
   try {
+    const slug = await createSheetSlug(sheetTitle);
+
     const sheet = await db
       .insertInto("Sheet")
-      .values({ content, title: title ?? "Untitled", userId: user.id })
-      .returning(["id"])
+      .values({ content, title: sheetTitle, slug, userId: user.id })
+      .returning(["id", "slug"])
       .executeTakeFirst();
 
     if (!sheet) {
@@ -42,7 +46,7 @@ export async function createSheet(
         .execute();
     }
 
-    return apiSuccess({ id: sheet.id });
+    return apiSuccess({ id: sheet.id, slug: sheet.slug });
   } catch {
     return apiError(ApiErrorCode.FAILED_TO_CREATE);
   }

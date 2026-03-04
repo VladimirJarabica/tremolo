@@ -3,68 +3,58 @@
 import { useEffect, useState } from "react";
 import { AbcViewer } from "./abc-viewer";
 import { SheetEditor } from "./sheet-editor";
-import { SheetDetail as SheetDetailType } from "@/be/sheet/get-sheet";
+import type { SheetBySlug } from "@/be/sheet/get-sheet-by-slug";
 
 export function SheetDetail({
-  sheet,
-  tags,
   allTags,
   currentUserId,
+  ...props
 }: {
-  sheet: SheetDetailType;
-  tags: { id: string; name: string }[];
+  sheet: SheetBySlug;
   allTags: { id: string; name: string }[];
   currentUserId: string | null;
 }): React.JSX.Element {
+  const [updateSheet, setUpdatedSheet] = useState(props.sheet);
   const [isEditing, setIsEditing] = useState(false);
-  const [editingContent, setEditingContent] = useState(sheet.content);
-  const [editingTitle, setEditingTitle] = useState(sheet.title);
 
-  const isOwner = currentUserId === sheet.userId;
+  const sheet = isEditing ? updateSheet : props.sheet;
+
+  const isOwner = currentUserId === props.sheet.userId;
 
   // Reset editing state when sheet changes
   useEffect(() => {
-    setEditingContent(sheet.content);
-    setEditingTitle(sheet.title);
+    setUpdatedSheet(sheet);
     setIsEditing(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Reset state when sheet changes
-  }, [sheet.id]);
-
-  const displayContent = isEditing ? editingContent : sheet.content;
+  }, [props.sheet.id]);
 
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-auto p-6">
-        <AbcViewer
-          sheet={{
-            ...sheet,
-            title: isEditing ? editingTitle : sheet.title,
-            content: displayContent,
-          }}
-        />
+        <AbcViewer sheet={sheet} />
       </div>
       <div className="border-t border-zinc-200 p-4">
         <div className="mb-3 flex flex-wrap gap-2">
-          {tags.map((tag) => (
+          {sheet.tags.map((tag) => (
             <TagBadge key={tag.id} name={tag.name} />
           ))}
-          {tags.length === 0 && (
+          {sheet.tags.length === 0 && (
             <span className="text-sm text-zinc-400">No tags</span>
           )}
         </div>
         {isOwner ? (
           <SheetEditor
-            sheetId={sheet.id}
-            initialContent={sheet.content}
-            initialTitle={sheet.title}
-            initialTagIds={tags.map((t) => t.id)}
+            sheet={sheet}
             allTags={allTags}
             isEditing={isEditing}
             setIsEditing={setIsEditing}
-            editingContent={editingContent}
-            setEditingContent={setEditingContent}
-            editingTitle={editingTitle}
-            setEditingTitle={setEditingTitle}
+            updateContent={(content) =>
+              setUpdatedSheet((prev) => ({ ...prev, content }))
+            }
+            updateTitle={(title) =>
+              setUpdatedSheet((prev) => ({ ...prev, title }))
+            }
+            onCancel={() => setUpdatedSheet(props.sheet)}
           />
         ) : (
           <p className="text-sm text-zinc-400">
