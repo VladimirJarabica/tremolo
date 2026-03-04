@@ -6,6 +6,7 @@ export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export type Sheet = {
     id: Generated<string>;
+    title: Generated<string>;
     content: string;
     deletedAt: Timestamp | null;
     createdAt: Generated<Timestamp>;

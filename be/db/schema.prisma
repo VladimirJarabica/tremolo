@@ -25,6 +25,7 @@ model Tag {
 model Sheet {
   id      String @id @default(dbgenerated("gen_random_uuid()"))
   tags    Tag[]
+  title   String @default("Untitled")
   content String
 
   deletedAt DateTime?
