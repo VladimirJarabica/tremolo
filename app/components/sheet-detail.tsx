@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AbcViewer } from "./abc-viewer";
 import { SheetEditor } from "./sheet-editor";
 import { SheetDetail as SheetDetailType } from "@/be/sheet/get-sheet";
@@ -17,6 +17,13 @@ export function SheetDetail({
   const [isEditing, setIsEditing] = useState(false);
   const [editingContent, setEditingContent] = useState(sheet.content);
   const [editingTitle, setEditingTitle] = useState(sheet.title);
+
+  // Reset editing state when sheet changes
+  useEffect(() => {
+    setEditingContent(sheet.content);
+    setEditingTitle(sheet.title);
+    setIsEditing(false);
+  }, [sheet.id]);
 
   const displayContent = isEditing ? editingContent : sheet.content;
 

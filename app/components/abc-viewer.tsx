@@ -70,7 +70,7 @@ export function AbcViewer({
   }
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
+    <div className="flex flex-1 flex-col overflow-hidden h-full">
       {/* Sheet music notation */}
       <div
         ref={notationRef}
