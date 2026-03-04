@@ -10,12 +10,6 @@ export async function Header(): Promise<React.JSX.Element> {
     <header className="flex h-14 items-center justify-between border-b border-zinc-200 px-4">
       <div className="flex items-center gap-6">
         <h1 className="text-xl font-semibold">Tremolo</h1>
-        <Link
-          href="/trash"
-          className="text-sm text-zinc-600 hover:text-zinc-900"
-        >
-          Trash
-        </Link>
       </div>
       <div className="flex items-center gap-3">
         {user && <NewSheetButton />}
