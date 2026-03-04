@@ -11,21 +11,27 @@ import { TagSelector } from "./tag-selector";
 export function SheetEditor({
   sheetId,
   initialContent,
+  initialTitle,
   initialTagIds,
   allTags,
   isEditing,
   setIsEditing,
   editingContent,
   setEditingContent,
+  editingTitle,
+  setEditingTitle,
 }: {
   sheetId: string;
   initialContent: string;
+  initialTitle: string;
   initialTagIds: string[];
   allTags: { id: string; name: string }[];
   isEditing: boolean;
   setIsEditing: (value: boolean) => void;
   editingContent: string;
   setEditingContent: (content: string) => void;
+  editingTitle: string;
+  setEditingTitle: (title: string) => void;
 }): React.JSX.Element {
   const router = useRouter();
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(initialTagIds);
@@ -38,6 +44,7 @@ export function SheetEditor({
       const result = await updateSheet({
         sheetId,
         content: editingContent,
+        title: editingTitle,
         tagIds: selectedTagIds,
       });
       if (result.success) {
@@ -71,6 +78,7 @@ export function SheetEditor({
 
   function handleCancel(): void {
     setEditingContent(initialContent);
+    setEditingTitle(initialTitle);
     setSelectedTagIds(initialTagIds);
     setIsEditing(false);
   }
@@ -105,11 +113,18 @@ export function SheetEditor({
 
   return (
     <div className="space-y-4">
+      <input
+        type="text"
+        value={editingTitle}
+        onChange={(e) => setEditingTitle(e.target.value)}
+        className="w-full rounded-lg border border-zinc-300 p-3 text-lg font-medium"
+        placeholder="Title"
+      />
       <textarea
         value={editingContent}
         onChange={(e) => setEditingContent(e.target.value)}
         className="h-48 w-full rounded-lg border border-zinc-300 p-3 font-mono text-sm"
-        placeholder="Enter ABC notation here..."
+        placeholder="Enter ABC notation here (without T: line)..."
       />
       <TagSelector
         allTags={allTags}
@@ -143,7 +158,7 @@ export function NewSheetButton(): React.JSX.Element {
   async function handleClick(): Promise<void> {
     setIsCreating(true);
     try {
-      const result = await createSheet({ content: "X:1\nT:New Tune\nM:4/4\nL:1/4\nK:C\n" });
+      const result = await createSheet({ content: "X:1\nM:4/4\nL:1/4\nK:C\n", title: "New Tune" });
       if (result.success) {
         router.push(`/?sheetId=${result.data.id}`);
         router.refresh();

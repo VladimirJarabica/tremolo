@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const createSheetSchema = z.object({
   content: z.string().min(1, "Content is required"),
+  title: z.string().optional(),
   tagIds: z.array(z.string()).optional(),
 });
 
@@ -10,6 +11,7 @@ export type CreateSheetInput = z.infer<typeof createSheetSchema>;
 export const updateSheetSchema = z.object({
   sheetId: z.string().min(1, "Sheet ID is required"),
   content: z.string().min(1, "Content is required").optional(),
+  title: z.string().optional(),
   tagIds: z.array(z.string()).optional(),
 });
 

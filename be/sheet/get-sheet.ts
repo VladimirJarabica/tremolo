@@ -13,6 +13,7 @@ export async function getSheet(
 ): Promise<
   ApiResponse<{
     id: string;
+    title: string;
     content: string;
     createdAt: Date;
     updatedAt: Date;
@@ -27,7 +28,7 @@ export async function getSheet(
   try {
     const sheet = await db
       .selectFrom("Sheet")
-      .select(["id", "content", "createdAt", "updatedAt"])
+      .select(["id", "title", "content", "createdAt", "updatedAt"])
       .where("id", "=", parsed.data.sheetId)
       .where("deletedAt", "is", null)
       .executeTakeFirst();

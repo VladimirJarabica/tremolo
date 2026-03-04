@@ -16,13 +16,14 @@ export async function updateSheet(
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);
   }
 
-  const { sheetId, content, tagIds } = parsed.data;
+  const { sheetId, content, title, tagIds } = parsed.data;
 
   try {
     const sheet = await db
       .updateTable("Sheet")
       .set({
         ...(content !== undefined && { content }),
+        ...(title !== undefined && { title }),
         updatedAt: new Date(),
       })
       .where("id", "=", sheetId)

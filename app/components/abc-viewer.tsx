@@ -3,12 +3,21 @@
 import { useEffect, useRef } from "react";
 import abcjs from "abcjs";
 
-export function AbcViewer({ content }: { content: string }): React.JSX.Element {
+export function AbcViewer({
+  content,
+  title,
+}: {
+  title: string;
+  content: string;
+}): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const abcContent = `X:1\nT:${title}\n${content}`;
+  console.log("content", content, abcContent);
 
   useEffect(() => {
     if (containerRef.current && content.trim()) {
-      abcjs.renderAbc(containerRef.current, content, {
+      abcjs.renderAbc(containerRef.current, abcContent, {
         responsive: "resize",
         visualTranspose: 0,
       });
@@ -18,7 +27,7 @@ export function AbcViewer({ content }: { content: string }): React.JSX.Element {
         containerRef.current.removeChild(children[0]);
       }
     }
-  }, [content]);
+  }, [abcContent]);
 
   if (!content.trim()) {
     return (

@@ -5,7 +5,7 @@ export function SheetList({
   sheets,
   selectedId,
 }: {
-  sheets: { id: string; content: string; createdAt: Date }[];
+  sheets: { id: string; title: string; createdAt: Date }[];
   selectedId?: string;
 }): React.JSX.Element {
   return (
@@ -21,7 +21,7 @@ export function SheetList({
               <SheetListItem
                 key={sheet.id}
                 id={sheet.id}
-                title={getPreviewTitle(sheet.content)}
+                title={sheet.title}
                 createdAt={sheet.createdAt}
                 isActive={sheet.id === selectedId}
               />
@@ -62,14 +62,4 @@ function SheetListItem({
       </Link>
     </li>
   );
-}
-
-function getPreviewTitle(content: string): string {
-  // Try to extract title from ABC notation (T: field)
-  const titleMatch = content.match(/^T:\s*(.+)$/m);
-  if (titleMatch) {
-    return titleMatch[1].trim();
-  }
-  // Fall back to first line of content
-  return content.split("\n")[0]?.slice(0, 50) ?? "Untitled";
 }

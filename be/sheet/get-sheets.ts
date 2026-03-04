@@ -10,7 +10,7 @@ import {
 
 export async function getSheets(
   input?: GetSheetsInput,
-): Promise<ApiResponse<{ id: string; content: string; createdAt: Date; updatedAt: Date }[]>> {
+): Promise<ApiResponse<{ id: string; title: string; content: string; createdAt: Date; updatedAt: Date }[]>> {
   const parsed = getSheetsSchema.safeParse(input ?? {});
   if (!parsed.success) {
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);

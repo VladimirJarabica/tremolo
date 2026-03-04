@@ -9,19 +9,29 @@ export function SheetDetail({
   tags,
   allTags,
 }: {
-  sheet: { id: string; content: string; createdAt: Date; updatedAt: Date };
+  sheet: {
+    id: string;
+    title: string;
+    content: string;
+    createdAt: Date;
+    updatedAt: Date;
+  };
   tags: { id: string; name: string }[];
   allTags: { id: string; name: string }[];
 }): React.JSX.Element {
   const [isEditing, setIsEditing] = useState(false);
   const [editingContent, setEditingContent] = useState(sheet.content);
+  const [editingTitle, setEditingTitle] = useState(sheet.title);
 
   const displayContent = isEditing ? editingContent : sheet.content;
 
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-auto p-6">
-        <AbcViewer content={displayContent} />
+        <AbcViewer
+          title={isEditing ? editingTitle : sheet.title}
+          content={displayContent}
+        />
       </div>
       <div className="border-t border-zinc-200 p-4">
         <div className="mb-3 flex flex-wrap gap-2">
@@ -35,12 +45,15 @@ export function SheetDetail({
         <SheetEditor
           sheetId={sheet.id}
           initialContent={sheet.content}
+          initialTitle={sheet.title}
           initialTagIds={tags.map((t) => t.id)}
           allTags={allTags}
           isEditing={isEditing}
           setIsEditing={setIsEditing}
           editingContent={editingContent}
           setEditingContent={setEditingContent}
+          editingTitle={editingTitle}
+          setEditingTitle={setEditingTitle}
         />
       </div>
     </div>
