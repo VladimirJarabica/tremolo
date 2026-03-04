@@ -1,5 +1,7 @@
 "use client";
 
+import "abcjs/abcjs-audio.css";
+
 import { useEffect, useRef, useState } from "react";
 import abcjs from "abcjs";
 import { SheetDetail } from "@/be/sheet/get-sheet";
@@ -10,25 +12,54 @@ export function AbcViewer({
 }: {
   sheet: SheetDetail;
 }): React.JSX.Element {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const notationRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLDivElement>(null);
   const [transpose, setTranspose] = useState(0);
 
   const abcContent = getAbcNotationFromSheet(sheet);
-  console.log("content", sheet.content, abcContent);
 
   useEffect(() => {
-    if (containerRef.current && sheet.content.trim()) {
-      abcjs.renderAbc(containerRef.current, abcContent, {
+    if (notationRef.current && audioRef.current && sheet.content.trim()) {
+      // Clear previous content
+      notationRef.current.innerHTML = "";
+      audioRef.current.innerHTML = "";
+
+      // Render ABC notation with transpose
+      const visualObj = abcjs.renderAbc(notationRef.current, abcContent, {
         responsive: "resize",
         visualTranspose: transpose,
       });
-      // Clear any previous renders
-      const children = containerRef.current.children;
-      while (children.length > 1) {
-        containerRef.current.removeChild(children[0]);
-      }
+
+      // Setup audio controls
+      const synthControl = new abcjs.synth.SynthController();
+      synthControl.load(audioRef.current, null, {
+        displayLoop: true,
+        displayRestart: true,
+        displayPlay: true,
+        displayProgress: true,
+        displayWarp: true,
+      });
+
+      // Create synth with the transposed visual object
+      const createSynth = new abcjs.synth.CreateSynth();
+      createSynth
+        .init({
+          visualObj: visualObj[0],
+        })
+        .then(() => {
+          // The visualObj already contains transposed notes from renderAbc
+          synthControl.setTune(visualObj[0], false, {
+            midiTranspose: transpose,
+          });
+        })
+        .catch(console.error);
+
+      // Cleanup
+      return () => {
+        synthControl.pause();
+      };
     }
-  }, [abcContent, transpose]);
+  }, [abcContent, transpose, sheet.content]);
 
   if (!sheet.content.trim()) {
     return (
@@ -39,26 +70,66 @@ export function AbcViewer({
   }
 
   return (
-    <>
-      <div ref={containerRef} className="abc-container" />
-      <div className="mb-4 flex items-center gap-3">
-        <span className="text-sm text-zinc-500">Transpose:</span>
-        <button
-          onClick={() => setTranspose((t) => t - 1)}
-          className="rounded-md border border-zinc-300 px-3 py-1 text-lg font-medium hover:bg-zinc-50 disabled:opacity-50"
-        >
-          -
-        </button>
-        <span className="min-w-12 text-center font-mono">
-          {transpose > 0 ? `+${transpose}` : transpose}
-        </span>
-        <button
-          onClick={() => setTranspose((t) => t + 1)}
-          className="rounded-md border border-zinc-300 px-3 py-1 text-lg font-medium hover:bg-zinc-50 disabled:opacity-50"
-        >
-          +
-        </button>
+    <div className="flex flex-1 flex-col overflow-hidden">
+      {/* Sheet music notation */}
+      <div
+        ref={notationRef}
+        className="abc-container min-h-0 flex-1 overflow-auto rounded-lg bg-white p-4"
+      />
+
+      {/* Controls bar */}
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3">
+        {/* Transpose controls */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+            Transpose
+          </span>
+          <div className="ml-2 flex items-center rounded-md bg-white shadow-sm ring-1 ring-zinc-200">
+            <button
+              onClick={() => setTranspose((t) => t - 1)}
+              className="rounded-l-md px-3 py-1.5 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+            >
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M20 12H4"
+                />
+              </svg>
+            </button>
+            <span className="min-w-10 border-x border-zinc-200 px-2 py-1.5 text-center font-mono text-sm">
+              {transpose > 0 ? `+${transpose}` : transpose}
+            </span>
+            <button
+              onClick={() => setTranspose((t) => t + 1)}
+              className="rounded-r-md px-3 py-1.5 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+            >
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Audio player */}
+        <div ref={audioRef} className="abcjs-audio max-w-2xl min-w-xl flex-1" />
       </div>
-    </>
+    </div>
   );
 }
