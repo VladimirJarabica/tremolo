@@ -19,8 +19,6 @@ export async function getSheet(input: GetSheetInput): Promise<
     tags: { id: string; name: string }[];
   }>
 > {
-  const { user } = await getUserContext();
-
   const parsed = getSheetSchema.safeParse(input);
   if (!parsed.success) {
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);
@@ -31,7 +29,6 @@ export async function getSheet(input: GetSheetInput): Promise<
       .selectFrom("Sheet")
       .select(["id", "title", "content", "createdAt", "updatedAt"])
       .where("id", "=", parsed.data.sheetId)
-      .where("userId", "=", user.id)
       .where("deletedAt", "is", null)
       .executeTakeFirst();
 
