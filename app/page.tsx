@@ -1,11 +1,10 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { getSheets } from "@/app/actions/get-sheets";
 import { getSheet } from "@/app/actions/get-sheet";
 import { getTags } from "@/app/actions/get-tags";
 import { SheetList } from "@/app/components/sheet-list";
 import { SheetDetail, EmptyState } from "@/app/components/sheet-detail";
-import { NewSheetButton } from "@/app/components/sheet-editor";
+import { Header } from "./components/header";
 
 export default async function Home({
   searchParams,
@@ -35,19 +34,7 @@ export default async function Home({
 
   return (
     <div className="flex h-screen flex-col bg-white">
-      {/* Header */}
-      <header className="flex h-14 items-center justify-between border-b border-zinc-200 px-4">
-        <h1 className="text-xl font-semibold">Tremolo</h1>
-        <div className="flex gap-2">
-          <Link
-            href="/trash"
-            className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
-          >
-            Trash
-          </Link>
-          <NewSheetButton />
-        </div>
-      </header>
+      <Header />
 
       {/* Main content */}
       <div className="flex flex-1 overflow-hidden">

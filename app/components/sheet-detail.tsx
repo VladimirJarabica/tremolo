@@ -23,6 +23,7 @@ export function SheetDetail({
     setEditingContent(sheet.content);
     setEditingTitle(sheet.title);
     setIsEditing(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Reset state when sheet changes
   }, [sheet.id]);
 
   const displayContent = isEditing ? editingContent : sheet.content;
