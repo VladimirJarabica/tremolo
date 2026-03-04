@@ -158,7 +158,14 @@ export function NewSheetButton(): React.JSX.Element {
   async function handleClick(): Promise<void> {
     setIsCreating(true);
     try {
-      const result = await createSheet({ content: "X:1\nM:4/4\nL:1/4\nK:C\n", title: "New Tune" });
+      const result = await createSheet({
+        content: `M:4/4
+L:1/4
+Q:1/4=120
+K:C
+`,
+        title: "New Tune",
+      });
       if (result.success) {
         router.push(`/?sheetId=${result.data.id}`);
         router.refresh();
