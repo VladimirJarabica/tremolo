@@ -3,19 +3,14 @@
 import { useState } from "react";
 import { AbcViewer } from "./abc-viewer";
 import { SheetEditor } from "./sheet-editor";
+import { SheetDetail as SheetDetailType } from "@/be/sheet/get-sheet";
 
 export function SheetDetail({
   sheet,
   tags,
   allTags,
 }: {
-  sheet: {
-    id: string;
-    title: string;
-    content: string;
-    createdAt: Date;
-    updatedAt: Date;
-  };
+  sheet: SheetDetailType;
   tags: { id: string; name: string }[];
   allTags: { id: string; name: string }[];
 }): React.JSX.Element {
@@ -29,8 +24,11 @@ export function SheetDetail({
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-auto p-6">
         <AbcViewer
-          title={isEditing ? editingTitle : sheet.title}
-          content={displayContent}
+          sheet={{
+            ...sheet,
+            title: isEditing ? editingTitle : sheet.title,
+            content: displayContent,
+          }}
         />
       </div>
       <div className="border-t border-zinc-200 p-4">

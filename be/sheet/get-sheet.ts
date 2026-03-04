@@ -8,9 +8,7 @@ import {
   type ApiResponseData,
 } from "@/be/response";
 
-export async function getSheet(
-  input: GetSheetInput,
-): Promise<
+export async function getSheet(input: GetSheetInput): Promise<
   ApiResponse<{
     id: string;
     title: string;
@@ -50,4 +48,4 @@ export async function getSheet(
   }
 }
 
-export type GetSheetData = ApiResponseData<typeof getSheet>;
+export type SheetDetail = ApiResponseData<typeof getSheet>;

@@ -1,25 +1,26 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import abcjs from "abcjs";
+import { SheetDetail } from "@/be/sheet/get-sheet";
+import { getAbcNotationFromSheet } from "../utils/abc-notation";
 
 export function AbcViewer({
-  content,
-  title,
+  sheet,
 }: {
-  title: string;
-  content: string;
+  sheet: SheetDetail;
 }): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [transpose, setTranspose] = useState(0);
 
-  const abcContent = `X:1\nT:${title}\n${content}`;
-  console.log("content", content, abcContent);
+  const abcContent = getAbcNotationFromSheet(sheet);
+  console.log("content", sheet.content, abcContent);
 
   useEffect(() => {
-    if (containerRef.current && content.trim()) {
+    if (containerRef.current && sheet.content.trim()) {
       abcjs.renderAbc(containerRef.current, abcContent, {
         responsive: "resize",
-        visualTranspose: 0,
+        visualTranspose: transpose,
       });
       // Clear any previous renders
       const children = containerRef.current.children;
@@ -27,9 +28,9 @@ export function AbcViewer({
         containerRef.current.removeChild(children[0]);
       }
     }
-  }, [abcContent]);
+  }, [abcContent, transpose]);
 
-  if (!content.trim()) {
+  if (!sheet.content.trim()) {
     return (
       <div className="flex h-full items-center justify-center text-zinc-400">
         No content to preview
@@ -37,5 +38,27 @@ export function AbcViewer({
     );
   }
 
-  return <div ref={containerRef} className="abc-container" />;
+  return (
+    <>
+      <div ref={containerRef} className="abc-container" />
+      <div className="mb-4 flex items-center gap-3">
+        <span className="text-sm text-zinc-500">Transpose:</span>
+        <button
+          onClick={() => setTranspose((t) => t - 1)}
+          className="rounded-md border border-zinc-300 px-3 py-1 text-lg font-medium hover:bg-zinc-50 disabled:opacity-50"
+        >
+          -
+        </button>
+        <span className="min-w-12 text-center font-mono">
+          {transpose > 0 ? `+${transpose}` : transpose}
+        </span>
+        <button
+          onClick={() => setTranspose((t) => t + 1)}
+          className="rounded-md border border-zinc-300 px-3 py-1 text-lg font-medium hover:bg-zinc-50 disabled:opacity-50"
+        >
+          +
+        </button>
+      </div>
+    </>
+  );
 }
