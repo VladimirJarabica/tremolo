@@ -23,3 +23,13 @@ export async function getSafeUserContext(): Promise<UserContext | null> {
     return null;
   }
 }
+
+export async function requireUser(id: string) {
+  const userContext = await getUserContext();
+
+  if (userContext.user.id !== id) {
+    throw new AuthError(AuthErrorCode.AUTH_NOT_AUTHORIZED);
+  }
+
+  return userContext;
+}
