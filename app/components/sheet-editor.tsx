@@ -159,8 +159,8 @@ export function NewSheetButton(): React.JSX.Element {
     setIsCreating(true);
     try {
       const result = await createSheet({
-        content: `M:4/4
-L:1/4
+        content: `M:2/4
+L:1/8
 Q:1/4=120
 K:C
 `,

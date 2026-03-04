@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/be/auth/get-user";
 
 export async function signUp(input: {
   email: string;
@@ -47,10 +48,14 @@ export async function signOut(): Promise<{ success: boolean }> {
   return { success: true };
 }
 
-export async function getUser() {
+export async function getAuthUser() {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   return user;
+}
+
+export async function getUser() {
+  return getCurrentUser();
 }

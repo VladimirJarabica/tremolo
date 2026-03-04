@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { getSheets } from "@/app/actions/get-sheets";
 import { getSheet } from "@/app/actions/get-sheet";
 import { getTags } from "@/app/actions/get-tags";
+import { getUser } from "@/app/actions/auth";
 import { SheetList } from "@/app/components/sheet-list";
 import { SheetDetail, EmptyState } from "@/app/components/sheet-detail";
 import { Header } from "./components/header";
@@ -13,13 +14,15 @@ export default async function Home({
 }): Promise<React.JSX.Element> {
   const { sheetId } = await searchParams;
 
-  const [sheetsResult, tagsResult] = await Promise.all([
+  const [sheetsResult, tagsResult, user] = await Promise.all([
     getSheets(),
     getTags(),
+    getUser(),
   ]);
 
   const sheets = sheetsResult.success ? sheetsResult.data : [];
   const allTags = tagsResult.success ? tagsResult.data : [];
+  const currentUserId = user?.id ?? null;
 
   let selectedSheet = null;
   let selectedTags: { id: string; name: string }[] = [];
@@ -52,6 +55,7 @@ export default async function Home({
               sheet={selectedSheet}
               tags={selectedTags}
               allTags={allTags}
+              currentUserId={currentUserId}
             />
           ) : (
             <EmptyState />

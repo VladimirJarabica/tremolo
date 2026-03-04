@@ -1,5 +1,4 @@
 import { db } from "@/be/db";
-import { getUserContext } from "@/be/auth/guards";
 import { getSheetSchema, type GetSheetInput } from "./validation-schema";
 import {
   apiError,
@@ -14,6 +13,7 @@ export async function getSheet(input: GetSheetInput): Promise<
     id: string;
     title: string;
     content: string;
+    userId: string;
     createdAt: Date;
     updatedAt: Date;
     tags: { id: string; name: string }[];
@@ -27,7 +27,7 @@ export async function getSheet(input: GetSheetInput): Promise<
   try {
     const sheet = await db
       .selectFrom("Sheet")
-      .select(["id", "title", "content", "createdAt", "updatedAt"])
+      .select(["id", "title", "content", "userId", "createdAt", "updatedAt"])
       .where("id", "=", parsed.data.sheetId)
       .where("deletedAt", "is", null)
       .executeTakeFirst();

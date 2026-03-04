@@ -1,5 +1,4 @@
 import { db } from "@/be/db";
-import { getUserContext } from "@/be/auth/guards";
 import { getSheetsSchema, type GetSheetsInput } from "./validation-schema";
 import {
   apiError,
@@ -18,7 +17,7 @@ export async function getSheets(input?: GetSheetsInput) {
   try {
     let query = db
       .selectFrom("Sheet")
-      .selectAll()
+      .select(["id", "title", "content", "userId", "createdAt", "updatedAt"])
       .where("deletedAt", "is", null);
 
     if (parsed.data.tagId) {

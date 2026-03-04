@@ -9,14 +9,18 @@ export function SheetDetail({
   sheet,
   tags,
   allTags,
+  currentUserId,
 }: {
   sheet: SheetDetailType;
   tags: { id: string; name: string }[];
   allTags: { id: string; name: string }[];
+  currentUserId: string | null;
 }): React.JSX.Element {
   const [isEditing, setIsEditing] = useState(false);
   const [editingContent, setEditingContent] = useState(sheet.content);
   const [editingTitle, setEditingTitle] = useState(sheet.title);
+
+  const isOwner = currentUserId === sheet.userId;
 
   // Reset editing state when sheet changes
   useEffect(() => {
@@ -48,19 +52,25 @@ export function SheetDetail({
             <span className="text-sm text-zinc-400">No tags</span>
           )}
         </div>
-        <SheetEditor
-          sheetId={sheet.id}
-          initialContent={sheet.content}
-          initialTitle={sheet.title}
-          initialTagIds={tags.map((t) => t.id)}
-          allTags={allTags}
-          isEditing={isEditing}
-          setIsEditing={setIsEditing}
-          editingContent={editingContent}
-          setEditingContent={setEditingContent}
-          editingTitle={editingTitle}
-          setEditingTitle={setEditingTitle}
-        />
+        {isOwner ? (
+          <SheetEditor
+            sheetId={sheet.id}
+            initialContent={sheet.content}
+            initialTitle={sheet.title}
+            initialTagIds={tags.map((t) => t.id)}
+            allTags={allTags}
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
+            editingContent={editingContent}
+            setEditingContent={setEditingContent}
+            editingTitle={editingTitle}
+            setEditingTitle={setEditingTitle}
+          />
+        ) : (
+          <p className="text-sm text-zinc-400">
+            Sign in as the owner to edit this sheet
+          </p>
+        )}
       </div>
     </div>
   );
