@@ -28,6 +28,9 @@ model Sheet {
   title   String @default("Untitled")
   content String
 
+  userId String
+  user   User  @relation(fields: [userId], references: [id])
+
   deletedAt DateTime?
 
   createdAt DateTime @default(now())
@@ -39,6 +42,8 @@ model User {
   email String @unique
 
   authId String? @unique
+
+  sheets Sheet[]
 
   deletedAt DateTime?
 

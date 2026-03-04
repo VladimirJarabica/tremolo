@@ -1,4 +1,5 @@
 import { db } from "@/be/db";
+import { requireSheetOwnership } from "@/be/auth/guards";
 import { updateSheetSchema, type UpdateSheetInput } from "./validation-schema";
 import {
   apiError,
@@ -11,6 +12,8 @@ import {
 export async function updateSheet(
   input: UpdateSheetInput,
 ): Promise<ApiResponse<{ id: string }>> {
+  const { user } = await requireSheetOwnership(input.sheetId);
+
   const parsed = updateSheetSchema.safeParse(input);
   if (!parsed.success) {
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);
@@ -27,6 +30,7 @@ export async function updateSheet(
         updatedAt: new Date(),
       })
       .where("id", "=", sheetId)
+      .where("userId", "=", user.id)
       .returning(["id"])
       .executeTakeFirst();
 

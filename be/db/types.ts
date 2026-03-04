@@ -8,6 +8,7 @@ export type Sheet = {
     id: Generated<string>;
     title: Generated<string>;
     content: string;
+    userId: string;
     deletedAt: Timestamp | null;
     createdAt: Generated<Timestamp>;
     updatedAt: Generated<Timestamp>;

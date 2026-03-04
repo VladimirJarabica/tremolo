@@ -1,4 +1,5 @@
 import { db } from "@/be/db";
+import { getUserContext } from "@/be/auth/guards";
 import {
   createSheetSchema,
   type CreateSheetInput,
@@ -14,6 +15,8 @@ import {
 export async function createSheet(
   input: CreateSheetInput,
 ): Promise<ApiResponse<{ id: string }>> {
+  const { user } = await getUserContext();
+
   const parsed = createSheetSchema.safeParse(input);
   if (!parsed.success) {
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);
@@ -24,7 +27,7 @@ export async function createSheet(
   try {
     const sheet = await db
       .insertInto("Sheet")
-      .values({ content, title: title ?? "Untitled" })
+      .values({ content, title: title ?? "Untitled", userId: user.id })
       .returning(["id"])
       .executeTakeFirst();
 

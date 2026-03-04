@@ -1,4 +1,5 @@
 import { db } from "@/be/db";
+import { getUserContext } from "@/be/auth/guards";
 import { getSheetsSchema, type GetSheetsInput } from "./validation-schema";
 import {
   apiError,
@@ -8,9 +9,7 @@ import {
   type ApiResponseData,
 } from "@/be/response";
 
-export async function getSheets(
-  input?: GetSheetsInput,
-): Promise<ApiResponse<{ id: string; title: string; content: string; createdAt: Date; updatedAt: Date }[]>> {
+export async function getSheets(input?: GetSheetsInput) {
   const parsed = getSheetsSchema.safeParse(input ?? {});
   if (!parsed.success) {
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);

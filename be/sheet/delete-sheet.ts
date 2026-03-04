@@ -1,4 +1,5 @@
 import { db } from "@/be/db";
+import { requireSheetOwnership } from "@/be/auth/guards";
 import { deleteSheetSchema, type DeleteSheetInput } from "./validation-schema";
 import {
   apiError,
@@ -11,6 +12,8 @@ import {
 export async function deleteSheet(
   input: DeleteSheetInput,
 ): Promise<ApiResponse<{ id: string }>> {
+  const { user } = await requireSheetOwnership(input.sheetId);
+
   const parsed = deleteSheetSchema.safeParse(input);
   if (!parsed.success) {
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);
@@ -21,6 +24,7 @@ export async function deleteSheet(
       .updateTable("Sheet")
       .set({ deletedAt: new Date(), updatedAt: new Date() })
       .where("id", "=", parsed.data.sheetId)
+      .where("userId", "=", user.id)
       .where("deletedAt", "is", null)
       .returning(["id"])
       .executeTakeFirst();
