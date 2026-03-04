@@ -1,0 +1,34 @@
+generator kysely {
+  provider     = "prisma-kysely"
+  // Optionally provide a destination directory for the generated file
+  // and a filename of your choice
+  output       = "."
+  fileName     = "types.ts"
+  // Optionally generate runtime enums to a separate file
+  enumFileName = "enums.ts"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Tag {
+  id   String @id @default(dbgenerated("gen_random_uuid()"))
+  name String @unique
+
+  sheets Sheet[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Sheet {
+  id      String @id @default(dbgenerated("gen_random_uuid()"))
+  tags    Tag[]
+  content String
+
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}

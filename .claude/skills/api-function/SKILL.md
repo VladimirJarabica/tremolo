@@ -94,7 +94,7 @@ export async function archiveMemorial(
   try {
     const memorial = await db
       .updateTable("Memorial")
-      .set({ archivedAt: new Date() })
+      .set({ archivedAt: new Date(), updatedAt: new Date() })
       .where("id", "=", parsed.data.memorialId)
       .where("deletedAt", "is", null)
       .returning(["id"])
@@ -129,6 +129,8 @@ Export `ApiResponseData<typeof fn>` at the end of every BE function file. This e
 3. DB operation in try/catch
 4. Return `apiSuccess(data)` or `apiError(code)`
 5. Audit log after successful operations
+
+**Update Operations:** Always set `updatedAt: new Date()` in `.set()` when updating records. The database does NOT auto-update this field.
 
 ### 4. Server Action (`app/**/actions/archive-memorial.ts`)
 
@@ -204,6 +206,7 @@ Read functions follow the same pattern — always go through a server action:
 | Using `parse()` instead of `safeParse()`      | `parse()` throws — use `safeParse()` and return error          |
 | Forgetting `revalidatePath` after mutations   | Stale data in UI                                               |
 | Skipping server action for reads              | All operations (reads included) go through actions             |
+| Not setting `updatedAt` on updates            | Always include `updatedAt: new Date()` in `.set()`             |
 
 ## Checklist
 

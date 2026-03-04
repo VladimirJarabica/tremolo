@@ -6,10 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Tremolo is a web application for creating and managing music sheets using ABC notation (https://abcnotation.com/). The application allows users (currently without authentication) to create, edit, and delete music sheets.
 
-### Core Data Entity: Sheet
-- `id`: Auto-generated unique identifier
-- `tags`: Array of strings for categorization
-- `content`: ABC music notation string
+### Core Data Entities
+- **Sheet**: `id`, `content` (ABC notation string), `tags` (many-to-many via Tag)
+- **Tag**: `id`, `name` (unique)
 
 ## Tech Stack
 
@@ -17,33 +16,72 @@ Tremolo is a web application for creating and managing music sheets using ABC no
 - **React**: 19.x
 - **Styling**: Tailwind CSS 4
 - **Language**: TypeScript (strict mode enabled)
-- **Linting**: ESLint with `eslint-config-next` (core-web-vitals + typescript)
+- **Database**: PostgreSQL with Prisma 7 (schema/migrations) + Kysely (query builder)
+- **Validation**: Zod
+- **Linting**: ESLint with `eslint-config-next`
 
 ## Commands
 
 ```bash
 # Development
-npm run dev          # Start development server on http://localhost:3000
+npm run dev              # Start development server on http://localhost:3000
+npm run docker:up        # Start PostgreSQL container
+
+# Database
+npm run db:generate      # Generate Prisma client and Kysely types
+npm run db:migrate       # Create and run migration
+npm run db:format        # Format Prisma schema
 
 # Production
-npm run build        # Build for production
-npm run start        # Start production server
+npm run build            # Build for production
+npm run start            # Start production server
 
-# Linting
-npm run lint         # Run ESLint
+# Quality
+npm run lint             # Run ESLint
+npm run type-check       # Run TypeScript check
 ```
+
+## Architecture
+
+```
+FE Component → Server Action → BE Function → ApiResponse<T>
+                    ↑
+              handleGuardedApi
+```
+
+- **BE functions** (`be/*/`): Contain business logic, Zod validation, DB operations
+- **Server actions** (`app/actions/`): Thin wrappers with `"use server"`, handle revalidation
+- **All operations return `ApiResponse<T>`**: `{ success: true, data } | { success: false, error }`
 
 ## Project Structure
 
 ```
+be/
+  db/
+    schema.prisma      # Prisma schema
+    types.ts           # Generated Kysely types
+    index.ts           # Kysely client
+  sheet/               # Sheet entity BE functions
+    validation-schema.ts
+    create-sheet.ts
+    get-sheet.ts
+    get-sheets.ts
+    update-sheet.ts
+    delete-sheet.ts
+  response.ts          # ApiResponse types and helpers
+
 app/
-  layout.tsx    # Root layout with Geist fonts
-  page.tsx      # Home page
-  globals.css   # Global styles with Tailwind and CSS variables
+  actions/             # Server actions
+  utils/
+    handle-guarded-api.ts
 ```
 
-## Architecture Notes
+## Database Conventions
 
-- Path alias `@/*` maps to the project root (configured in tsconfig.json)
-- Dark mode is supported via `prefers-color-scheme` media query
-- Font configuration uses Next.js font optimization with Geist Sans and Geist Mono
+- UUID primary keys via `gen_random_uuid()`
+- All models have `createdAt` and `updatedAt` timestamps
+- Many-to-many relations use Prisma implicit join tables (`_SheetToTag`)
+
+## Adding New API Functions
+
+See `.claude/skills/api-function/SKILL.md` for the complete pattern.

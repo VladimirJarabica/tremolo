@@ -4,22 +4,37 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "docker:up": "docker compose up -d",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:generate": "prisma generate --config prisma.config.ts",
+    "db:migrate": "prisma migrate dev --config prisma.config.ts",
+    "db:format": "prisma format --config prisma.config.ts",
+    "type-check": "npx tsc --noEmit"
   },
   "dependencies": {
+    "abcjs": "^6.6.2",
+    "clsx": "^2.1.1",
+    "kysely": "^0.28.11",
     "next": "16.1.6",
+    "pg": "^8.19.0",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "tailwind-merge": "^3.5.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.18.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.3.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "prisma": "^7.4.2",
+    "prisma-kysely": "^3.1.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
