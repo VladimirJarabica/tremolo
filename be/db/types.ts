@@ -22,8 +22,17 @@ export type Tag = {
     createdAt: Generated<Timestamp>;
     updatedAt: Generated<Timestamp>;
 };
+export type User = {
+    id: Generated<string>;
+    email: string;
+    authId: string | null;
+    deletedAt: Timestamp | null;
+    createdAt: Generated<Timestamp>;
+    updatedAt: Generated<Timestamp>;
+};
 export type DB = {
     _SheetToTag: SheetToTag;
     Sheet: Sheet;
     Tag: Tag;
+    User: User;
 };
