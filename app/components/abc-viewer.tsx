@@ -19,6 +19,7 @@ export function AbcViewer({
   listId?: string | null;
   initialTranspose?: number;
 }): React.JSX.Element {
+  console.log("AbcViewer", { sheet, initialTranspose });
   const notationRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLDivElement>(null);
   const [transpose, setTranspose] = useState(initialTranspose);
@@ -43,6 +44,10 @@ export function AbcViewer({
     },
     { wait: 1000 },
   );
+
+  useEffect(() => {
+    setTranspose(initialTranspose);
+  }, [initialTranspose]);
 
   function handleTransposeChange(delta: number): void {
     const newTranspose = transpose + delta;
