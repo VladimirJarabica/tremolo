@@ -4,7 +4,7 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   : ColumnType<T, T | undefined, T>;
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
-import type { Meter } from "./enums";
+import type { Meter, Scale } from "./enums";
 
 export type List = {
     id: Generated<string>;
@@ -27,6 +27,7 @@ export type Sheet = {
     content: string;
     meter: Meter;
     tempo: number;
+    scale: Scale;
     userId: string;
     deletedAt: Timestamp | null;
     createdAt: Generated<Timestamp>;

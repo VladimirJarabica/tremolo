@@ -15,6 +15,7 @@ export async function getSheet(input: GetSheetInput): Promise<
     content: string;
     meter: string;
     tempo: number;
+    scale: string;
     userId: string;
     createdAt: Date;
     updatedAt: Date;
@@ -35,6 +36,7 @@ export async function getSheet(input: GetSheetInput): Promise<
         "content",
         "meter",
         "tempo",
+        "scale",
         "userId",
         "createdAt",
         "updatedAt",

@@ -21,6 +21,43 @@ enum Meter {
   m_2_2
 }
 
+enum Scale {
+  // Major - sharps
+  C
+  G
+  D
+  A
+  E
+  B
+  Fs
+  Cs
+  // Major - flats
+  F
+  Bb
+  Eb
+  Ab
+  Db
+  Gb
+  Cb
+  // Minor - sharps
+  Am
+  Em
+  Bm
+  Fsm
+  Csm
+  Gsm
+  Dsm
+  Asm
+  // Minor - flats
+  Dm
+  Gm
+  Cm
+  Fm
+  Bbm
+  Ebm
+  Abm
+}
+
 model Tag {
   id   String @id @default(dbgenerated("gen_random_uuid()"))
   name String @unique
@@ -39,6 +76,7 @@ model Sheet {
   content String
   meter   Meter
   tempo   Int
+  scale   Scale
 
   userId String
   user   User   @relation(fields: [userId], references: [id])

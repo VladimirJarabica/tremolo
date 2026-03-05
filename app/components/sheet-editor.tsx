@@ -8,8 +8,8 @@ import { createTag } from "@/app/actions/create-tag";
 import { TagSelector } from "./tag-selector";
 import type { SheetBySlug } from "@/be/sheet/get-sheet-by-slug";
 import { useState } from "react";
-import { Meter } from "@/be/db/enums";
-import { METER_OPTIONS } from "@/lib/constants";
+import { Meter, Scale, type Scale as ScaleType } from "@/be/db/enums";
+import { METER_OPTIONS, SCALE_OPTIONS } from "@/lib/constants";
 
 export function SheetEditor({
   sheet,
@@ -17,6 +17,7 @@ export function SheetEditor({
   updateTitle,
   updateMeter,
   updateTempo,
+  updateScale,
   onCancel,
   allTags,
   isEditing,
@@ -30,6 +31,7 @@ export function SheetEditor({
   updateTitle: (title: string) => void;
   updateMeter: (meter: Meter) => void;
   updateTempo: (tempo: number) => void;
+  updateScale: (scale: ScaleType) => void;
   onCancel: () => void;
 }): React.JSX.Element {
   const router = useRouter();
@@ -48,6 +50,7 @@ export function SheetEditor({
         title: sheet.title,
         meter: sheet.meter as Meter,
         tempo: sheet.tempo,
+        scale: sheet.scale as ScaleType,
         tagIds: selectedTagIds,
       });
       if (result.success) {
@@ -127,7 +130,7 @@ export function SheetEditor({
         className="w-full rounded-lg border border-zinc-300 p-3 text-lg font-medium"
         placeholder="Title"
       />
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-4">
         <div className="flex items-center gap-2">
           <label htmlFor="meter" className="text-sm font-medium text-zinc-600">
             Meter
@@ -159,12 +162,29 @@ export function SheetEditor({
           />
           <span className="text-sm text-zinc-500">BPM</span>
         </div>
+        <div className="flex items-center gap-2">
+          <label htmlFor="scale" className="text-sm font-medium text-zinc-600">
+            Key
+          </label>
+          <select
+            id="scale"
+            value={sheet.scale}
+            onChange={(e) => updateScale(e.target.value as ScaleType)}
+            className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+          >
+            {SCALE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
       <textarea
         value={sheet.content}
         onChange={(e) => updateContent(e.target.value)}
         className="h-48 w-full rounded-lg border border-zinc-300 p-3 font-mono text-sm"
-        placeholder="Enter ABC notation here (without T:, M:, Q: lines)..."
+        placeholder="Enter ABC notation here (without T:, M:, Q:, K: lines)..."
       />
       <TagSelector
         allTags={allTags}
@@ -200,11 +220,11 @@ export function NewSheetButton(): React.JSX.Element {
     try {
       const result = await createSheet({
         content: `L:1/8
-K:C
 `,
         title: "New Tune",
         meter: Meter.m_2_4,
         tempo: 120,
+        scale: Scale.C,
       });
       if (result.success) {
         router.push(`/sheet/${result.data.slug}`);

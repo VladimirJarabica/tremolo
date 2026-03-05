@@ -23,6 +23,7 @@ export async function getSheets(input?: GetSheetsInput) {
         "content",
         "meter",
         "tempo",
+        "scale",
         "userId",
         "createdAt",
         "updatedAt",

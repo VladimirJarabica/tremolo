@@ -1,11 +1,12 @@
 import { z } from "zod";
-import { Meter } from "@/be/db/enums";
+import { Meter, Scale } from "@/be/db/enums";
 
 export const createSheetSchema = z.object({
   content: z.string().min(1, "Content is required"),
   title: z.string().optional(),
   meter: z.enum(Meter),
   tempo: z.number().int().positive(),
+  scale: z.enum(Scale),
   tagIds: z.array(z.string()).optional(),
 });
 
@@ -17,6 +18,7 @@ export const updateSheetSchema = z.object({
   title: z.string().optional(),
   meter: z.enum(Meter).optional(),
   tempo: z.number().int().positive().optional(),
+  scale: z.enum(Scale).optional(),
   tagIds: z.array(z.string()).optional(),
 });
 

@@ -88,6 +88,9 @@ export function SheetDetail({
             updateTempo={(tempo) =>
               setUpdatedSheet((prev) => ({ ...prev, tempo }))
             }
+            updateScale={(scale) =>
+              setUpdatedSheet((prev) => ({ ...prev, scale }))
+            }
             onCancel={() => setUpdatedSheet(props.sheet)}
           />
         ) : (

@@ -16,6 +16,7 @@ export async function getSheetBySlug(input: GetSheetBySlugInput): Promise<
     content: string;
     meter: string;
     tempo: number;
+    scale: string;
     userId: string;
     createdAt: Date;
     updatedAt: Date;
@@ -37,6 +38,7 @@ export async function getSheetBySlug(input: GetSheetBySlugInput): Promise<
         "content",
         "meter",
         "tempo",
+        "scale",
         "userId",
         "createdAt",
         "updatedAt",
