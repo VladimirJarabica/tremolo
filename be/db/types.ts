@@ -4,6 +4,20 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   : ColumnType<T, T | undefined, T>;
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export type List = {
+    id: Generated<string>;
+    name: string;
+    userId: string;
+    createdAt: Generated<Timestamp>;
+    updatedAt: Generated<Timestamp>;
+};
+export type ListItem = {
+    transpose: Generated<number>;
+    listId: string;
+    sheetId: string;
+    createdAt: Generated<Timestamp>;
+    updatedAt: Generated<Timestamp>;
+};
 export type Sheet = {
     id: Generated<string>;
     slug: string;
@@ -34,6 +48,8 @@ export type User = {
 };
 export type DB = {
     _SheetToTag: SheetToTag;
+    List: List;
+    ListItem: ListItem;
     Sheet: Sheet;
     Tag: Tag;
     User: User;

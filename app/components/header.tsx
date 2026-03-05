@@ -25,7 +25,7 @@ export function Header({
         <h1 className="text-xl font-semibold">Tremolo</h1>
       </div>
       <div className="flex items-center gap-3">
-        <NewSheetButton />
+        {user && <NewSheetButton />}
         <UserMenu user={user} />
       </div>
     </header>

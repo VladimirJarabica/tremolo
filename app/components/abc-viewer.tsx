@@ -2,21 +2,49 @@
 
 import "abcjs/abcjs-audio.css";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import abcjs from "abcjs";
+import { Check } from "lucide-react";
 import { SheetDetail } from "@/be/sheet/get-sheet";
 import { getAbcNotationFromSheet } from "../utils/abc-notation";
+import { updateListItemTranspose } from "@/app/actions/update-list-item-transpose";
 
 export function AbcViewer({
   sheet,
+  listId,
+  initialTranspose = 0,
 }: {
   sheet: SheetDetail;
+  listId?: string | null;
+  initialTranspose?: number;
 }): React.JSX.Element {
   const notationRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLDivElement>(null);
-  const [transpose, setTranspose] = useState(0);
+  const [transpose, setTranspose] = useState(initialTranspose);
+  const [showSaved, setShowSaved] = useState(false);
 
   const abcContent = getAbcNotationFromSheet(sheet);
+
+  const handleTransposeChange = useCallback(
+    async (delta: number) => {
+      const newTranspose = transpose + delta;
+      setTranspose(newTranspose);
+
+      if (listId) {
+        const result = await updateListItemTranspose({
+          listId,
+          sheetId: sheet.id,
+          transpose: newTranspose,
+        });
+
+        if (result.success) {
+          setShowSaved(true);
+          setTimeout(() => setShowSaved(false), 1500);
+        }
+      }
+    },
+    [transpose, listId, sheet.id],
+  );
 
   useEffect(() => {
     if (notationRef.current && audioRef.current && sheet.content.trim()) {
@@ -70,7 +98,7 @@ export function AbcViewer({
   }
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden h-full">
+    <div className="flex h-full flex-1 flex-col overflow-hidden">
       {/* Sheet music notation */}
       <div
         ref={notationRef}
@@ -86,7 +114,7 @@ export function AbcViewer({
           </span>
           <div className="ml-2 flex items-center rounded-md bg-white shadow-sm ring-1 ring-zinc-200">
             <button
-              onClick={() => setTranspose((t) => t - 1)}
+              onClick={() => handleTransposeChange(-1)}
               className="rounded-l-md px-3 py-1.5 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
             >
               <svg
@@ -107,7 +135,7 @@ export function AbcViewer({
               {transpose > 0 ? `+${transpose}` : transpose}
             </span>
             <button
-              onClick={() => setTranspose((t) => t + 1)}
+              onClick={() => handleTransposeChange(1)}
               className="rounded-r-md px-3 py-1.5 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
             >
               <svg
@@ -125,6 +153,16 @@ export function AbcViewer({
               </svg>
             </button>
           </div>
+          {/* Saved indicator */}
+          {showSaved && (
+            <span className="flex items-center gap-1 text-xs text-green-600 animate-in fade-in slide-in-from-left-2 duration-200">
+              <Check className="h-3 w-3" />
+              Saved
+            </span>
+          )}
+          {listId && !showSaved && (
+            <span className="text-xs text-zinc-400">Auto-saves to list</span>
+          )}
         </div>
 
         {/* Audio player */}
