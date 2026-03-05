@@ -23,7 +23,7 @@ export async function createSheet(
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);
   }
 
-  const { content, title, tagIds } = parsed.data;
+  const { content, title, meter, tempo, tagIds } = parsed.data;
   const sheetTitle = title ?? "Untitled";
 
   try {
@@ -31,7 +31,7 @@ export async function createSheet(
 
     const sheet = await db
       .insertInto("Sheet")
-      .values({ content, title: sheetTitle, slug, userId: user.id })
+      .values({ content, title: sheetTitle, slug, meter, tempo, userId: user.id })
       .returning(["id", "slug"])
       .executeTakeFirst();
 

@@ -13,6 +13,8 @@ export async function getSheet(input: GetSheetInput): Promise<
     id: string;
     title: string;
     content: string;
+    meter: string;
+    tempo: number;
     userId: string;
     createdAt: Date;
     updatedAt: Date;
@@ -27,7 +29,16 @@ export async function getSheet(input: GetSheetInput): Promise<
   try {
     const sheet = await db
       .selectFrom("Sheet")
-      .select(["id", "title", "content", "userId", "createdAt", "updatedAt"])
+      .select([
+        "id",
+        "title",
+        "content",
+        "meter",
+        "tempo",
+        "userId",
+        "createdAt",
+        "updatedAt",
+      ])
       .where("id", "=", parsed.data.sheetId)
       .where("deletedAt", "is", null)
       .executeTakeFirst();

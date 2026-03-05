@@ -12,6 +12,15 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Meter {
+  m_4_4
+  m_3_4
+  m_2_4
+  m_6_8
+  m_3_8
+  m_2_2
+}
+
 model Tag {
   id   String @id @default(dbgenerated("gen_random_uuid()"))
   name String @unique
@@ -28,6 +37,8 @@ model Sheet {
   tags    Tag[]
   title   String @default("Untitled")
   content String
+  meter   Meter
+  tempo   Int
 
   userId String
   user   User   @relation(fields: [userId], references: [id])

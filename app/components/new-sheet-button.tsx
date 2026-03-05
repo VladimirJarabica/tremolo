@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createSheet } from "@/app/actions/create-sheet";
+import { Meter } from "@/be/db/enums";
 
 import { useSidebar } from "./sidebar-provider";
 
@@ -17,12 +18,12 @@ export function NewSheetButton(): React.JSX.Element {
     setIsCreating(true);
     try {
       const result = await createSheet({
-        content: `M:2/4
-L:1/8
-Q:1/4=120
+        content: `L:1/8
 K:C
 `,
         title: "New Tune",
+        meter: Meter.m_2_4,
+        tempo: 120,
       });
       if (result.success) {
         setIsOpen(false);

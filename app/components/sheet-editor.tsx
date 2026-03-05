@@ -8,11 +8,15 @@ import { createTag } from "@/app/actions/create-tag";
 import { TagSelector } from "./tag-selector";
 import type { SheetBySlug } from "@/be/sheet/get-sheet-by-slug";
 import { useState } from "react";
+import { Meter } from "@/be/db/enums";
+import { METER_OPTIONS } from "@/lib/constants";
 
 export function SheetEditor({
   sheet,
   updateContent,
   updateTitle,
+  updateMeter,
+  updateTempo,
   onCancel,
   allTags,
   isEditing,
@@ -24,6 +28,8 @@ export function SheetEditor({
   setIsEditing: (value: boolean) => void;
   updateContent: (content: string) => void;
   updateTitle: (title: string) => void;
+  updateMeter: (meter: Meter) => void;
+  updateTempo: (tempo: number) => void;
   onCancel: () => void;
 }): React.JSX.Element {
   const router = useRouter();
@@ -40,6 +46,8 @@ export function SheetEditor({
         sheetId: sheet.id,
         content: sheet.content,
         title: sheet.title,
+        meter: sheet.meter as Meter,
+        tempo: sheet.tempo,
         tagIds: selectedTagIds,
       });
       if (result.success) {
@@ -119,11 +127,44 @@ export function SheetEditor({
         className="w-full rounded-lg border border-zinc-300 p-3 text-lg font-medium"
         placeholder="Title"
       />
+      <div className="flex gap-4">
+        <div className="flex items-center gap-2">
+          <label htmlFor="meter" className="text-sm font-medium text-zinc-600">
+            Meter
+          </label>
+          <select
+            id="meter"
+            value={sheet.meter}
+            onChange={(e) => updateMeter(e.target.value as Meter)}
+            className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+          >
+            {METER_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex items-center gap-2">
+          <label htmlFor="tempo" className="text-sm font-medium text-zinc-600">
+            Tempo
+          </label>
+          <input
+            id="tempo"
+            type="number"
+            min={1}
+            value={sheet.tempo}
+            onChange={(e) => updateTempo(parseInt(e.target.value, 10) || 120)}
+            className="w-20 rounded-md border border-zinc-300 px-3 py-2 text-sm"
+          />
+          <span className="text-sm text-zinc-500">BPM</span>
+        </div>
+      </div>
       <textarea
         value={sheet.content}
         onChange={(e) => updateContent(e.target.value)}
         className="h-48 w-full rounded-lg border border-zinc-300 p-3 font-mono text-sm"
-        placeholder="Enter ABC notation here (without T: line)..."
+        placeholder="Enter ABC notation here (without T:, M:, Q: lines)..."
       />
       <TagSelector
         allTags={allTags}
@@ -158,12 +199,12 @@ export function NewSheetButton(): React.JSX.Element {
     setIsCreating(true);
     try {
       const result = await createSheet({
-        content: `M:2/4
-L:1/8
-Q:1/4=120
+        content: `L:1/8
 K:C
 `,
         title: "New Tune",
+        meter: Meter.m_2_4,
+        tempo: 120,
       });
       if (result.success) {
         router.push(`/sheet/${result.data.slug}`);

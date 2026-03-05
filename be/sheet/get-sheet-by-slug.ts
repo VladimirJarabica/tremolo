@@ -14,6 +14,8 @@ export async function getSheetBySlug(input: GetSheetBySlugInput): Promise<
     slug: string;
     title: string;
     content: string;
+    meter: string;
+    tempo: number;
     userId: string;
     createdAt: Date;
     updatedAt: Date;
@@ -28,7 +30,17 @@ export async function getSheetBySlug(input: GetSheetBySlugInput): Promise<
   try {
     const sheet = await db
       .selectFrom("Sheet")
-      .select(["id", "slug", "title", "content", "userId", "createdAt", "updatedAt"])
+      .select([
+        "id",
+        "slug",
+        "title",
+        "content",
+        "meter",
+        "tempo",
+        "userId",
+        "createdAt",
+        "updatedAt",
+      ])
       .where("slug", "=", parsed.data.slug)
       .where("deletedAt", "is", null)
       .executeTakeFirst();

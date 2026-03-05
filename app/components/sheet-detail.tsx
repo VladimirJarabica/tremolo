@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { AbcViewer } from "./abc-viewer";
-import { SheetEditor } from "./sheet-editor";
-import { AddToListDialog } from "./add-to-list-dialog";
-import type { SheetBySlug } from "@/be/sheet/get-sheet-by-slug";
 import type { GetListsData } from "@/be/list/get-lists";
+import type { SheetBySlug } from "@/be/sheet/get-sheet-by-slug";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { AbcViewer } from "./abc-viewer";
+import { AddToListDialog } from "./add-to-list-dialog";
+import { SheetEditor } from "./sheet-editor";
 
 export function SheetDetail({
   allTags,
@@ -81,6 +81,12 @@ export function SheetDetail({
             }
             updateTitle={(title) =>
               setUpdatedSheet((prev) => ({ ...prev, title }))
+            }
+            updateMeter={(meter) =>
+              setUpdatedSheet((prev) => ({ ...prev, meter }))
+            }
+            updateTempo={(tempo) =>
+              setUpdatedSheet((prev) => ({ ...prev, tempo }))
             }
             onCancel={() => setUpdatedSheet(props.sheet)}
           />

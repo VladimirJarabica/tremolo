@@ -20,7 +20,7 @@ export async function updateSheet(
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);
   }
 
-  const { sheetId, content, title, tagIds } = parsed.data;
+  const { sheetId, content, title, meter, tempo, tagIds } = parsed.data;
 
   try {
     // Get current sheet to check if title changed
@@ -46,6 +46,8 @@ export async function updateSheet(
       .set({
         ...(content !== undefined && { content }),
         ...(title !== undefined && { title: newTitle }),
+        ...(meter !== undefined && { meter }),
+        ...(tempo !== undefined && { tempo }),
         slug: newSlug,
         updatedAt: new Date(),
       })

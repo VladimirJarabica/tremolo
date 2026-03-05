@@ -21,6 +21,8 @@ export async function getSheets(input?: GetSheetsInput) {
         "slug",
         "title",
         "content",
+        "meter",
+        "tempo",
         "userId",
         "createdAt",
         "updatedAt",
