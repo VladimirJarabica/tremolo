@@ -2,9 +2,10 @@
 
 import "abcjs/abcjs-audio.css";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import abcjs from "abcjs";
 import { Check } from "lucide-react";
+import { useDebouncer } from "@tanstack/react-pacer";
 import { SheetDetail } from "@/be/sheet/get-sheet";
 import { getAbcNotationFromSheet } from "../utils/abc-notation";
 import { updateListItemTranspose } from "@/app/actions/update-list-item-transpose";
@@ -25,16 +26,13 @@ export function AbcViewer({
 
   const abcContent = getAbcNotationFromSheet(sheet);
 
-  const handleTransposeChange = useCallback(
-    async (delta: number) => {
-      const newTranspose = transpose + delta;
-      setTranspose(newTranspose);
-
+  const debouncedSave = useDebouncer(
+    async (value: number) => {
       if (listId) {
         const result = await updateListItemTranspose({
           listId,
           sheetId: sheet.id,
-          transpose: newTranspose,
+          transpose: value,
         });
 
         if (result.success) {
@@ -43,8 +41,14 @@ export function AbcViewer({
         }
       }
     },
-    [transpose, listId, sheet.id],
+    { wait: 1000 },
   );
+
+  function handleTransposeChange(delta: number): void {
+    const newTranspose = transpose + delta;
+    setTranspose(newTranspose);
+    debouncedSave.maybeExecute(newTranspose);
+  }
 
   useEffect(() => {
     if (notationRef.current && audioRef.current && sheet.content.trim()) {
