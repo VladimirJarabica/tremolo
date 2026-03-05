@@ -1,28 +1,31 @@
 import { Suspense } from "react";
 import { getSheets } from "@/app/actions/get-sheets";
-import { SheetList } from "@/app/components/sheet-list";
-import { Header } from "@/app/components/header";
+import { getUser } from "@/app/actions/auth";
+import { AppShell } from "@/app/components/app-shell";
+import { SidebarProvider } from "@/app/components/sidebar-provider";
 
 export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }): Promise<React.JSX.Element> {
-  const sheetsResult = await getSheets();
+  const [sheetsResult, userData] = await Promise.all([
+    getSheets(),
+    getUser(),
+  ]);
 
   const sheets = sheetsResult.success ? sheetsResult.data : [];
+  const user = userData ? { email: userData.email ?? "" } : null;
 
   return (
-    <div className="flex h-screen flex-col bg-white">
-      <Header />
-      <div className="flex flex-1 overflow-hidden">
-        <aside className="w-72 shrink-0 border-r border-zinc-200">
-          <Suspense fallback={<div className="p-4">Loading...</div>}>
-            <SheetList sheets={sheets} />
-          </Suspense>
-        </aside>
-        <main className="flex-1 overflow-hidden">{children}</main>
-      </div>
-    </div>
+    <SidebarProvider>
+      <AppShell sheets={sheets} user={user}>
+        <Suspense
+          fallback={<div className="flex h-full items-center justify-center">Loading...</div>}
+        >
+          {children}
+        </Suspense>
+      </AppShell>
+    </SidebarProvider>
   );
 }

@@ -4,11 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import type { GetSheetsData } from "@/be/sheet/get-sheets";
 
 export function SheetList({
   sheets,
 }: {
-  sheets: { id: string; slug: string; title: string; createdAt: Date }[];
+  sheets: GetSheetsData;
 }): React.JSX.Element {
   const pathname = usePathname();
   const currentSlug = pathname.startsWith("/sheet/")
