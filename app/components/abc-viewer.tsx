@@ -24,6 +24,7 @@ export function AbcViewer({
   const audioRef = useRef<HTMLDivElement>(null);
   const [transpose, setTranspose] = useState(initialTranspose);
   const [showSaved, setShowSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const abcContent = getAbcNotationFromSheet(sheet);
 
@@ -56,52 +57,74 @@ export function AbcViewer({
   }
 
   useEffect(() => {
-    if (notationRef.current && audioRef.current && sheet.content.trim()) {
-      // Clear previous content
-      notationRef.current.innerHTML = "";
-      audioRef.current.innerHTML = "";
-
-      // Render ABC notation with transpose
-      const visualObj = abcjs.renderAbc(notationRef.current, abcContent, {
-        responsive: "resize",
-        visualTranspose: transpose,
-      });
-
-      // Setup audio controls
-      const synthControl = new abcjs.synth.SynthController();
-      synthControl.load(audioRef.current, null, {
-        displayLoop: true,
-        displayRestart: true,
-        displayPlay: true,
-        displayProgress: true,
-        displayWarp: true,
-      });
-
-      // Create synth with the transposed visual object
-      const createSynth = new abcjs.synth.CreateSynth();
-      createSynth
-        .init({
-          visualObj: visualObj[0],
-        })
-        .then(() => {
-          // The visualObj already contains transposed notes from renderAbc
-          synthControl.setTune(visualObj[0], false, {
-            midiTranspose: transpose,
-          });
-        })
-        .catch(console.error);
-
-      // Cleanup
-      return () => {
-        synthControl.pause();
-      };
+    if (!notationRef.current || !audioRef.current || !sheet.content.trim()) {
+      return;
     }
+
+    let synthControl: InstanceType<typeof abcjs.synth.SynthController> | null =
+      null;
+
+    async function init(): Promise<void> {
+      try {
+        setError(null);
+        // Clear previous content
+        notationRef.current!.innerHTML = "";
+        audioRef.current!.innerHTML = "";
+
+        // Render ABC notation with transpose
+        const visualObj = abcjs.renderAbc(notationRef.current!, abcContent, {
+          responsive: "resize",
+          visualTranspose: transpose,
+        });
+
+        // Setup audio controls
+        synthControl = new abcjs.synth.SynthController();
+        synthControl.load(audioRef.current!, null, {
+          displayLoop: true,
+          displayRestart: true,
+          displayPlay: true,
+          displayProgress: true,
+          displayWarp: true,
+        });
+
+        // Create synth with the transposed visual object
+        const createSynth = new abcjs.synth.CreateSynth();
+        await createSynth.init({
+          visualObj: visualObj[0],
+        });
+
+        // The visualObj already contains transposed notes from renderAbc
+        synthControl.setTune(visualObj[0], false, {
+          midiTranspose: transpose,
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to render sheet");
+      }
+    }
+
+    init();
+
+    // Cleanup
+    return () => {
+      synthControl?.pause();
+    };
   }, [abcContent, transpose, sheet.content]);
 
   if (!sheet.content.trim()) {
     return (
       <div className="flex h-full items-center justify-center text-zinc-400">
         No content to preview
+      </div>
+    );
+  }
+
+  if (error !== null) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg text-red-600">Failed to render sheet</p>
+          <p className="mt-2 text-sm text-zinc-500">Verify your input</p>
+        </div>
       </div>
     );
   }
