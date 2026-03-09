@@ -10,6 +10,7 @@ import { SheetDetail } from "@/be/sheet/get-sheet";
 import { getAbcNotationFromSheet } from "../utils/abc-notation";
 import { updateListItemTranspose } from "@/app/actions/update-list-item-transpose";
 import { wrapBars, calculateBarsPerLine } from "@/app/utils/abc-wrap";
+import { BarsPerLineSlider } from "@/app/components/bars-per-line-slider";
 
 export function AbcViewer({
   sheet,
@@ -26,8 +27,14 @@ export function AbcViewer({
   const [showSaved, setShowSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
+  const [isAutomatic, setIsAutomatic] = useState(true);
+  const [manualBarsPerLine, setManualBarsPerLine] = useState(4);
 
   const abcContent = getAbcNotationFromSheet(sheet);
+
+  const barsPerLine = isAutomatic
+    ? calculateBarsPerLine(containerWidth)
+    : manualBarsPerLine;
 
   // Track container width for responsive bars per line
   useEffect(() => {
@@ -75,6 +82,11 @@ export function AbcViewer({
     debouncedSave.maybeExecute(newTranspose);
   }
 
+  function handleBarsPerLineChange(automatic: boolean, manualValue: number): void {
+    setIsAutomatic(automatic);
+    setManualBarsPerLine(manualValue);
+  }
+
   useEffect(() => {
     if (
       !notationRef.current ||
@@ -95,12 +107,8 @@ export function AbcViewer({
         notationRef.current!.innerHTML = "";
         audioRef.current!.innerHTML = "";
 
-        // Calculate bars per line based on container width
-        const barsPerLine = calculateBarsPerLine(containerWidth);
-
         // Wrap content with newlines based on bars per line
         const wrappedContent = wrapBars(abcContent, barsPerLine);
-        console.log("wrappedContent", wrappedContent);
 
         // Render ABC notation with transpose
         const visualObj = abcjs.renderAbc(
@@ -143,7 +151,7 @@ export function AbcViewer({
     return () => {
       synthControl?.pause();
     };
-  }, [abcContent, transpose, sheet.content, containerWidth]);
+  }, [abcContent, transpose, sheet.content, containerWidth, barsPerLine]);
 
   if (!sheet.content.trim()) {
     return (
@@ -173,67 +181,72 @@ export function AbcViewer({
       />
 
       {/* Controls bar */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3">
-        {/* Transpose controls */}
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium uppercase tracking-wide text-zinc-400">
-            Transpose
-          </span>
-          <div className="ml-2 flex items-center rounded-md bg-white shadow-sm ring-1 ring-zinc-200">
-            <button
-              onClick={() => handleTransposeChange(-1)}
-              className="rounded-l-md px-3 py-1.5 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
-            >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M20 12H4"
-                />
-              </svg>
-            </button>
-            <span className="min-w-10 border-x border-zinc-200 px-2 py-1.5 text-center font-mono text-sm">
-              {transpose > 0 ? `+${transpose}` : transpose}
+      <div className="mt-4 space-y-3 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          {/* Transpose controls */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+              Transpose
             </span>
-            <button
-              onClick={() => handleTransposeChange(1)}
-              className="rounded-r-md px-3 py-1.5 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
-            >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+            <div className="ml-2 flex items-center rounded-md bg-white shadow-sm ring-1 ring-zinc-200">
+              <button
+                onClick={() => handleTransposeChange(-1)}
+                className="rounded-l-md px-3 py-1.5 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-            </button>
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M20 12H4"
+                  />
+                </svg>
+              </button>
+              <span className="min-w-10 border-x border-zinc-200 px-2 py-1.5 text-center font-mono text-sm">
+                {transpose > 0 ? `+${transpose}` : transpose}
+              </span>
+              <button
+                onClick={() => handleTransposeChange(1)}
+                className="rounded-r-md px-3 py-1.5 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+              >
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+              </button>
+            </div>
+            {/* Saved indicator */}
+            {showSaved && (
+              <span className="flex items-center gap-1 text-xs text-green-600 animate-in fade-in slide-in-from-left-2 duration-200">
+                <Check className="h-3 w-3" />
+                Saved
+              </span>
+            )}
+            {listId && !showSaved && (
+              <span className="text-xs text-zinc-400">Auto-saves to list</span>
+            )}
           </div>
-          {/* Saved indicator */}
-          {showSaved && (
-            <span className="flex items-center gap-1 text-xs text-green-600 animate-in fade-in slide-in-from-left-2 duration-200">
-              <Check className="h-3 w-3" />
-              Saved
-            </span>
-          )}
-          {listId && !showSaved && (
-            <span className="text-xs text-zinc-400">Auto-saves to list</span>
-          )}
+
+          {/* Audio player */}
+          <div ref={audioRef} className="abcjs-audio max-w-2xl min-w-xl flex-1" />
         </div>
 
-        {/* Audio player */}
-        <div ref={audioRef} className="abcjs-audio max-w-2xl min-w-xl flex-1" />
+        {/* Bars per line slider */}
+        <BarsPerLineSlider value={barsPerLine} onChange={handleBarsPerLineChange} />
       </div>
     </div>
   );
