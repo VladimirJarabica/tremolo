@@ -82,7 +82,10 @@ export function AbcViewer({
     debouncedSave.maybeExecute(newTranspose);
   }
 
-  function handleBarsPerLineChange(automatic: boolean, manualValue: number): void {
+  function handleBarsPerLineChange(
+    automatic: boolean,
+    manualValue: number,
+  ): void {
     setIsAutomatic(automatic);
     setManualBarsPerLine(manualValue);
   }
@@ -177,11 +180,11 @@ export function AbcViewer({
       {/* Sheet music notation */}
       <div
         ref={notationRef}
-        className="abc-container min-h-0 flex-1 overflow-auto rounded-lg bg-white p-4"
+        className="abc-container min-h-0 flex-1 rounded-lg bg-white p-4"
       />
 
       {/* Controls bar */}
-      <div className="mt-4 space-y-3 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3">
+      <div className="mt-4 space-y-3 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 print:hidden">
         <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Transpose controls */}
           <div className="flex flex-wrap items-center gap-2">
@@ -242,11 +245,25 @@ export function AbcViewer({
           </div>
 
           {/* Audio player */}
-          <div ref={audioRef} className="abcjs-audio max-w-2xl min-w-xl flex-1" />
+          <div
+            ref={audioRef}
+            className="abcjs-audio max-w-2xl min-w-xl flex-1"
+          />
         </div>
 
         {/* Bars per line slider */}
-        <BarsPerLineSlider value={barsPerLine} onChange={handleBarsPerLineChange} />
+        <div className="flex items-center justify-between print:hidden">
+          <BarsPerLineSlider
+            value={barsPerLine}
+            onChange={handleBarsPerLineChange}
+          />
+          <button
+            onClick={() => window.print()}
+            className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+          >
+            Print
+          </button>
+        </div>
       </div>
     </div>
   );

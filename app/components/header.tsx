@@ -13,7 +13,7 @@ export function Header({
   const { isOpen, setIsOpen } = useSidebar();
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-zinc-200 bg-white px-4">
+    <header className="flex w-full z-1 fixed top-0 h-14 items-center justify-between border-b border-zinc-200 bg-white px-4 print:hidden">
       <div className="flex items-center gap-3">
         <button
           onClick={() => setIsOpen(!isOpen)}

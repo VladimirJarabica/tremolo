@@ -53,7 +53,7 @@ export function SheetDetail({
           initialTranspose={initialTranspose}
         />
       </div>
-      <div className="border-t border-zinc-200 p-4">
+      <div className="border-t border-zinc-200 p-4 print:hidden">
         <div className="mb-3 flex flex-wrap items-center gap-2">
           {sheet.tags.map((tag) => (
             <TagBadge key={tag.id} name={tag.name} />

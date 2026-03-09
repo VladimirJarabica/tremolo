@@ -139,8 +139,14 @@ export function MultiAbcViewer({
   return (
     <div className="flex h-full flex-col">
       {/* Controls */}
-      <div className="border-b border-zinc-200 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 print:hidden">
         <BarsPerLineSlider value={barsPerLine} onChange={handleSliderChange} />
+        <button
+          onClick={() => window.print()}
+          className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+        >
+          Print
+        </button>
       </div>
 
       {/* Sheet music */}

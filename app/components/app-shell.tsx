@@ -26,7 +26,7 @@ export function AppShell({
       {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden print:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
@@ -34,11 +34,11 @@ export function AppShell({
       {/* Header - full width */}
       <Header user={user} />
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 mt-14 print:mt-0 relative">
         {/* Sidebar */}
         <aside
           className={cn(
-            "fixed inset-y-0 left-0 z-50 w-72 transform border-r border-zinc-200 bg-white transition-transform duration-200 ease-in-out lg:static lg:z-auto lg:translate-x-0",
+            "fixed inset-y-0 print:hidden top-14 left-0 z-50 w-72 transform border-r border-zinc-200 bg-white transition-transform duration-200 ease-in-out lg:static lg:z-auto lg:translate-x-0",
             isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           )}
         >
@@ -46,7 +46,7 @@ export function AppShell({
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 overflow-hidden">{children}</main>
+        <main className="flex-1">{children}</main>
       </div>
     </div>
   );
