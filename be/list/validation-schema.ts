@@ -20,6 +20,12 @@ export const deleteListSchema = z.object({
 
 export type DeleteListInput = z.infer<typeof deleteListSchema>;
 
+export const getListSchema = z.object({
+  listId: z.string().min(1, "List ID is required"),
+});
+
+export type GetListInput = z.infer<typeof getListSchema>;
+
 // List item schemas
 export const addSheetToListSchema = z.object({
   listId: z.string().min(1, "List ID is required"),

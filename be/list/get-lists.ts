@@ -8,18 +8,7 @@ import {
   type ApiResponseData,
 } from "@/be/response";
 
-export type ListWithItems = {
-  id: string;
-  name: string;
-  items: {
-    sheetId: string;
-    sheetSlug: string;
-    sheetTitle: string;
-    transpose: number;
-  }[];
-};
-
-export async function getLists(): Promise<ApiResponse<ListWithItems[]>> {
+export async function getLists() {
   const { user } = await getUserContext();
 
   try {
@@ -45,12 +34,15 @@ export async function getLists(): Promise<ApiResponse<ListWithItems[]>> {
         "ListItem.transpose",
         "Sheet.slug as sheetSlug",
         "Sheet.title as sheetTitle",
+        "Sheet.meter",
+        "Sheet.tempo",
+        "Sheet.scale",
       ])
       .where("ListItem.listId", "in", listIds)
       .where("Sheet.deletedAt", "is", null)
       .execute();
 
-    const listsWithItems: ListWithItems[] = lists.map((list) => {
+    const listsWithItems = lists.map((list) => {
       const listItemsFiltered = listItems.filter(
         (item) => item.listId === list.id,
       );
@@ -81,3 +73,4 @@ export async function getLists(): Promise<ApiResponse<ListWithItems[]>> {
 }
 
 export type GetListsData = ApiResponseData<typeof getLists>;
+export type ListWithItems = GetListsData[number];
