@@ -46,6 +46,22 @@ describe("splitBars", () => {
     const result = splitBars("");
     expect(result).toEqual([]);
   });
+
+  it("handles complex real-world ABC with chord symbols and mixed bar lines", () => {
+    const abc = `"Dm"DF AG FE|"F"F3GA2|"C"Gc cc cd|"F"A4F2|"Bb"GB dc
+  BA|"Dm"AB AF Dz|"A"EF AG EF|"Bb"D4"C"E2|"F"F4"C"G2|"Dm"AA AG"A"EF|1"Dm"D
+  [FA]2 [FA] "A"z [EA]|"Dm"D
+  [FA]2[FA]"A"[EA]2:||2"Bb"D4"C"E2|"F"F4"C"G2|"Dm"AA AG "A"EF|"Dm"D2z4||`;
+
+    const result = splitBars(abc);
+
+    expect(result).toHaveLength(17);
+    expect(result[0]).toBe(`"Dm"DF AG FE|`);
+    expect(result[9]).toBe(`"Dm"AA AG"A"EF|1`);
+    expect(result[11]).toContain(`:|`);
+    expect(result[12]).toBe(`|2`);
+    expect(result[16]).toBe(`"Dm"D2z4||`);
+  });
 });
 
 describe("wrapBars", () => {

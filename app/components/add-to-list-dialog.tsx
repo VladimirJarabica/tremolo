@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -10,14 +11,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { addSheetToList } from "@/app/actions/add-sheet-to-list";
 import { removeSheetFromList } from "@/app/actions/remove-sheet-from-list";
 import type { GetListsData } from "@/be/list/get-lists";
 
 export function AddToListDialog({
   sheetId,
+  sheetSlug,
   sheetTitle,
   lists,
   open,
@@ -25,26 +25,16 @@ export function AddToListDialog({
   onSuccess,
 }: {
   sheetId: string;
+  sheetSlug: string;
   sheetTitle: string;
   lists: GetListsData;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
 }): React.JSX.Element {
-  const [selectedListId, setSelectedListId] = useState<string | null>(null);
-  const [transpose, setTranspose] = useState(0);
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Reset state when dialog closes
-  const handleOpenChange = (newOpen: boolean): void => {
-    if (!newOpen) {
-      setSelectedListId(null);
-      setTranspose(0);
-      setError(null);
-    }
-    onOpenChange(newOpen);
-  };
 
   // Find if sheet is already in any list
   const listsWithMembership = lists.map((list) => {
@@ -71,43 +61,30 @@ export function AddToListDialog({
         setError("Failed to remove from list");
       }
     } else {
-      setSelectedListId(listId);
-    }
-    setIsLoading(false);
-  };
+      const result = await addSheetToList({
+        listId,
+        sheetId,
+        transpose: 0,
+      });
 
-  const handleAdd = async (): Promise<void> => {
-    if (!selectedListId) return;
-
-    setIsLoading(true);
-    setError(null);
-
-    const result = await addSheetToList({
-      listId: selectedListId,
-      sheetId,
-      transpose,
-    });
-
-    if (result.success) {
-      setSelectedListId(null);
-      setTranspose(0);
-      onOpenChange(false);
-      onSuccess?.();
-    } else {
-      setError("Failed to add to list");
+      if (result.success) {
+        onOpenChange(false);
+        onSuccess?.();
+        router.push(`/sheet/${sheetSlug}?list=${listId}`);
+      } else {
+        setError("Failed to add to list");
+      }
     }
     setIsLoading(false);
   };
 
   const handleClose = (): void => {
-    setSelectedListId(null);
-    setTranspose(0);
     setError(null);
     onOpenChange(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Add to List</DialogTitle>
@@ -119,51 +96,6 @@ export function AddToListDialog({
         {lists.length === 0 ? (
           <div className="py-4 text-center text-sm text-zinc-500">
             No lists yet. Create a list first.
-          </div>
-        ) : selectedListId ? (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="transpose">Transposition</Label>
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setTranspose((t) => t - 1)}
-                >
-                  -
-                </Button>
-                <Input
-                  id="transpose"
-                  type="number"
-                  value={transpose}
-                  onChange={(e) => setTranspose(parseInt(e.target.value) || 0)}
-                  className="w-20 text-center"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setTranspose((t) => t + 1)}
-                >
-                  +
-                </Button>
-              </div>
-            </div>
-            {error && <p className="text-sm text-red-500">{error}</p>}
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setSelectedListId(null)}
-                disabled={isLoading}
-              >
-                Back
-              </Button>
-              <Button type="button" onClick={handleAdd} disabled={isLoading}>
-                {isLoading ? "Adding..." : "Add"}
-              </Button>
-            </DialogFooter>
           </div>
         ) : (
           <div className="space-y-2">

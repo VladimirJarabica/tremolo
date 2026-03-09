@@ -102,6 +102,7 @@ export function SheetDetail({
 
       <AddToListDialog
         sheetId={sheet.id}
+        sheetSlug={sheet.slug}
         sheetTitle={sheet.title}
         lists={lists}
         open={showAddToList}
