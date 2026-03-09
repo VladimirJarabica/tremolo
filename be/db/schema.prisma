@@ -90,8 +90,9 @@ model Sheet {
 }
 
 model List {
-  id   String @id @default(dbgenerated("gen_random_uuid()"))
-  name String
+  id             String   @id @default(dbgenerated("gen_random_uuid()"))
+  name           String
+  sheetIdsOrder  String[] @default([])
 
   items ListItem[]
 

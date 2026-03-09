@@ -23,19 +23,38 @@ export async function removeSheetFromList(
   }
 
   try {
-    // Verify list ownership and delete item
+    // Get list for sheetIdsOrder
+    const list = await db
+      .selectFrom("List")
+      .select(["id", "sheetIdsOrder", "userId"])
+      .where("id", "=", parsed.data.listId)
+      .executeTakeFirst();
+
+    if (!list || list.userId !== user.id) {
+      return apiError(ApiErrorCode.NOT_FOUND);
+    }
+
+    // Delete the list item
     const listItem = await db
       .deleteFrom("ListItem")
-      .using("List")
-      .where("ListItem.listId", "=", parsed.data.listId)
-      .where("ListItem.sheetId", "=", parsed.data.sheetId)
-      .where("List.userId", "=", user.id)
-      .returning(["ListItem.listId", "ListItem.sheetId"])
+      .where("listId", "=", parsed.data.listId)
+      .where("sheetId", "=", parsed.data.sheetId)
+      .returning(["listId", "sheetId"])
       .executeTakeFirst();
 
     if (!listItem) {
       return apiError(ApiErrorCode.NOT_FOUND);
     }
+
+    // Remove from sheetIdsOrder
+    const newOrder = list.sheetIdsOrder.filter(
+      (id) => id !== parsed.data.sheetId,
+    );
+    await db
+      .updateTable("List")
+      .set({ sheetIdsOrder: newOrder })
+      .where("id", "=", parsed.data.listId)
+      .execute();
 
     return apiSuccess(listItem);
   } catch {

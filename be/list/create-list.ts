@@ -25,6 +25,7 @@ export async function createList(
       .values({
         name: parsed.data.name,
         userId: user.id,
+        sheetIdsOrder: [],
       })
       .returning(["id", "name"])
       .executeTakeFirst();

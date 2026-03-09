@@ -32,6 +32,16 @@ describe("splitBars", () => {
     expect(result).toEqual(["CDE|", "FGA||", "Bcd|:", "efg|1", "abc:|", "def"]);
   });
 
+  it("splits :||: (repeat end + repeat start) into separate bars", () => {
+    const result = splitBars("ABC:||:DEF");
+    expect(result).toEqual(["ABC:|", "|:DEF"]);
+  });
+
+  it("handles :||: with content around it", () => {
+    const result = splitBars("CDE|FGA|z6:||:\"F\"AF2 AF2|");
+    expect(result).toEqual(["CDE|", "FGA|", "z6:|", "|:\"F\"AF2 AF2|"]);
+  });
+
   it("handles chords with pipes inside brackets", () => {
     const result = splitBars("[CEG]|[DFA]");
     expect(result).toEqual(["[CEG]|", "[DFA]"]);

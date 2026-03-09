@@ -47,3 +47,18 @@ export const updateListItemTransposeSchema = z.object({
 export type UpdateListItemTransposeInput = z.infer<
   typeof updateListItemTransposeSchema
 >;
+
+export const reorderListItemSchema = z.object({
+  listId: z.string().min(1, "List ID is required"),
+  sheetId: z.string().min(1, "Sheet ID is required"),
+  direction: z.enum(["up", "down"]),
+});
+
+export type ReorderListItemInput = z.infer<typeof reorderListItemSchema>;
+
+export const updateListOrderSchema = z.object({
+  listId: z.string().min(1, "List ID is required"),
+  sheetIdsOrder: z.array(z.string().min(1)),
+});
+
+export type UpdateListOrderInput = z.infer<typeof updateListOrderSchema>;

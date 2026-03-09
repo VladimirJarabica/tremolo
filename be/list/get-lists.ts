@@ -25,7 +25,7 @@ export async function getLists(): Promise<ApiResponse<ListWithItems[]>> {
   try {
     const lists = await db
       .selectFrom("List")
-      .select(["id", "name"])
+      .select(["id", "name", "sheetIdsOrder"])
       .where("userId", "=", user.id)
       .orderBy("createdAt", "desc")
       .execute();
@@ -48,21 +48,31 @@ export async function getLists(): Promise<ApiResponse<ListWithItems[]>> {
       ])
       .where("ListItem.listId", "in", listIds)
       .where("Sheet.deletedAt", "is", null)
-      .orderBy("ListItem.createdAt", "asc")
       .execute();
 
-    const listsWithItems: ListWithItems[] = lists.map((list) => ({
-      id: list.id,
-      name: list.name,
-      items: listItems
-        .filter((item) => item.listId === list.id)
-        .map((item) => ({
-          sheetId: item.sheetId,
-          sheetSlug: item.sheetSlug,
-          sheetTitle: item.sheetTitle,
-          transpose: item.transpose,
-        })),
-    }));
+    const listsWithItems: ListWithItems[] = lists.map((list) => {
+      const listItemsFiltered = listItems.filter(
+        (item) => item.listId === list.id,
+      );
+
+      // If sheetIdsOrder exists and has items, use it for ordering
+      // Otherwise fall back to all items (migrated lists without order)
+      const sheetIdsOrder = list.sheetIdsOrder ?? [];
+      const orderedItems =
+        sheetIdsOrder.length > 0
+          ? sheetIdsOrder
+              .map((sheetId) =>
+                listItemsFiltered.find((item) => item.sheetId === sheetId),
+              )
+              .filter((item) => item !== undefined)
+          : listItemsFiltered;
+
+      return {
+        id: list.id,
+        name: list.name,
+        items: orderedItems,
+      };
+    });
 
     return apiSuccess(listsWithItems);
   } catch {

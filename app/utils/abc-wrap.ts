@@ -1,15 +1,18 @@
 /**
  * Split ABC content into bars, preserving bar line types
  * Handles: ||, |:, :|, |1, |2, etc.
+ * Special case: :||: (repeat end + repeat start) splits into two bars
  */
 export function splitBars(content: string): string[] {
   // Match bar lines in order of specificity:
+  // :||: (repeat end + start - most specific, must be first)
   // || (double bar), |: (repeat start), :| (repeat end), |1-9 (volta), | (single bar)
   // But NOT | that's part of chords like [CEG]
-  const barPattern = /(\|\||\|:|:\||\|[1-9]|\|)/g;
+  const barPattern = /(:\|\|:|\|\||\|:|:\||\|[1-9]|\|)/g;
 
   const bars: string[] = [];
   let lastIndex = 0;
+  let prependToNext = "";
   let match;
 
   while ((match = barPattern.exec(content)) !== null) {
@@ -23,14 +26,27 @@ export function splitBars(content: string): string[] {
       continue;
     }
 
-    // Add the content before the bar line + the bar line itself
-    bars.push(content.slice(lastIndex, match.index + match[0].length));
-    lastIndex = match.index + match[0].length;
+    const barLine = match[0];
+
+    // Special handling for :||: - split into two separate bars
+    if (barLine === ":||:") {
+      // Add content before + :|
+      bars.push(content.slice(lastIndex, match.index) + ":|");
+      // Skip past the entire :||: and prepend |: to next content
+      lastIndex = match.index + barLine.length;
+      prependToNext = "|:";
+    } else {
+      // Normal handling - add content before + bar line
+      const contentBefore = prependToNext + content.slice(lastIndex, match.index);
+      bars.push(contentBefore + barLine);
+      prependToNext = "";
+      lastIndex = match.index + barLine.length;
+    }
   }
 
   // Add any remaining content
   if (lastIndex < content.length) {
-    bars.push(content.slice(lastIndex));
+    bars.push(prependToNext + content.slice(lastIndex));
   }
 
   return bars;

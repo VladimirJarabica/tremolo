@@ -26,7 +26,7 @@ export async function addSheetToList(
     // Verify list ownership
     const list = await db
       .selectFrom("List")
-      .select(["id"])
+      .select(["id", "sheetIdsOrder"])
       .where("id", "=", parsed.data.listId)
       .where("userId", "=", user.id)
       .executeTakeFirst();
@@ -66,6 +66,17 @@ export async function addSheetToList(
 
     if (!listItem) {
       return apiError(ApiErrorCode.FAILED_TO_CREATE);
+    }
+
+    // Add to sheetIdsOrder if not already present
+    if (!list.sheetIdsOrder.includes(parsed.data.sheetId)) {
+      await db
+        .updateTable("List")
+        .set({
+          sheetIdsOrder: [...list.sheetIdsOrder, parsed.data.sheetId],
+        })
+        .where("id", "=", parsed.data.listId)
+        .execute();
     }
 
     return apiSuccess(listItem);

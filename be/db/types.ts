@@ -9,6 +9,7 @@ import type { Meter, Scale } from "./enums";
 export type List = {
     id: Generated<string>;
     name: string;
+    sheetIdsOrder: string[];
     userId: string;
     createdAt: Generated<Timestamp>;
     updatedAt: Generated<Timestamp>;
