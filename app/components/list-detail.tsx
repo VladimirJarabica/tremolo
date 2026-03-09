@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Link from "next/link";
 import {
   DndContext,
   closestCenter,
@@ -22,6 +23,7 @@ import { updateListOrder } from "@/app/actions/update-list-order";
 import { removeSheetFromList } from "@/app/actions/remove-sheet-from-list";
 import { ListActionsMenu } from "./list-actions-menu";
 import { SortableListCard } from "./sortable-list-card";
+import { Button } from "@/components/ui/button";
 
 export function ListDetail({
   initialList,
@@ -119,9 +121,16 @@ export function ListDetail({
         <h1 className="text-2xl font-semibold text-zinc-900">
           {initialList.name}
         </h1>
-        <ListActionsMenu
-          list={{ id: initialList.id, name: initialList.name }}
-        />
+        <div className="flex items-center gap-2">
+          {initialList.items.length > 0 && (
+            <Button variant="outline" asChild>
+              <Link href={`/list/${initialList.id}/all`}>Show all notes</Link>
+            </Button>
+          )}
+          <ListActionsMenu
+            list={{ id: initialList.id, name: initialList.name }}
+          />
+        </div>
       </div>
 
       {items.length === 0 ? (
