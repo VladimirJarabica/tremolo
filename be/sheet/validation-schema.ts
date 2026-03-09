@@ -4,6 +4,8 @@ import { Meter, Scale } from "@/be/db/enums";
 export const createSheetSchema = z.object({
   content: z.string().min(1, "Content is required"),
   title: z.string().optional(),
+  author: z.string().max(200).optional(),
+  source: z.string().max(500).optional(),
   meter: z.enum(Meter),
   tempo: z.number().int().positive(),
   scale: z.enum(Scale),
@@ -16,6 +18,8 @@ export const updateSheetSchema = z.object({
   sheetId: z.string().min(1, "Sheet ID is required"),
   content: z.string().min(1, "Content is required").optional(),
   title: z.string().optional(),
+  author: z.string().max(200).optional(),
+  source: z.string().max(500).optional(),
   meter: z.enum(Meter).optional(),
   tempo: z.number().int().positive().optional(),
   scale: z.enum(Scale).optional(),

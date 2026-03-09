@@ -12,6 +12,8 @@ export async function getSheet(input: GetSheetInput): Promise<
   ApiResponse<{
     id: string;
     title: string;
+    author: string | null;
+    source: string | null;
     content: string;
     meter: string;
     tempo: number;
@@ -33,6 +35,8 @@ export async function getSheet(input: GetSheetInput): Promise<
       .select([
         "id",
         "title",
+        "author",
+        "source",
         "content",
         "meter",
         "tempo",

@@ -37,10 +37,15 @@ export async function getListWithSheets(input: GetListInput) {
         "ListItem.transpose",
         "Sheet.slug as sheetSlug",
         "Sheet.title as sheetTitle",
+        "Sheet.author",
+        "Sheet.source",
         "Sheet.meter",
         "Sheet.tempo",
         "Sheet.scale",
         "Sheet.content",
+        "Sheet.userId",
+        "Sheet.createdAt",
+        "Sheet.updatedAt",
       ])
       .where("ListItem.listId", "=", list.id)
       .where("Sheet.deletedAt", "is", null)
@@ -64,10 +69,16 @@ export async function getListWithSheets(input: GetListInput) {
         sheet: {
           id: item.sheetId,
           title: item.sheetTitle,
+          author: item.author,
+          source: item.source,
           content: item.content,
           meter: item.meter,
           tempo: item.tempo,
           scale: item.scale,
+          userId: item.userId,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          tags: [],
         } satisfies SheetDetail,
       })),
     });

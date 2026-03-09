@@ -13,6 +13,8 @@ export async function getSheetBySlug(input: GetSheetBySlugInput): Promise<
     id: string;
     slug: string;
     title: string;
+    author: string | null;
+    source: string | null;
     content: string;
     meter: string;
     tempo: number;
@@ -35,6 +37,8 @@ export async function getSheetBySlug(input: GetSheetBySlugInput): Promise<
         "id",
         "slug",
         "title",
+        "author",
+        "source",
         "content",
         "meter",
         "tempo",

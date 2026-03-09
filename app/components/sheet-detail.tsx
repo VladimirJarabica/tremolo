@@ -82,6 +82,12 @@ export function SheetDetail({
             updateTitle={(title) =>
               setUpdatedSheet((prev) => ({ ...prev, title }))
             }
+            updateAuthor={(author) =>
+              setUpdatedSheet((prev) => ({ ...prev, author }))
+            }
+            updateSource={(source) =>
+              setUpdatedSheet((prev) => ({ ...prev, source }))
+            }
             updateMeter={(meter) =>
               setUpdatedSheet((prev) => ({ ...prev, meter }))
             }

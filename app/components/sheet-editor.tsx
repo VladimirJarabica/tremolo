@@ -15,6 +15,8 @@ export function SheetEditor({
   sheet,
   updateContent,
   updateTitle,
+  updateAuthor,
+  updateSource,
   updateMeter,
   updateTempo,
   updateScale,
@@ -29,6 +31,8 @@ export function SheetEditor({
   setIsEditing: (value: boolean) => void;
   updateContent: (content: string) => void;
   updateTitle: (title: string) => void;
+  updateAuthor: (author: string) => void;
+  updateSource: (source: string) => void;
   updateMeter: (meter: Meter) => void;
   updateTempo: (tempo: number) => void;
   updateScale: (scale: ScaleType) => void;
@@ -48,6 +52,8 @@ export function SheetEditor({
         sheetId: sheet.id,
         content: sheet.content,
         title: sheet.title,
+        author: sheet.author ?? undefined,
+        source: sheet.source ?? undefined,
         meter: sheet.meter as Meter,
         tempo: sheet.tempo,
         scale: sheet.scale as ScaleType,
@@ -130,6 +136,22 @@ export function SheetEditor({
         className="w-full rounded-lg border border-zinc-300 p-3 text-lg font-medium"
         placeholder="Title"
       />
+      <div className="flex gap-4">
+        <input
+          type="text"
+          value={sheet.author ?? ""}
+          onChange={(e) => updateAuthor(e.target.value)}
+          className="flex-1 rounded-lg border border-zinc-300 p-3 text-sm"
+          placeholder="Composer name"
+        />
+        <input
+          type="text"
+          value={sheet.source ?? ""}
+          onChange={(e) => updateSource(e.target.value)}
+          className="flex-1 rounded-lg border border-zinc-300 p-3 text-sm"
+          placeholder="Source or reference"
+        />
+      </div>
       <div className="flex flex-wrap gap-4">
         <div className="flex items-center gap-2">
           <label htmlFor="meter" className="text-sm font-medium text-zinc-600">

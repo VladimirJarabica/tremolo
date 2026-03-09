@@ -69,10 +69,12 @@ model Tag {
 }
 
 model Sheet {
-  id      String @id @default(dbgenerated("gen_random_uuid()"))
-  slug    String @unique
+  id      String  @id @default(dbgenerated("gen_random_uuid()"))
+  slug    String  @unique
   tags    Tag[]
-  title   String @default("Untitled")
+  title   String  @default("Untitled")
+  author  String?
+  source  String?
   content String
   meter   Meter
   tempo   Int

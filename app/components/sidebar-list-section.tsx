@@ -130,16 +130,21 @@ export function SidebarListSection({
         <button
           type="button"
           onClick={() => setIsExpanded((prev) => !prev)}
-          className="flex flex-1 items-center gap-1 rounded-md px-2 py-1.5 text-left text-sm font-medium text-zinc-700 hover:bg-zinc-100"
+          className="rounded-md px-1 py-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600"
         >
           {isExpanded ? (
             <ChevronDown className="h-3 w-3" />
           ) : (
             <ChevronRight className="h-3 w-3" />
           )}
+        </button>
+        <Link
+          href={`/list/${list.id}`}
+          className="flex flex-1 items-center gap-1 rounded-md px-1 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100"
+        >
           <span className="truncate">{list.name}</span>
           <span className="ml-auto text-xs text-zinc-400">{items.length}</span>
-        </button>
+        </Link>
         <button
           type="button"
           onClick={(e) => {
