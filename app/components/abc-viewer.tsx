@@ -9,6 +9,7 @@ import { useDebouncer } from "@tanstack/react-pacer";
 import { SheetDetail } from "@/be/sheet/get-sheet";
 import { getAbcNotationFromSheet } from "../utils/abc-notation";
 import { updateListItemTranspose } from "@/app/actions/update-list-item-transpose";
+import { wrapBars, calculateBarsPerLine } from "@/app/utils/abc-wrap";
 
 export function AbcViewer({
   sheet,
@@ -19,14 +20,32 @@ export function AbcViewer({
   listId?: string | null;
   initialTranspose?: number;
 }): React.JSX.Element {
-  console.log("AbcViewer", { sheet, initialTranspose });
   const notationRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLDivElement>(null);
   const [transpose, setTranspose] = useState(initialTranspose);
   const [showSaved, setShowSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [containerWidth, setContainerWidth] = useState<number>(0);
 
   const abcContent = getAbcNotationFromSheet(sheet);
+
+  // Track container width for responsive bars per line
+  useEffect(() => {
+    if (!notationRef.current) {
+      return;
+    }
+
+    const observer = new ResizeObserver((entries) => {
+      const width = entries[0]?.contentRect.width;
+      if (width !== undefined && width > 0) {
+        setContainerWidth(Math.floor(width));
+      }
+    });
+
+    observer.observe(notationRef.current);
+
+    return () => observer.disconnect();
+  }, []);
 
   const debouncedSave = useDebouncer(
     async (value: number) => {
@@ -57,7 +76,12 @@ export function AbcViewer({
   }
 
   useEffect(() => {
-    if (!notationRef.current || !audioRef.current || !sheet.content.trim()) {
+    if (
+      !notationRef.current ||
+      !audioRef.current ||
+      !sheet.content.trim() ||
+      containerWidth === 0
+    ) {
       return;
     }
 
@@ -71,11 +95,22 @@ export function AbcViewer({
         notationRef.current!.innerHTML = "";
         audioRef.current!.innerHTML = "";
 
+        // Calculate bars per line based on container width
+        const barsPerLine = calculateBarsPerLine(containerWidth);
+
+        // Wrap content with newlines based on bars per line
+        const wrappedContent = wrapBars(abcContent, barsPerLine);
+        console.log("wrappedContent", wrappedContent);
+
         // Render ABC notation with transpose
-        const visualObj = abcjs.renderAbc(notationRef.current!, abcContent, {
-          responsive: "resize",
-          visualTranspose: transpose,
-        });
+        const visualObj = abcjs.renderAbc(
+          notationRef.current!,
+          wrappedContent,
+          {
+            responsive: "resize",
+            visualTranspose: transpose,
+          },
+        );
 
         // Setup audio controls
         synthControl = new abcjs.synth.SynthController();
@@ -108,7 +143,7 @@ export function AbcViewer({
     return () => {
       synthControl?.pause();
     };
-  }, [abcContent, transpose, sheet.content]);
+  }, [abcContent, transpose, sheet.content, containerWidth]);
 
   if (!sheet.content.trim()) {
     return (
@@ -130,7 +165,7 @@ export function AbcViewer({
   }
 
   return (
-    <div className="flex h-full flex-1 flex-col overflow-hidden">
+    <div className="flex h-full flex-1 flex-col">
       {/* Sheet music notation */}
       <div
         ref={notationRef}
