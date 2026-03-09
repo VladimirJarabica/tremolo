@@ -4,7 +4,6 @@ import {
   apiError,
   ApiErrorCode,
   apiSuccess,
-  type ApiResponse,
   type ApiResponseData,
 } from "@/be/response";
 import {

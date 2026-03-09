@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import {
   DndContext,
@@ -41,16 +41,9 @@ export function SidebarListSection({
   currentSlug: string | undefined;
   currentListId: string | null;
 }): React.JSX.Element {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(currentListId === list.id);
   const [isEditing, setIsEditing] = useState(false);
   const [items, setItems] = useState(list.items);
-
-  // Auto-expand when this list is active in URL
-  useEffect(() => {
-    if (currentListId === list.id) {
-      setIsExpanded(true);
-    }
-  }, [currentListId, list.id]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
