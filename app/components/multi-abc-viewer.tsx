@@ -7,6 +7,7 @@ import abcjs from "abcjs";
 import { SheetDetail } from "@/be/sheet/get-sheet";
 import { wrapBars, calculateBarsPerLine } from "@/app/utils/abc-wrap";
 import { BarsPerLineSlider } from "@/app/components/bars-per-line-slider";
+import { getAbcNotationFromSheet } from "../utils/abc-notation";
 
 const meterToAbc: Record<string, string> = {
   m_4_4: "4/4",
@@ -56,16 +57,8 @@ function getAbcTune(
   transpose: number,
   barsPerLine: number,
 ) {
-  const wrappedContent = wrapBars(sheet.content, barsPerLine);
-  return `X:${index}
-T:${sheet.title}
-M:${meterToAbc[sheet.meter]}
-Q:1/4=${sheet.tempo}
-K:${scaleToAbc[sheet.scale]}
-L:1/8
-%%score (1)
-%%transpose ${transpose}
-${wrappedContent}`;
+  const notation = getAbcNotationFromSheet(sheet, { index, hideSource: true });
+  return wrapBars(notation, barsPerLine);
 }
 
 export function MultiAbcViewer({

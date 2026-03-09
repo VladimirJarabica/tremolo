@@ -47,12 +47,15 @@ const scaleToAbc: Record<Scale, string> = {
   Abm: "Abm",
 };
 
-export const getAbcNotationFromSheet = (sheet: SheetDetail) => {
+export const getAbcNotationFromSheet = (
+  sheet: SheetDetail,
+  options?: { index?: number; hideSource?: boolean },
+) => {
   const lines = [
-    "X:1",
+    `X:${options?.index ?? 1}`,
     `T:${sheet.title}`,
     ...(sheet.author ? [`C:${sheet.author}`] : []),
-    ...(sheet.source ? [`S:${sheet.source}`] : []),
+    ...(sheet.source && !options?.hideSource ? [`S:${sheet.source}`] : []),
     `M:${meterToAbc[sheet.meter as Meter]}`,
     `Q:1/4=${sheet.tempo}`,
     `K:${scaleToAbc[sheet.scale as Scale]}`,
