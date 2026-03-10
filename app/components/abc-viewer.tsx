@@ -30,7 +30,11 @@ export function AbcViewer({
   const [isAutomatic, setIsAutomatic] = useState(true);
   const [manualBarsPerLine, setManualBarsPerLine] = useState(4);
 
-  const abcContent = getAbcNotationFromSheet(sheet);
+  const abcContent = getAbcNotationFromSheet(sheet, { hideSource: true });
+
+  const isSourceLink =
+    sheet.source !== null &&
+    (sheet.source.startsWith("http://") || sheet.source.startsWith("https://"));
 
   const barsPerLine = isAutomatic
     ? calculateBarsPerLine(containerWidth)
@@ -187,6 +191,25 @@ export function AbcViewer({
         ref={notationRef}
         className="abc-container min-h-0 flex-1 rounded-lg bg-white p-4"
       />
+
+      {/* Source */}
+      {sheet.source !== null && (
+        <div className="mt-2 text-sm text-zinc-500 flex gap-1">
+          Source:
+          {isSourceLink ? (
+            <a
+              href={sheet.source}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block truncate hover:underline"
+            >
+              {sheet.source}
+            </a>
+          ) : (
+            <div className="truncate">{sheet.source}</div>
+          )}
+        </div>
+      )}
 
       {/* Controls bar */}
       <div className="mt-4 space-y-3 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 print:hidden">
