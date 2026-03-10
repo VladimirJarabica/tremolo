@@ -39,10 +39,9 @@ export function SheetDetail({
 
   // Reset editing state when sheet changes
   useEffect(() => {
-    setUpdatedSheet(sheet);
+    setUpdatedSheet(props.sheet);
     setIsEditing(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Reset state when sheet changes
-  }, [props.sheet.id]);
+  }, [props.sheet.id, props.sheet.slug]);
 
   return (
     <div className="flex h-full flex-col">

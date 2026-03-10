@@ -36,6 +36,11 @@ export function AbcViewer({
     ? calculateBarsPerLine(containerWidth)
     : manualBarsPerLine;
 
+  // Clear error when content changes
+  useEffect(() => {
+    setError(null);
+  }, [abcContent]);
+
   // Track container width for responsive bars per line
   useEffect(() => {
     if (!notationRef.current) {
