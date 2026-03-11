@@ -12,9 +12,16 @@ export default async function AppPage({
     tempoRange?: "slow" | "medium" | "fast";
     scale?: string;
     search?: string;
+    tagIds?: string | string[];
   }>;
 }): Promise<React.JSX.Element> {
   const params = await searchParams;
+
+  const tagIds = params.tagIds
+    ? Array.isArray(params.tagIds)
+      ? params.tagIds
+      : [params.tagIds]
+    : undefined;
 
   return (
     <SheetGrid
@@ -25,6 +32,7 @@ export default async function AppPage({
       tempoRange={params.tempoRange}
       scale={params.scale as Scale | undefined}
       search={params.search}
+      tagIds={tagIds}
     />
   );
 }

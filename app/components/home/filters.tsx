@@ -8,9 +8,11 @@ import type { GetPublicSheetsInput } from "@/be/sheet/validation-schema";
 export function HomeFilters({
   currentFilters,
   total,
+  tags,
 }: {
   currentFilters: GetPublicSheetsInput;
   total: number;
+  tags: { id: string; name: string }[];
 }): React.JSX.Element {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -41,6 +43,24 @@ export function HomeFilters({
     [router, searchParams],
   );
 
+  const toggleTag = useCallback(
+    (tagId: string) => {
+      const params = new URLSearchParams(searchParams);
+      const currentTags = params.getAll("tagIds");
+      const newTags = currentTags.includes(tagId)
+        ? currentTags.filter((t) => t !== tagId)
+        : [...currentTags, tagId];
+
+      params.delete("tagIds");
+      for (const tag of newTags) {
+        params.append("tagIds", tag);
+      }
+      params.delete("page");
+      router.push(`?${params.toString()}`, { scroll: false });
+    },
+    [router, searchParams],
+  );
+
   const clearFilters = useCallback(() => {
     router.push("?", { scroll: false });
   }, [router]);
@@ -49,7 +69,10 @@ export function HomeFilters({
     currentFilters.search ||
     currentFilters.meter ||
     currentFilters.tempoRange ||
-    currentFilters.scale;
+    currentFilters.scale ||
+    (currentFilters.tagIds && currentFilters.tagIds.length > 0);
+
+  const selectedTagIds = currentFilters.tagIds ?? [];
 
   return (
     <div className="border-b border-zinc-200 p-4">
@@ -165,6 +188,26 @@ export function HomeFilters({
             <option value="Abm">Ab minor</option>
           </optgroup>
         </select>
+
+        {/* Tag filter */}
+        {tags.length > 0 && (
+          <div className="flex flex-wrap max-w-62 items-center gap-1">
+            {tags.map((tag) => (
+              <button
+                key={tag.id}
+                type="button"
+                onClick={() => toggleTag(tag.id)}
+                className={`rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors ${
+                  selectedTagIds.includes(tag.id)
+                    ? "bg-zinc-900 text-white"
+                    : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
+                }`}
+              >
+                {tag.name}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Clear filters */}
         {hasFilters && (

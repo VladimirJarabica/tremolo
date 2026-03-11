@@ -32,7 +32,7 @@ export async function getPublicSheets(input?: GetPublicSheetsInput) {
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);
   }
 
-  const { page, orderBy, order, meter, tempoRange, scale, search } =
+  const { page, orderBy, order, meter, tempoRange, scale, search, tagIds } =
     parsed.data;
 
   try {
@@ -92,6 +92,15 @@ export async function getPublicSheets(input?: GetPublicSheetsInput) {
           eb("author", "ilike", searchPattern),
         ]),
       );
+    }
+
+    if (tagIds && tagIds.length > 0) {
+      countQuery = countQuery
+        .innerJoin("_SheetToTag", "Sheet.id", "_SheetToTag.A")
+        .where("_SheetToTag.B", "in", tagIds);
+      dataQuery = dataQuery
+        .innerJoin("_SheetToTag", "Sheet.id", "_SheetToTag.A")
+        .where("_SheetToTag.B", "in", tagIds);
     }
 
     // Get total count

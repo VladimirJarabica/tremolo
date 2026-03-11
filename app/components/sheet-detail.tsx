@@ -45,7 +45,7 @@ export function SheetDetail({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex-1 overflow-auto p-6">
+      <div className="overflow-auto p-6">
         <AbcViewer
           sheet={sheet}
           listId={listId}

@@ -185,11 +185,11 @@ export function AbcViewer({
   }
 
   return (
-    <div className="flex h-full flex-1 flex-col">
+    <div className="flex h-full flex-col">
       {/* Sheet music notation */}
       <div
         ref={notationRef}
-        className="abc-container min-h-0 flex-1 rounded-lg bg-white p-4"
+        className="abc-container min-h-0 rounded-lg bg-white p-4"
       />
 
       {/* Source */}

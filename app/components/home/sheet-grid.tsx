@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import { getPublicSheets } from "@/app/actions/get-public-sheets";
+import { getTags } from "@/app/actions/get-tags";
 import type { GetPublicSheetsInput } from "@/be/sheet/validation-schema";
 import { HomeFilters } from "./filters";
 import { Pagination } from "./pagination";
@@ -13,6 +14,7 @@ type SheetGridProps = {
   tempoRange?: GetPublicSheetsInput["tempoRange"];
   scale?: GetPublicSheetsInput["scale"];
   search?: string;
+  tagIds?: string[];
 };
 
 export async function SheetGrid(
@@ -26,9 +28,13 @@ export async function SheetGrid(
     tempoRange: props.tempoRange,
     scale: props.scale,
     search: props.search,
+    tagIds: props.tagIds,
   };
 
-  const result = await getPublicSheets(input);
+  const [result, tagsResult] = await Promise.all([
+    getPublicSheets(input),
+    getTags(),
+  ]);
 
   if (!result.success) {
     return (
@@ -39,10 +45,11 @@ export async function SheetGrid(
   }
 
   const { items, total } = result.data;
+  const tags = tagsResult.success ? tagsResult.data : [];
 
   return (
     <div className="flex h-full flex-col">
-      <HomeFilters currentFilters={input} total={total} />
+      <HomeFilters currentFilters={input} total={total} tags={tags} />
       <div className="overflow-auto">
         {items.length === 0 ? (
           <div className="flex h-full items-center justify-center text-zinc-400">

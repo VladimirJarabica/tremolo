@@ -74,6 +74,7 @@ export const getPublicSheetsSchema = z.object({
   tempoRange: z.enum(["slow", "medium", "fast"]).optional(),
   scale: z.enum(Scale).optional(),
   search: z.string().max(200).optional(),
+  tagIds: z.array(z.string()).optional(),
 });
 
 export type GetPublicSheetsInput = z.infer<typeof getPublicSheetsSchema>;
