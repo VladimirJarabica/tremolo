@@ -57,3 +57,23 @@ export const getSheetsSchema = z.object({
 });
 
 export type GetSheetsInput = z.infer<typeof getSheetsSchema>;
+
+export const tempoRanges = {
+  slow: { min: 0, max: 80 },
+  medium: { min: 80, max: 140 },
+  fast: { min: 140, max: 999 },
+} as const;
+
+export type TempoRange = keyof typeof tempoRanges;
+
+export const getPublicSheetsSchema = z.object({
+  page: z.number().int().positive().default(1),
+  orderBy: z.enum(["createdAt", "title"]).default("createdAt"),
+  order: z.enum(["asc", "desc"]).default("desc"),
+  meter: z.enum(Meter).optional(),
+  tempoRange: z.enum(["slow", "medium", "fast"]).optional(),
+  scale: z.enum(Scale).optional(),
+  search: z.string().max(200).optional(),
+});
+
+export type GetPublicSheetsInput = z.infer<typeof getPublicSheetsSchema>;
