@@ -42,7 +42,7 @@ export function HomeFilters({
   );
 
   const clearFilters = useCallback(() => {
-    router.push("", { scroll: false });
+    router.push("?", { scroll: false });
   }, [router]);
 
   const hasFilters =
