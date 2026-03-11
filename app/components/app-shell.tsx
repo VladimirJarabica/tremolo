@@ -3,18 +3,15 @@
 import { cn } from "@/lib/utils";
 import { SheetList } from "./sheet-list";
 import { Header } from "./header";
-import type { GetSheetsData } from "@/be/sheet/get-sheets";
 import type { GetListsData } from "@/be/list/get-lists";
 
 import { useSidebar } from "./sidebar-provider";
 
 export function AppShell({
-  sheets,
   lists,
   user,
   children,
 }: {
-  sheets: GetSheetsData;
   lists: GetListsData;
   user: { email: string } | null;
   children: React.ReactNode;
@@ -42,7 +39,7 @@ export function AppShell({
             isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           )}
         >
-          <SheetList sheets={sheets} lists={lists} isLoggedIn={user !== null} />
+          <SheetList lists={lists} isLoggedIn={user !== null} />
         </aside>
 
         {/* Main content */}

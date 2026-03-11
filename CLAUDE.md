@@ -65,7 +65,6 @@ be/
     validation-schema.ts
     create-sheet.ts
     get-sheet.ts
-    get-sheets.ts
     update-sheet.ts
     delete-sheet.ts
   response.ts          # ApiResponse types and helpers

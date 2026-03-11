@@ -52,12 +52,6 @@ export const getSheetBySlugSchema = z.object({
 
 export type GetSheetBySlugInput = z.infer<typeof getSheetBySlugSchema>;
 
-export const getSheetsSchema = z.object({
-  tagId: z.string().optional(),
-});
-
-export type GetSheetsInput = z.infer<typeof getSheetsSchema>;
-
 export const tempoRanges = {
   slow: { min: 0, max: 80 },
   medium: { min: 80, max: 140 },
