@@ -36,12 +36,16 @@ export function SidebarListSection({
   list,
   currentSlug,
   currentListId,
+  listPageId,
 }: {
   list: ListWithItems;
   currentSlug: string | undefined;
   currentListId: string | null;
+  listPageId: string | undefined;
 }): React.JSX.Element {
-  const [isExpanded, setIsExpanded] = useState(currentListId === list.id);
+  const [isExpanded, setIsExpanded] = useState(
+    currentListId === list.id || listPageId === list.id,
+  );
   const [isEditing, setIsEditing] = useState(false);
   const [items, setItems] = useState(list.items);
 

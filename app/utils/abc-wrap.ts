@@ -37,7 +37,8 @@ export function splitBars(content: string): string[] {
       prependToNext = "|:";
     } else {
       // Normal handling - add content before + bar line
-      const contentBefore = prependToNext + content.slice(lastIndex, match.index);
+      const contentBefore =
+        prependToNext + content.slice(lastIndex, match.index);
       bars.push(contentBefore + barLine);
       prependToNext = "";
       lastIndex = match.index + barLine.length;
@@ -71,9 +72,9 @@ export function wrapBars(content: string, barsPerLine: number): string {
  * Calculate bars per line based on container width
  */
 export function calculateBarsPerLine(width: number): number {
-  if (width < 400) return 1;
-  if (width < 550) return 2;
-  if (width < 700) return 3;
-  if (width < 850) return 4;
-  return 5;
+  if (width < 700) return 4;
+  if (width < 850) return 5;
+  if (width < 1000) return 6;
+  if (width < 1500) return 7;
+  return 8;
 }

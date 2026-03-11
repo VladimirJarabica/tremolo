@@ -21,6 +21,11 @@ export function SheetList({
     ? pathname.replace("/sheet/", "")
     : undefined;
 
+  // Extract list ID when on list page
+  const listPageId = pathname.startsWith("/list/")
+    ? pathname.replace("/list/", "")
+    : undefined;
+
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   return (
@@ -55,6 +60,7 @@ export function SheetList({
                     list={list}
                     currentSlug={currentSlug}
                     currentListId={currentListId}
+                    listPageId={listPageId}
                   />
                 ))}
               </ul>
