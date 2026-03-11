@@ -46,7 +46,7 @@ export function AppShell({
         </aside>
 
         {/* Main content */}
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 max-w-[100vw]">{children}</main>
       </div>
     </div>
   );
