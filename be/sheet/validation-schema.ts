@@ -63,7 +63,6 @@ export type TempoRange = keyof typeof tempoRanges;
 export const getPublicSheetsSchema = z.object({
   page: z.number().int().positive().default(1),
   orderBy: z.enum(["createdAt", "title"]).default("createdAt"),
-  order: z.enum(["asc", "desc"]).default("desc"),
   meter: z.enum(Meter).optional(),
   tempoRange: z.enum(["slow", "medium", "fast"]).optional(),
   scale: z.enum(Scale).optional(),

@@ -32,7 +32,7 @@ export async function getPublicSheets(input?: GetPublicSheetsInput) {
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);
   }
 
-  const { page, orderBy, order, meter, tempoRange, scale, search, tagIds } =
+  const { page, orderBy, meter, tempoRange, scale, search, tagIds } =
     parsed.data;
 
   try {
@@ -110,7 +110,7 @@ export async function getPublicSheets(input?: GetPublicSheetsInput) {
     // Get paginated data
     const offset = (page - 1) * ITEMS_PER_PAGE;
     const sheets = await dataQuery
-      .orderBy(orderBy, order)
+      .orderBy(orderBy, orderBy === "title" ? "asc" : "desc")
       .limit(ITEMS_PER_PAGE)
       .offset(offset)
       .execute();

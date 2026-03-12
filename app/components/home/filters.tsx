@@ -1,9 +1,10 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
-import { Search, X } from "lucide-react";
 import type { GetPublicSheetsInput } from "@/be/sheet/validation-schema";
+import { useDebouncedCallback } from "@tanstack/react-pacer";
+import { Search, X } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useState } from "react";
 
 export function HomeFilters({
   currentFilters,
@@ -16,6 +17,9 @@ export function HomeFilters({
 }): React.JSX.Element {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // Local state for search input
+  const [searchValue, setSearchValue] = useState(currentFilters.search ?? "");
 
   const updateFilter = useCallback(
     (key: string, value: string | null) => {
@@ -65,6 +69,22 @@ export function HomeFilters({
     router.push("?", { scroll: false });
   }, [router]);
 
+  // Debounced search handler
+  const debouncedSearch = useDebouncedCallback(
+    (value: string) => {
+      updateFilter("search", value || null);
+    },
+    { wait: 500 },
+  );
+
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearchValue(value);
+      debouncedSearch(value);
+    },
+    [debouncedSearch],
+  );
+
   const hasFilters =
     currentFilters.search ||
     currentFilters.meter ||
@@ -83,8 +103,8 @@ export function HomeFilters({
           <input
             type="text"
             placeholder="Search by title or author..."
-            value={currentFilters.search ?? ""}
-            onChange={(e) => updateFilter("search", e.target.value || null)}
+            value={searchValue}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="w-full rounded-lg border border-zinc-200 py-2 pl-10 pr-4 text-sm focus:border-zinc-400 focus:outline-none"
           />
         </div>
@@ -93,7 +113,9 @@ export function HomeFilters({
         <div className="flex rounded-lg border border-zinc-200 overflow-hidden">
           <button
             type="button"
-            onClick={() => updateFilter("orderBy", "title")}
+            onClick={() => {
+              updateFilter("orderBy", "title");
+            }}
             className={`px-3 py-2 text-sm transition-colors ${
               currentFilters.orderBy === "title"
                 ? "bg-zinc-900 text-white"
@@ -104,7 +126,9 @@ export function HomeFilters({
           </button>
           <button
             type="button"
-            onClick={() => updateFilter("orderBy", "createdAt")}
+            onClick={() => {
+              updateFilter("orderBy", "createdAt");
+            }}
             className={`px-3 py-2 text-sm transition-colors ${
               currentFilters.orderBy === "title"
                 ? "bg-white text-zinc-600 hover:bg-zinc-50"

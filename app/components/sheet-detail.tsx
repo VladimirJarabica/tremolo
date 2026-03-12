@@ -39,6 +39,7 @@ export function SheetDetail({
 
   // Reset editing state when sheet changes
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setUpdatedSheet(props.sheet);
     setIsEditing(false);
   }, [props.sheet.id, props.sheet.slug]);

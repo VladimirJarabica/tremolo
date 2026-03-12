@@ -2,11 +2,11 @@
 
 import "abcjs/abcjs-audio.css";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import abcjs from "abcjs";
-import { SheetDetail } from "@/be/sheet/get-sheet";
-import { wrapBars, calculateBarsPerLine } from "@/app/utils/abc-wrap";
 import { BarsPerLineSlider } from "@/app/components/bars-per-line-slider";
+import { calculateBarsPerLine, wrapBars } from "@/app/utils/abc-wrap";
+import { SheetDetail } from "@/be/sheet/get-sheet";
+import abcjs from "abcjs";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getAbcNotationFromSheet } from "../utils/abc-notation";
 
 const meterToAbc: Record<string, string> = {

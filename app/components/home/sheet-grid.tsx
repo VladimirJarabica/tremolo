@@ -23,7 +23,6 @@ export async function SheetGrid(
   const input: GetPublicSheetsInput = {
     page: props.page ?? 1,
     orderBy: props.orderBy ?? "createdAt",
-    order: props.order ?? "desc",
     meter: props.meter,
     tempoRange: props.tempoRange,
     scale: props.scale,
