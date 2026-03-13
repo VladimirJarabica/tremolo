@@ -60,7 +60,8 @@ export const getAbcNotationFromSheet = (
     `Q:1/4=${sheet.tempo}`,
     `K:${scaleToAbc[sheet.scale as Scale]}`,
     "L:1/8",
+    sheet.content.includes("clef=bass") ? "V:1 clef=treble" : null,
     sheet.content,
-  ];
+  ].filter(Boolean) as string[];
   return lines.join("\n");
 };
