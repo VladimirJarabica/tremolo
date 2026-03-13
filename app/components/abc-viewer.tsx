@@ -1,7 +1,5 @@
 "use client";
 
-import "abcjs/abcjs-audio.css";
-
 import { useEffect, useRef, useState } from "react";
 import abcjs from "abcjs";
 import { Check } from "lucide-react";
@@ -135,11 +133,11 @@ export function AbcViewer({
         // Setup audio controls
         synthControl = new abcjs.synth.SynthController();
         synthControl.load(audioRef.current!, null, {
-          displayLoop: true,
-          displayRestart: true,
+          displayLoop: false,
+          displayRestart: false,
           displayPlay: true,
           displayProgress: true,
-          displayWarp: true,
+          displayWarp: false,
         });
 
         // Create synth with the transposed visual object
@@ -180,8 +178,12 @@ export function AbcViewer({
     return (
       <div className="flex h-full items-center justify-center">
         <div className="text-center">
-          <p className="text-lg text-[oklch(0.577_0.245_27.325)]">Failed to render sheet</p>
-          <p className="mt-2 text-sm text-[oklch(0.5_0.04_160)]">Verify your input</p>
+          <p className="text-lg text-[oklch(0.577_0.245_27.325)]">
+            Failed to render sheet
+          </p>
+          <p className="mt-2 text-sm text-[oklch(0.5_0.04_160)]">
+            Verify your input
+          </p>
         </div>
       </div>
     );
@@ -218,11 +220,11 @@ export function AbcViewer({
       <div className="mt-4 space-y-3 rounded-2xl border border-[oklch(0.92_0.02_160)] backdrop-blur-sm bg-white/80 px-4 py-3 shadow-sm print:hidden">
         <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Transpose controls */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2 justify-between flex-row">
             <span className="text-xs font-semibold uppercase tracking-wide text-[oklch(0.5_0.04_160)]">
               Transpose
             </span>
-            <div className="ml-2 flex items-center rounded-xl bg-white shadow-sm ring-1 ring-[oklch(0.92_0.02_160)]">
+            <div className="flex items-center rounded-xl bg-white shadow-sm ring-1 ring-[oklch(0.92_0.02_160)]">
               <button
                 onClick={() => handleTransposeChange(-1)}
                 className="rounded-l-xl px-3 py-1.5 text-[oklch(0.45_0.05_160)] hover:bg-[oklch(0.96_0.02_160)] transition-colors"
@@ -271,15 +273,14 @@ export function AbcViewer({
               </span>
             )}
             {listId && !showSaved && (
-              <span className="text-xs text-[oklch(0.5_0.04_160)]">Auto-saves to list</span>
+              <span className="text-xs text-[oklch(0.5_0.04_160)]">
+                Auto-saves to list
+              </span>
             )}
-          </div>
 
-          {/* Audio player */}
-          <div
-            ref={audioRef}
-            className="abcjs-audio max-w-2xl min-w-xl flex-1"
-          />
+            {/* Audio player - full width on mobile */}
+          </div>
+          <div ref={audioRef} className="abcjs-audio max-w-2xl flex-1" />
         </div>
 
         {/* Bars per line slider */}

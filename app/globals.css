@@ -127,7 +127,162 @@
   }
   body {
     @apply bg-background text-foreground;
-    background: linear-gradient(135deg, oklch(0.99 0.008 160) 0%, oklch(0.985 0.012 140) 50%, oklch(0.99 0.006 150) 100%);
+    background: linear-gradient(
+      135deg,
+      oklch(0.99 0.008 160) 0%,
+      oklch(0.985 0.012 140) 50%,
+      oklch(0.99 0.006 150) 100%
+    );
     background-attachment: fixed;
+  }
+}
+
+/* ABC.js Audio Player - Forest Mist Theme */
+.abcjs-inline-audio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.abcjs-css-warning {
+  display: none !important;
+}
+
+.abcjs-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid oklch(0.92 0.02 160);
+  background: white;
+  color: oklch(0.45 0.06 160);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.abcjs-btn:hover {
+  background: oklch(0.96 0.02 160);
+  border-color: oklch(0.85 0.04 160);
+}
+
+.abcjs-btn:active {
+  transform: scale(0.95);
+}
+
+.abcjs-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.abcjs-midi-start.abcjs-btn {
+  background: linear-gradient(
+    to right,
+    oklch(0.55 0.18 160),
+    oklch(0.5 0.18 150)
+  );
+  border-color: transparent;
+  margin-right: 8px;
+  color: white;
+  width: 45px;
+  padding-right: 10px;
+  box-shadow: 0 4px 12px oklch(0.55 0.18 160 / 0.3);
+
+  > svg:last-of-type {
+    display: none;
+  }
+}
+
+.abcjs-midi-start.abcjs-btn:hover {
+  box-shadow: 0 6px 16px oklch(0.55 0.18 160 / 0.4);
+}
+
+.abcjs-midi-loop.abcjs-btn[aria-pressed="true"] {
+  background: oklch(0.94 0.06 150);
+  border-color: oklch(0.55 0.18 160);
+  color: oklch(0.45 0.18 160);
+}
+
+.abcjs-midi-progress-background {
+  flex: 1;
+  min-width: 80px;
+  height: 8px;
+  border-radius: 4px;
+  background: oklch(0.94 0.02 160);
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.abcjs-midi-progress-indicator {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(
+    to right,
+    oklch(0.55 0.18 160),
+    oklch(0.5 0.18 150)
+  );
+  box-shadow: 0 2px 6px oklch(0.55 0.18 160 / 0.4);
+}
+
+.abcjs-midi-clock {
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: oklch(0.4 0.05 160);
+  min-width: 40px;
+}
+
+.abcjs-tempo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: oklch(0.5 0.04 160);
+}
+
+.abcjs-tempo-wrapper label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.abcjs-midi-tempo {
+  width: 50px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  border: 1px solid oklch(0.92 0.02 160);
+  background: white;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: oklch(0.4 0.05 160);
+  text-align: center;
+}
+
+.abcjs-midi-tempo:focus {
+  outline: none;
+  border-color: oklch(0.55 0.18 160);
+  box-shadow: 0 0 0 2px oklch(0.55 0.18 160 / 0.2);
+}
+
+.abcjs-loading-svg {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
