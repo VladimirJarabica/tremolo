@@ -19,11 +19,11 @@ export function AppShell({
   const { isOpen, setIsOpen } = useSidebar();
 
   return (
-    <div className="flex h-screen flex-col bg-white">
+    <div className="flex h-screen flex-col">
       {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden print:hidden"
+          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm lg:hidden print:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
@@ -35,7 +35,8 @@ export function AppShell({
         {/* Sidebar */}
         <aside
           className={cn(
-            "fixed inset-y-0 print:hidden top-14 left-0 z-50 w-72 transform border-r border-zinc-200 bg-white transition-transform duration-200 ease-in-out lg:static lg:z-auto lg:translate-x-0",
+            "fixed inset-y-0 print:hidden top-14 left-0 z-50 w-72 transform border-r border-[oklch(0.92_0.02_160)] backdrop-blur-xl transition-transform duration-200 ease-in-out lg:static lg:z-auto lg:translate-x-0",
+            "bg-white/80 shadow-lg shadow-[oklch(0.6_0.12_160/0.05)]",
             isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           )}
         >

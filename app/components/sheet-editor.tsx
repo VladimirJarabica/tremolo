@@ -112,14 +112,14 @@ export function SheetEditor({
       <div className="flex gap-2">
         <button
           onClick={() => setIsEditing(true)}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+          className="rounded-xl bg-gradient-to-r from-[oklch(0.55_0.18_160)] to-[oklch(0.5_0.18_150)] px-4 py-2 text-sm font-medium text-white shadow-md shadow-[oklch(0.55_0.18_160/0.3)] transition-all hover:shadow-lg hover:shadow-[oklch(0.55_0.18_160/0.4)] hover:scale-[1.02] active:scale-[0.98]"
         >
           Edit
         </button>
         <button
           onClick={handleDelete}
           disabled={isDeleting}
-          className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-50"
+          className="rounded-xl border border-[oklch(0.85_0.04_160)] bg-white px-4 py-2 text-sm font-medium text-[oklch(0.4_0.05_160)] transition-all hover:bg-[oklch(0.96_0.02_160)] hover:border-[oklch(0.7_0.06_160)] disabled:opacity-50"
         >
           {isDeleting ? "Deleting..." : "Delete"}
         </button>
@@ -133,7 +133,7 @@ export function SheetEditor({
         type="text"
         value={sheet.title}
         onChange={(e) => updateTitle(e.target.value)}
-        className="w-full rounded-lg border border-zinc-300 p-3 text-lg font-medium"
+        className="w-full rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 p-3 text-lg font-medium text-[oklch(0.25_0.03_160)] placeholder:text-[oklch(0.55_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm"
         placeholder="Title"
       />
       <div className="flex gap-4">
@@ -141,27 +141,27 @@ export function SheetEditor({
           type="text"
           value={sheet.author ?? ""}
           onChange={(e) => updateAuthor(e.target.value)}
-          className="flex-1 rounded-lg border border-zinc-300 p-3 text-sm"
+          className="flex-1 rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 p-3 text-sm text-[oklch(0.3_0.03_160)] placeholder:text-[oklch(0.55_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm"
           placeholder="Composer name"
         />
         <input
           type="text"
           value={sheet.source ?? ""}
           onChange={(e) => updateSource(e.target.value)}
-          className="flex-1 rounded-lg border border-zinc-300 p-3 text-sm"
+          className="flex-1 rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 p-3 text-sm text-[oklch(0.3_0.03_160)] placeholder:text-[oklch(0.55_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm"
           placeholder="Source or reference"
         />
       </div>
       <div className="flex flex-wrap gap-4">
         <div className="flex items-center gap-2">
-          <label htmlFor="meter" className="text-sm font-medium text-zinc-600">
+          <label htmlFor="meter" className="text-sm font-medium text-[oklch(0.45_0.05_160)]">
             Meter
           </label>
           <select
             id="meter"
             value={sheet.meter}
             onChange={(e) => updateMeter(e.target.value as Meter)}
-            className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+            className="rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 px-3 py-2 text-sm text-[oklch(0.3_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm cursor-pointer"
           >
             {METER_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -171,7 +171,7 @@ export function SheetEditor({
           </select>
         </div>
         <div className="flex items-center gap-2">
-          <label htmlFor="tempo" className="text-sm font-medium text-zinc-600">
+          <label htmlFor="tempo" className="text-sm font-medium text-[oklch(0.45_0.05_160)]">
             Tempo
           </label>
           <input
@@ -180,19 +180,19 @@ export function SheetEditor({
             min={1}
             value={sheet.tempo}
             onChange={(e) => updateTempo(parseInt(e.target.value, 10) || 120)}
-            className="w-20 rounded-md border border-zinc-300 px-3 py-2 text-sm"
+            className="w-20 rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 px-3 py-2 text-sm text-[oklch(0.3_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm"
           />
-          <span className="text-sm text-zinc-500">BPM</span>
+          <span className="text-sm text-[oklch(0.5_0.04_160)]">BPM</span>
         </div>
         <div className="flex items-center gap-2">
-          <label htmlFor="scale" className="text-sm font-medium text-zinc-600">
+          <label htmlFor="scale" className="text-sm font-medium text-[oklch(0.45_0.05_160)]">
             Key
           </label>
           <select
             id="scale"
             value={sheet.scale}
             onChange={(e) => updateScale(e.target.value as ScaleType)}
-            className="rounded-md border border-zinc-300 px-3 py-2 text-sm"
+            className="rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 px-3 py-2 text-sm text-[oklch(0.3_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm cursor-pointer"
           >
             {SCALE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -205,7 +205,7 @@ export function SheetEditor({
       <textarea
         value={sheet.content}
         onChange={(e) => updateContent(e.target.value)}
-        className="h-48 w-full rounded-lg border border-zinc-300 p-3 font-mono text-sm"
+        className="h-48 w-full rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 p-3 font-mono text-sm text-[oklch(0.25_0.03_160)] placeholder:text-[oklch(0.55_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm"
         placeholder="Enter ABC notation here (without T:, M:, Q:, K: lines)..."
       />
       <TagSelector
@@ -218,13 +218,13 @@ export function SheetEditor({
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          className="rounded-xl bg-gradient-to-r from-[oklch(0.55_0.18_160)] to-[oklch(0.5_0.18_150)] px-4 py-2 text-sm font-medium text-white shadow-md shadow-[oklch(0.55_0.18_160/0.3)] transition-all hover:shadow-lg hover:shadow-[oklch(0.55_0.18_160/0.4)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
         >
           {isSaving ? "Saving..." : "Save"}
         </button>
         <button
           onClick={handleCancel}
-          className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
+          className="rounded-xl border border-[oklch(0.85_0.04_160)] bg-white px-4 py-2 text-sm font-medium text-[oklch(0.4_0.05_160)] transition-all hover:bg-[oklch(0.96_0.02_160)] hover:border-[oklch(0.7_0.06_160)]"
         >
           Cancel
         </button>

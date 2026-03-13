@@ -127,20 +127,20 @@ export function SidebarListSection({
         <button
           type="button"
           onClick={() => setIsExpanded((prev) => !prev)}
-          className="rounded-md px-1 py-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600"
+          className="rounded-lg px-1 py-1.5 text-[oklch(0.5_0.06_160)] hover:bg-[oklch(0.94_0.04_160)] transition-colors"
         >
           {isExpanded ? (
-            <ChevronDown className="h-3 w-3" />
+            <ChevronDown className="h-3.5 w-3.5" />
           ) : (
-            <ChevronRight className="h-3 w-3" />
+            <ChevronRight className="h-3.5 w-3.5" />
           )}
         </button>
         <Link
           href={`/list/${list.id}`}
-          className="flex flex-1 items-center gap-1 rounded-md px-1 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100"
+          className="flex flex-1 items-center gap-2 rounded-xl px-2 py-1.5 text-sm font-medium text-[oklch(0.35_0.04_160)] hover:bg-[oklch(0.96_0.02_160)] transition-colors"
         >
           <span className="truncate">{list.name}</span>
-          <span className="ml-auto text-xs text-zinc-400">{items.length}</span>
+          <span className="ml-auto text-xs font-medium px-1.5 py-0.5 rounded-md bg-[oklch(0.94_0.02_160)] text-[oklch(0.5_0.04_160)]">{items.length}</span>
         </Link>
         <button
           type="button"
@@ -148,7 +148,7 @@ export function SidebarListSection({
             e.stopPropagation();
             setIsEditing(true);
           }}
-          className="rounded p-1 text-zinc-400 opacity-0 transition-opacity hover:bg-zinc-100 hover:text-zinc-600 group-hover:opacity-100"
+          className="rounded-lg p-1 text-[oklch(0.5_0.04_160)] opacity-0 transition-all hover:bg-[oklch(0.94_0.04_160)] hover:text-[oklch(0.4_0.08_160)] group-hover:opacity-100"
           title="Edit list"
         >
           <Pencil className="h-3 w-3" />
@@ -166,7 +166,7 @@ export function SidebarListSection({
             items={items.map((i) => i.sheetId)}
             strategy={verticalListSortingStrategy}
           >
-            <ul className="ml-4 mt-1 space-y-1 border-l border-zinc-200 pl-2">
+            <ul className="ml-4 mt-1 space-y-0.5 border-l-2 border-[oklch(0.92_0.03_160)] pl-3">
               {items.map((item, index) => (
                 <SortableListItem
                   key={item.sheetId}
@@ -238,16 +238,16 @@ function SortableListItem({
     <li ref={setNodeRef} style={style} className={isDragging ? "opacity-50" : ""}>
       <div
         className={cn(
-          "flex items-center gap-1 rounded-md px-2 py-1.5 text-sm transition-colors",
+          "flex items-center gap-1 rounded-xl px-2 py-1.5 text-sm transition-all",
           currentSlug === item.sheetSlug && currentListId === listId
-            ? "bg-zinc-100 text-zinc-900"
-            : "text-zinc-600 hover:bg-zinc-50",
+            ? "bg-gradient-to-r from-[oklch(0.94_0.04_160)] to-[oklch(0.94_0.04_150)] text-[oklch(0.3_0.06_160)] shadow-sm"
+            : "text-[oklch(0.4_0.04_160)] hover:bg-[oklch(0.96_0.02_160)]",
         )}
       >
         {/* Drag handle */}
         <button
           type="button"
-          className="cursor-grab text-zinc-300 hover:text-zinc-500"
+          className="cursor-grab text-[oklch(0.7_0.02_160)] hover:text-[oklch(0.5_0.08_160)] transition-colors"
           {...attributes}
           {...listeners}
         >
@@ -262,7 +262,7 @@ function SortableListItem({
           <div className="flex items-center justify-between">
             <span className="truncate">{item.sheetTitle || "Untitled"}</span>
             {item.transpose !== 0 && (
-              <span className="text-xs text-zinc-400">
+              <span className="text-xs font-medium px-1.5 py-0.5 rounded-md bg-[oklch(0.94_0.04_160)] text-[oklch(0.45_0.08_160)]">
                 {item.transpose > 0 ? "+" : ""}
                 {item.transpose}
               </span>
@@ -277,10 +277,10 @@ function SortableListItem({
             onClick={() => onArrowClick(item.sheetId, "up")}
             disabled={isFirst}
             className={cn(
-              "rounded p-0.5",
+              "rounded p-0.5 transition-colors",
               isFirst
-                ? "text-zinc-200"
-                : "text-zinc-300 hover:bg-zinc-100 hover:text-zinc-500",
+                ? "text-[oklch(0.9_0.01_160)]"
+                : "text-[oklch(0.7_0.02_160)] hover:bg-[oklch(0.94_0.04_160)] hover:text-[oklch(0.5_0.08_160)]",
             )}
             title="Move up"
           >
@@ -291,10 +291,10 @@ function SortableListItem({
             onClick={() => onArrowClick(item.sheetId, "down")}
             disabled={isLast}
             className={cn(
-              "rounded p-0.5",
+              "rounded p-0.5 transition-colors",
               isLast
-                ? "text-zinc-200"
-                : "text-zinc-300 hover:bg-zinc-100 hover:text-zinc-500",
+                ? "text-[oklch(0.9_0.01_160)]"
+                : "text-[oklch(0.7_0.02_160)] hover:bg-[oklch(0.94_0.04_160)] hover:text-[oklch(0.5_0.08_160)]",
             )}
             title="Move down"
           >

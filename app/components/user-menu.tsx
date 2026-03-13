@@ -36,10 +36,15 @@ export function UserMenu({
             variant="ghost"
             size="sm"
             onClick={() => setShowLogin(true)}
+            className="text-[oklch(0.4_0.05_160)] hover:bg-[oklch(0.96_0.02_160)] hover:text-[oklch(0.3_0.06_160)]"
           >
             Sign In
           </Button>
-          <Button size="sm" onClick={() => setShowRegister(true)}>
+          <Button
+            size="sm"
+            onClick={() => setShowRegister(true)}
+            className="bg-gradient-to-r from-[oklch(0.55_0.18_160)] to-[oklch(0.5_0.18_150)] text-white shadow-md shadow-[oklch(0.55_0.18_160/0.3)] hover:shadow-lg"
+          >
             Sign Up
           </Button>
         </div>
@@ -64,9 +69,9 @@ export function UserMenu({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-            <Avatar className="h-9 w-9">
-              <AvatarFallback className="bg-zinc-900 text-sm font-medium text-white">
+          <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-[oklch(0.96_0.02_160)]">
+            <Avatar className="h-9 w-9 ring-2 ring-[oklch(0.85_0.04_160)]">
+              <AvatarFallback className="bg-gradient-to-br from-[oklch(0.55_0.18_160)] to-[oklch(0.5_0.18_150)] text-sm font-medium text-white">
                 {initials}
               </AvatarFallback>
             </Avatar>
@@ -74,10 +79,10 @@ export function UserMenu({
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <div className="p-2">
-            <p className="text-sm font-medium">{user.email}</p>
+            <p className="text-sm font-medium text-[oklch(0.25_0.03_160)]">{user.email}</p>
           </div>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+          <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-[oklch(0.4_0.05_160)] focus:bg-[oklch(0.96_0.02_160)]">
             Sign out
           </DropdownMenuItem>
         </DropdownMenuContent>

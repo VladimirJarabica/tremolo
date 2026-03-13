@@ -40,7 +40,7 @@ export function NewSheetButton(): React.JSX.Element {
     <button
       onClick={handleClick}
       disabled={isCreating}
-      className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+      className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-[oklch(0.55_0.18_160)] to-[oklch(0.5_0.18_150)] px-4 py-2 text-sm font-medium text-white shadow-md shadow-[oklch(0.55_0.18_160/0.3)] transition-all hover:shadow-lg hover:shadow-[oklch(0.55_0.18_160/0.4)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
     >
       <Plus className="h-4 w-4" />
       {isCreating ? "Creating..." : "New"}

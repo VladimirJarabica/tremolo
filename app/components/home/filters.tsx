@@ -95,31 +95,31 @@ export function HomeFilters({
   const selectedTagIds = currentFilters.tagIds ?? [];
 
   return (
-    <div className="border-b border-zinc-200 p-4">
+    <div className="border-b border-[oklch(0.92_0.02_160)] backdrop-blur-sm bg-white/60 p-4 sticky top-14 z-10">
       <div className="flex flex-wrap items-center gap-3">
         {/* Search */}
         <div className="relative flex-1 min-w-[200px] max-w-md">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[oklch(0.5_0.06_160)]" />
           <input
             type="text"
             placeholder="Search by title or author..."
             value={searchValue}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full rounded-lg border border-zinc-200 py-2 pl-10 pr-4 text-sm focus:border-zinc-400 focus:outline-none"
+            className="w-full rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 py-2 pl-10 pr-4 text-sm text-[oklch(0.25_0.02_160)] placeholder:text-[oklch(0.55_0.03_160)] shadow-sm focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all"
           />
         </div>
 
         {/* Order */}
-        <div className="flex rounded-lg border border-zinc-200 overflow-hidden">
+        <div className="flex rounded-xl border border-[oklch(0.92_0.02_160)] overflow-hidden shadow-sm bg-white/80">
           <button
             type="button"
             onClick={() => {
               updateFilter("orderBy", "title");
             }}
-            className={`px-3 py-2 text-sm transition-colors ${
+            className={`px-3 py-2 text-sm font-medium transition-all ${
               currentFilters.orderBy === "title"
-                ? "bg-zinc-900 text-white"
-                : "bg-white text-zinc-600 hover:bg-zinc-50"
+                ? "bg-gradient-to-r from-[oklch(0.55_0.18_160)] to-[oklch(0.5_0.18_150)] text-white shadow-sm"
+                : "bg-transparent text-[oklch(0.45_0.04_160)] hover:bg-[oklch(0.96_0.02_160)]"
             }`}
           >
             Name
@@ -129,10 +129,10 @@ export function HomeFilters({
             onClick={() => {
               updateFilter("orderBy", "createdAt");
             }}
-            className={`px-3 py-2 text-sm transition-colors ${
+            className={`px-3 py-2 text-sm font-medium transition-all ${
               currentFilters.orderBy === "title"
-                ? "bg-white text-zinc-600 hover:bg-zinc-50"
-                : "bg-zinc-900 text-white"
+                ? "bg-transparent text-[oklch(0.45_0.04_160)] hover:bg-[oklch(0.96_0.02_160)]"
+                : "bg-gradient-to-r from-[oklch(0.55_0.18_160)] to-[oklch(0.5_0.18_150)] text-white shadow-sm"
             }`}
           >
             Date
@@ -143,7 +143,7 @@ export function HomeFilters({
         <select
           value={currentFilters.meter ?? ""}
           onChange={(e) => updateFilter("meter", e.target.value || null)}
-          className="rounded-lg border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-400 focus:outline-none"
+          className="rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 px-3 py-2 text-sm text-[oklch(0.35_0.04_160)] shadow-sm focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all cursor-pointer"
         >
           <option value="">All meters</option>
           <option value="m_4_4">4/4</option>
@@ -158,7 +158,7 @@ export function HomeFilters({
         <select
           value={currentFilters.tempoRange ?? ""}
           onChange={(e) => updateFilter("tempoRange", e.target.value || null)}
-          className="rounded-lg border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-400 focus:outline-none"
+          className="rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 px-3 py-2 text-sm text-[oklch(0.35_0.04_160)] shadow-sm focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all cursor-pointer"
         >
           <option value="">All tempos</option>
           <option value="slow">Slow (up to 80)</option>
@@ -170,7 +170,7 @@ export function HomeFilters({
         <select
           value={currentFilters.scale ?? ""}
           onChange={(e) => updateFilter("scale", e.target.value || null)}
-          className="rounded-lg border border-zinc-200 px-3 py-2 text-sm focus:border-zinc-400 focus:outline-none"
+          className="rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 px-3 py-2 text-sm text-[oklch(0.35_0.04_160)] shadow-sm focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all cursor-pointer"
         >
           <option value="">All scales</option>
           <optgroup label="Major - Sharps">
@@ -221,10 +221,10 @@ export function HomeFilters({
                 key={tag.id}
                 type="button"
                 onClick={() => toggleTag(tag.id)}
-                className={`rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors ${
+                className={`rounded-full px-2.5 py-0.5 text-xs font-medium transition-all ${
                   selectedTagIds.includes(tag.id)
-                    ? "bg-zinc-900 text-white"
-                    : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
+                    ? "bg-gradient-to-r from-[oklch(0.55_0.18_160)] to-[oklch(0.5_0.18_150)] text-white shadow-md shadow-[oklch(0.55_0.18_160/0.25)]"
+                    : "bg-white/80 text-[oklch(0.4_0.05_160)] border border-[oklch(0.92_0.02_160)] shadow-sm hover:border-[oklch(0.7_0.08_160)] hover:shadow-md"
                 }`}
               >
                 {tag.name}
@@ -238,7 +238,7 @@ export function HomeFilters({
           <button
             type="button"
             onClick={clearFilters}
-            className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-100"
+            className="flex items-center gap-1 rounded-xl px-3 py-2 text-sm text-[oklch(0.45_0.05_160)] hover:bg-[oklch(0.96_0.02_160)] transition-colors"
           >
             <X className="h-4 w-4" />
             Clear
@@ -246,7 +246,7 @@ export function HomeFilters({
         )}
 
         {/* Count */}
-        <span className="ml-auto text-sm text-zinc-500">{total} sheets</span>
+        <span className="ml-auto text-sm font-medium text-[oklch(0.45_0.05_160)]">{total} sheets</span>
       </div>
     </div>
   );

@@ -170,7 +170,7 @@ export function AbcViewer({
 
   if (!sheet.content.trim()) {
     return (
-      <div className="flex h-full items-center justify-center text-zinc-400">
+      <div className="flex h-full items-center justify-center text-[oklch(0.5_0.03_160)]">
         No content to preview
       </div>
     );
@@ -180,8 +180,8 @@ export function AbcViewer({
     return (
       <div className="flex h-full items-center justify-center">
         <div className="text-center">
-          <p className="text-lg text-red-600">Failed to render sheet</p>
-          <p className="mt-2 text-sm text-zinc-500">Verify your input</p>
+          <p className="text-lg text-[oklch(0.577_0.245_27.325)]">Failed to render sheet</p>
+          <p className="mt-2 text-sm text-[oklch(0.5_0.04_160)]">Verify your input</p>
         </div>
       </div>
     );
@@ -192,19 +192,19 @@ export function AbcViewer({
       {/* Sheet music notation */}
       <div
         ref={notationRef}
-        className="abc-container min-h-0 rounded-lg bg-white p-4"
+        className="abc-container min-h-0 rounded-2xl border border-[oklch(0.92_0.02_160)] bg-white/90 backdrop-blur-sm p-4 shadow-sm"
       />
 
       {/* Source */}
       {sheet.source !== null && (
-        <div className="mt-2 text-sm text-zinc-500 flex gap-1">
+        <div className="mt-2 text-sm text-[oklch(0.5_0.04_160)] flex gap-1">
           Source:
           {isSourceLink ? (
             <a
               href={sheet.source}
               target="_blank"
               rel="noopener noreferrer"
-              className="block truncate hover:underline"
+              className="block truncate text-[oklch(0.55_0.18_160)] hover:underline"
             >
               {sheet.source}
             </a>
@@ -215,17 +215,17 @@ export function AbcViewer({
       )}
 
       {/* Controls bar */}
-      <div className="mt-4 space-y-3 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 print:hidden">
+      <div className="mt-4 space-y-3 rounded-2xl border border-[oklch(0.92_0.02_160)] backdrop-blur-sm bg-white/80 px-4 py-3 shadow-sm print:hidden">
         <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Transpose controls */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+            <span className="text-xs font-semibold uppercase tracking-wide text-[oklch(0.5_0.04_160)]">
               Transpose
             </span>
-            <div className="ml-2 flex items-center rounded-md bg-white shadow-sm ring-1 ring-zinc-200">
+            <div className="ml-2 flex items-center rounded-xl bg-white shadow-sm ring-1 ring-[oklch(0.92_0.02_160)]">
               <button
                 onClick={() => handleTransposeChange(-1)}
-                className="rounded-l-md px-3 py-1.5 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+                className="rounded-l-xl px-3 py-1.5 text-[oklch(0.45_0.05_160)] hover:bg-[oklch(0.96_0.02_160)] transition-colors"
               >
                 <svg
                   className="h-4 w-4"
@@ -241,12 +241,12 @@ export function AbcViewer({
                   />
                 </svg>
               </button>
-              <span className="min-w-10 border-x border-zinc-200 px-2 py-1.5 text-center font-mono text-sm">
+              <span className="min-w-10 border-x border-[oklch(0.92_0.02_160)] px-2 py-1.5 text-center font-mono text-sm font-medium text-[oklch(0.35_0.04_160)]">
                 {transpose > 0 ? `+${transpose}` : transpose}
               </span>
               <button
                 onClick={() => handleTransposeChange(1)}
-                className="rounded-r-md px-3 py-1.5 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+                className="rounded-r-xl px-3 py-1.5 text-[oklch(0.45_0.05_160)] hover:bg-[oklch(0.96_0.02_160)] transition-colors"
               >
                 <svg
                   className="h-4 w-4"
@@ -265,13 +265,13 @@ export function AbcViewer({
             </div>
             {/* Saved indicator */}
             {showSaved && (
-              <span className="flex items-center gap-1 text-xs text-green-600 animate-in fade-in slide-in-from-left-2 duration-200">
+              <span className="flex items-center gap-1 text-xs font-medium text-[oklch(0.6_0.2_145)] animate-in fade-in slide-in-from-left-2 duration-200">
                 <Check className="h-3 w-3" />
                 Saved
               </span>
             )}
             {listId && !showSaved && (
-              <span className="text-xs text-zinc-400">Auto-saves to list</span>
+              <span className="text-xs text-[oklch(0.5_0.04_160)]">Auto-saves to list</span>
             )}
           </div>
 
@@ -290,7 +290,7 @@ export function AbcViewer({
           />
           <button
             onClick={() => window.print()}
-            className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+            className="rounded-xl border border-[oklch(0.85_0.04_160)] bg-white px-4 py-2 text-sm font-medium text-[oklch(0.4_0.05_160)] hover:bg-gradient-to-r hover:from-[oklch(0.96_0.02_160)] hover:to-[oklch(0.96_0.02_150)] hover:border-[oklch(0.7_0.08_160)] transition-all"
           >
             Print
           </button>

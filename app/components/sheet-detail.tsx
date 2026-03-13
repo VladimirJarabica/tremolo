@@ -53,18 +53,18 @@ export function SheetDetail({
           initialTranspose={initialTranspose}
         />
       </div>
-      <div className="border-t border-zinc-200 p-4 print:hidden">
+      <div className="border-t border-[oklch(0.92_0.02_160)] backdrop-blur-sm bg-white/80 p-4 print:hidden">
         <div className="mb-3 flex flex-wrap items-center gap-2">
           {sheet.tags.map((tag) => (
             <TagBadge key={tag.id} name={tag.name} />
           ))}
           {sheet.tags.length === 0 && (
-            <span className="text-sm text-zinc-400">No tags</span>
+            <span className="text-sm text-[oklch(0.5_0.03_160)]">No tags</span>
           )}
           {isOwner && (
             <button
               onClick={() => setShowAddToList(true)}
-              className="ml-auto rounded-md border border-zinc-300 px-2 py-1 text-xs text-zinc-600 transition-colors hover:bg-zinc-50"
+              className="ml-auto rounded-xl border border-[oklch(0.85_0.04_160)] px-3 py-1.5 text-xs font-medium text-[oklch(0.4_0.05_160)] transition-all hover:bg-gradient-to-r hover:from-[oklch(0.96_0.02_160)] hover:to-[oklch(0.96_0.02_150)] hover:border-[oklch(0.7_0.08_160)]"
             >
               Add to List
             </button>
@@ -100,7 +100,7 @@ export function SheetDetail({
             onCancel={() => setUpdatedSheet(props.sheet)}
           />
         ) : (
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-[oklch(0.5_0.03_160)]">
             Sign in as the owner to edit this sheet
           </p>
         )}
@@ -120,7 +120,7 @@ export function SheetDetail({
 
 function TagBadge({ name }: { name: string }): React.JSX.Element {
   return (
-    <span className="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-700">
+    <span className="inline-flex items-center rounded-full bg-gradient-to-r from-[oklch(0.94_0.04_160)] to-[oklch(0.94_0.04_150)] px-3 py-1 text-xs font-medium text-[oklch(0.4_0.08_160)]">
       {name}
     </span>
   );
@@ -128,7 +128,7 @@ function TagBadge({ name }: { name: string }): React.JSX.Element {
 
 export function EmptyState(): React.JSX.Element {
   return (
-    <div className="flex h-full items-center justify-center text-zinc-400">
+    <div className="flex h-full items-center justify-center text-[oklch(0.5_0.03_160)]">
       <div className="text-center">
         <p className="text-lg">Select a sheet or create a new one</p>
       </div>
