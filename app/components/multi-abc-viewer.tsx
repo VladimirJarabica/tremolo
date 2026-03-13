@@ -9,48 +9,6 @@ import abcjs from "abcjs";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getAbcNotationFromSheet } from "../utils/abc-notation";
 
-const meterToAbc: Record<string, string> = {
-  m_4_4: "4/4",
-  m_3_4: "3/4",
-  m_2_4: "2/4",
-  m_6_8: "6/8",
-  m_3_8: "3/8",
-  m_2_2: "2/2",
-};
-
-const scaleToAbc: Record<string, string> = {
-  C: "C",
-  G: "G",
-  D: "D",
-  A: "A",
-  E: "E",
-  B: "B",
-  Fs: "F#",
-  Cs: "C#",
-  F: "F",
-  Bb: "Bb",
-  Eb: "Eb",
-  Ab: "Ab",
-  Db: "Db",
-  Gb: "Gb",
-  Cb: "Cb",
-  Am: "Am",
-  Em: "Em",
-  Bm: "Bm",
-  Fsm: "F#m",
-  Csm: "C#m",
-  Gsm: "G#m",
-  Dsm: "D#m",
-  Asm: "A#m",
-  Dm: "Dm",
-  Gm: "Gm",
-  Cm: "Cm",
-  Fm: "Fm",
-  Bbm: "Bbm",
-  Ebm: "Ebm",
-  Abm: "Abm",
-};
-
 function getAbcTune(
   sheet: SheetDetail,
   index: number,
