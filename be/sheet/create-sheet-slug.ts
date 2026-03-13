@@ -1,21 +1,20 @@
 import { db } from "@/be/db";
 
 export async function createSheetSlug(title: string): Promise<string> {
-  const baseSlug = title
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9-]/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-    || "untitled";
+  const baseSlug =
+    title
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9-]/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "") || "untitled";
 
   // Find all slugs that start with this base
   const existingSlugs = await db
     .selectFrom("Sheet")
     .where("slug", "like", `${baseSlug}%`)
-    .where("deletedAt", "is", null)
     .select(["slug"])
     .execute();
 

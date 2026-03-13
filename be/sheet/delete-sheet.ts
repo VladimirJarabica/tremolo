@@ -20,9 +20,12 @@ export async function deleteSheet(
   }
 
   try {
+    const now = new Date();
+    const deletedSlug = `deleted-${now.getTime()}`;
+
     const sheet = await db
       .updateTable("Sheet")
-      .set({ deletedAt: new Date(), updatedAt: new Date() })
+      .set({ deletedAt: now, updatedAt: now, slug: deletedSlug })
       .where("id", "=", parsed.data.sheetId)
       .where("userId", "=", user.id)
       .where("deletedAt", "is", null)

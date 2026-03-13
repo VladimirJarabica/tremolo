@@ -1,9 +1,6 @@
 import { db } from "@/be/db";
 import { getUserContext } from "@/be/auth/guards";
-import {
-  createSheetSchema,
-  type CreateSheetInput,
-} from "./validation-schema";
+import { createSheetSchema, type CreateSheetInput } from "./validation-schema";
 import {
   apiError,
   ApiErrorCode,
@@ -23,7 +20,8 @@ export async function createSheet(
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);
   }
 
-  const { content, title, author, source, meter, tempo, scale, tagIds } = parsed.data;
+  const { content, title, author, source, meter, tempo, scale, tagIds } =
+    parsed.data;
   const sheetTitle = title ?? "Untitled";
 
   try {
@@ -31,7 +29,17 @@ export async function createSheet(
 
     const sheet = await db
       .insertInto("Sheet")
-      .values({ content, title: sheetTitle, author, source, slug, meter, tempo, scale, userId: user.id })
+      .values({
+        content,
+        title: sheetTitle,
+        author,
+        source,
+        slug,
+        meter,
+        tempo,
+        scale,
+        userId: user.id,
+      })
       .returning(["id", "slug"])
       .executeTakeFirst();
 
@@ -47,7 +55,8 @@ export async function createSheet(
     }
 
     return apiSuccess({ id: sheet.id, slug: sheet.slug });
-  } catch {
+  } catch (error) {
+    console.log("error", error);
     return apiError(ApiErrorCode.FAILED_TO_CREATE);
   }
 }
