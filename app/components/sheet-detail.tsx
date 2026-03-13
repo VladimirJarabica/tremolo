@@ -46,14 +46,14 @@ export function SheetDetail({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-6">
         <AbcViewer
           sheet={sheet}
           listId={listId}
           initialTranspose={initialTranspose}
         />
       </div>
-      <div className="border-t border-[oklch(0.92_0.02_160)] backdrop-blur-sm bg-white/80 p-4 print:hidden">
+      <div className="sticky bottom-0 border-t border-[oklch(0.92_0.02_160)] backdrop-blur-sm bg-white/80 p-4 print:hidden">
         <div className="mb-3 flex flex-wrap items-center gap-2">
           {sheet.tags.map((tag) => (
             <TagBadge key={tag.id} name={tag.name} />
@@ -99,11 +99,7 @@ export function SheetDetail({
             }
             onCancel={() => setUpdatedSheet(props.sheet)}
           />
-        ) : (
-          <p className="text-sm text-[oklch(0.5_0.03_160)]">
-            Sign in as the owner to edit this sheet
-          </p>
-        )}
+        ) : null}
       </div>
 
       <AddToListDialog
