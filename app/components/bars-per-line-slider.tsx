@@ -20,7 +20,11 @@ export function BarsPerLineSlider({
   };
 
   const handleManualChange = (val: number) => {
-    onChange(isAutomatic, val);
+    // Switch to manual mode when user touches the slider
+    if (isAutomatic) {
+      setIsAutomatic(false);
+    }
+    onChange(false, val);
   };
 
   return (
@@ -31,23 +35,22 @@ export function BarsPerLineSlider({
           checked={isAutomatic}
           onCheckedChange={handleAutomaticChange}
         />
-        <Label htmlFor="automatic" className="text-sm text-zinc-600">
+        <Label htmlFor="automatic" className="text-sm text-[oklch(0.5_0.04_160)]">
           Automatic
         </Label>
       </div>
 
       <div className="flex flex-1 items-center gap-3">
-        <span className="text-sm text-zinc-600">Bars per line:</span>
+        <span className="text-sm text-[oklch(0.5_0.04_160)]">Bars per line:</span>
         <Slider
           value={[value]}
           onValueChange={([val]) => handleManualChange(val)}
           min={1}
           max={25}
           step={1}
-          disabled={isAutomatic}
           className="w-32"
         />
-        <span className="min-w-6 text-center text-sm font-medium text-zinc-900">
+        <span className="min-w-6 text-center text-sm font-medium text-[oklch(0.35_0.04_160)]">
           {value}
         </span>
       </div>
