@@ -148,9 +148,12 @@ export function AbcViewer({
           visualObj: visualObj[0],
         });
 
+        const containsBassCleff = abcContent.includes("clef=bass");
+
         // The visualObj already contains transposed notes from renderAbc
         synthControl.setTune(visualObj[0], false, {
           midiTranspose: transpose,
+          chordsOff: containsBassCleff,
         });
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to render sheet");
