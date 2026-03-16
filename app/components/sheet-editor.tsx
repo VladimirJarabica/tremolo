@@ -10,6 +10,7 @@ import type { SheetBySlug } from "@/be/sheet/get-sheet-by-slug";
 import { useState } from "react";
 import { Meter, Scale, type Scale as ScaleType } from "@/be/db/enums";
 import { METER_OPTIONS, SCALE_OPTIONS } from "@/lib/constants";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 export function SheetEditor({
   sheet,
@@ -44,6 +45,7 @@ export function SheetEditor({
   );
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [metadataExpanded, setMetadataExpanded] = useState(true);
 
   async function handleSave(): Promise<void> {
     setIsSaving(true);
@@ -112,7 +114,7 @@ export function SheetEditor({
       <div className="flex gap-2">
         <button
           onClick={() => setIsEditing(true)}
-          className="rounded-xl bg-gradient-to-r from-[oklch(0.55_0.18_160)] to-[oklch(0.5_0.18_150)] px-4 py-2 text-sm font-medium text-white shadow-md shadow-[oklch(0.55_0.18_160/0.3)] transition-all hover:shadow-lg hover:shadow-[oklch(0.55_0.18_160/0.4)] hover:scale-[1.02] active:scale-[0.98]"
+          className="rounded-xl bg-linear-to-r from-[oklch(0.55_0.18_160)] to-[oklch(0.5_0.18_150)] px-4 py-2 text-sm font-medium text-white shadow-md shadow-[oklch(0.55_0.18_160/0.3)] transition-all hover:shadow-lg hover:shadow-[oklch(0.55_0.18_160/0.4)] hover:scale-[1.02] active:scale-[0.98]"
         >
           Edit
         </button>
@@ -128,97 +130,124 @@ export function SheetEditor({
   }
 
   return (
-    <div className="space-y-4">
-      <input
-        type="text"
-        value={sheet.title}
-        onChange={(e) => updateTitle(e.target.value)}
-        className="w-full rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 p-3 text-lg font-medium text-[oklch(0.25_0.03_160)] placeholder:text-[oklch(0.55_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm"
-        placeholder="Title"
-      />
-      <div className="flex gap-4">
-        <input
-          type="text"
-          value={sheet.author ?? ""}
-          onChange={(e) => updateAuthor(e.target.value)}
-          className="flex-1 rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 p-3 text-sm text-[oklch(0.3_0.03_160)] placeholder:text-[oklch(0.55_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm"
-          placeholder="Composer name"
-        />
-        <input
-          type="text"
-          value={sheet.source ?? ""}
-          onChange={(e) => updateSource(e.target.value)}
-          className="flex-1 rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 p-3 text-sm text-[oklch(0.3_0.03_160)] placeholder:text-[oklch(0.55_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm"
-          placeholder="Source or reference"
-        />
+    <div className="flex flex-col gap-3">
+      {/* Collapsible metadata section */}
+      <div className="rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/60">
+        <button
+          type="button"
+          onClick={() => setMetadataExpanded(!metadataExpanded)}
+          className="flex w-full items-center justify-between p-3 text-left text-sm font-medium text-[oklch(0.4_0.05_160)] hover:bg-[oklch(0.98_0.01_160)] rounded-xl transition-colors"
+        >
+          <span className="flex items-center gap-2">
+            {metadataExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            {sheet.title || "Untitled"}
+            <span className="text-[oklch(0.55_0.03_160)] font-normal">
+              • {sheet.author || "No author"}
+            </span>
+          </span>
+          <span className="text-xs text-[oklch(0.5_0.04_160)]">
+            {metadataExpanded ? "Collapse" : "Expand"}
+          </span>
+        </button>
+        {metadataExpanded && (
+          <div className="space-y-3 border-t border-[oklch(0.92_0.02_160)] p-3">
+            <input
+              type="text"
+              value={sheet.title}
+              onChange={(e) => updateTitle(e.target.value)}
+              className="w-full rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 p-3 text-lg font-medium text-[oklch(0.25_0.03_160)] placeholder:text-[oklch(0.55_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm"
+              placeholder="Title"
+            />
+            <div className="flex gap-4">
+              <input
+                type="text"
+                value={sheet.author ?? ""}
+                onChange={(e) => updateAuthor(e.target.value)}
+                className="flex-1 rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 p-3 text-sm text-[oklch(0.3_0.03_160)] placeholder:text-[oklch(0.55_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm"
+                placeholder="Composer name"
+              />
+              <input
+                type="text"
+                value={sheet.source ?? ""}
+                onChange={(e) => updateSource(e.target.value)}
+                className="flex-1 rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 p-3 text-sm text-[oklch(0.3_0.03_160)] placeholder:text-[oklch(0.55_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm"
+                placeholder="Source or reference"
+              />
+            </div>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex items-center gap-2">
+                <label htmlFor="meter" className="text-sm font-medium text-[oklch(0.45_0.05_160)]">
+                  Meter
+                </label>
+                <select
+                  id="meter"
+                  value={sheet.meter}
+                  onChange={(e) => updateMeter(e.target.value as Meter)}
+                  className="rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 px-3 py-2 text-sm text-[oklch(0.3_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm cursor-pointer"
+                >
+                  {METER_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <label htmlFor="tempo" className="text-sm font-medium text-[oklch(0.45_0.05_160)]">
+                  Tempo
+                </label>
+                <input
+                  id="tempo"
+                  type="number"
+                  min={1}
+                  value={sheet.tempo}
+                  onChange={(e) => updateTempo(parseInt(e.target.value, 10) || 120)}
+                  className="w-20 rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 px-3 py-2 text-sm text-[oklch(0.3_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm"
+                />
+                <span className="text-sm text-[oklch(0.5_0.04_160)]">BPM</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <label htmlFor="scale" className="text-sm font-medium text-[oklch(0.45_0.05_160)]">
+                  Key
+                </label>
+                <select
+                  id="scale"
+                  value={sheet.scale}
+                  onChange={(e) => updateScale(e.target.value as ScaleType)}
+                  className="rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 px-3 py-2 text-sm text-[oklch(0.3_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm cursor-pointer"
+                >
+                  {SCALE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <TagSelector
+              allTags={allTags}
+              selectedIds={selectedTagIds}
+              onChange={setSelectedTagIds}
+              onCreateTag={handleCreateTag}
+            />
+          </div>
+        )}
       </div>
-      <div className="flex flex-wrap gap-4">
-        <div className="flex items-center gap-2">
-          <label htmlFor="meter" className="text-sm font-medium text-[oklch(0.45_0.05_160)]">
-            Meter
-          </label>
-          <select
-            id="meter"
-            value={sheet.meter}
-            onChange={(e) => updateMeter(e.target.value as Meter)}
-            className="rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 px-3 py-2 text-sm text-[oklch(0.3_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm cursor-pointer"
-          >
-            {METER_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex items-center gap-2">
-          <label htmlFor="tempo" className="text-sm font-medium text-[oklch(0.45_0.05_160)]">
-            Tempo
-          </label>
-          <input
-            id="tempo"
-            type="number"
-            min={1}
-            value={sheet.tempo}
-            onChange={(e) => updateTempo(parseInt(e.target.value, 10) || 120)}
-            className="w-20 rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 px-3 py-2 text-sm text-[oklch(0.3_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm"
-          />
-          <span className="text-sm text-[oklch(0.5_0.04_160)]">BPM</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <label htmlFor="scale" className="text-sm font-medium text-[oklch(0.45_0.05_160)]">
-            Key
-          </label>
-          <select
-            id="scale"
-            value={sheet.scale}
-            onChange={(e) => updateScale(e.target.value as ScaleType)}
-            className="rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 px-3 py-2 text-sm text-[oklch(0.3_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm cursor-pointer"
-          >
-            {SCALE_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+
+      {/* Textarea - always visible */}
       <textarea
         value={sheet.content}
         onChange={(e) => updateContent(e.target.value)}
-        className="h-48 w-full rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 p-3 font-mono text-sm text-[oklch(0.25_0.03_160)] placeholder:text-[oklch(0.55_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm"
+        className="min-h-32 flex-1 w-full rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 p-3 font-mono text-sm text-[oklch(0.25_0.03_160)] placeholder:text-[oklch(0.55_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm"
         placeholder="Enter ABC notation here (without T:, M:, Q:, K: lines)..."
       />
-      <TagSelector
-        allTags={allTags}
-        selectedIds={selectedTagIds}
-        onChange={setSelectedTagIds}
-        onCreateTag={handleCreateTag}
-      />
+
+      {/* Actions section */}
       <div className="flex gap-2">
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="rounded-xl bg-gradient-to-r from-[oklch(0.55_0.18_160)] to-[oklch(0.5_0.18_150)] px-4 py-2 text-sm font-medium text-white shadow-md shadow-[oklch(0.55_0.18_160/0.3)] transition-all hover:shadow-lg hover:shadow-[oklch(0.55_0.18_160/0.4)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
+          className="rounded-xl bg-linear-to-r from-[oklch(0.55_0.18_160)] to-[oklch(0.5_0.18_150)] px-4 py-2 text-sm font-medium text-white shadow-md shadow-[oklch(0.55_0.18_160/0.3)] transition-all hover:shadow-lg hover:shadow-[oklch(0.55_0.18_160/0.4)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
         >
           {isSaving ? "Saving..." : "Save"}
         </button>

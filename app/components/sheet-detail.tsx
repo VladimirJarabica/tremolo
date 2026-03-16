@@ -52,9 +52,8 @@ export function SheetDetail({
           listId={listId}
           initialTranspose={initialTranspose}
         />
-      </div>
-      <div className="sticky bottom-0 border-t border-[oklch(0.92_0.02_160)] backdrop-blur-sm bg-white/80 p-4 print:hidden">
-        <div className="mb-3 flex flex-wrap items-center gap-2">
+        {/* Tags section under the sheet */}
+        <div className="mt-4 flex flex-wrap items-center gap-2 print:hidden">
           {sheet.tags.map((tag) => (
             <TagBadge key={tag.id} name={tag.name} />
           ))}
@@ -64,12 +63,14 @@ export function SheetDetail({
           {isOwner && (
             <button
               onClick={() => setShowAddToList(true)}
-              className="ml-auto rounded-xl border border-[oklch(0.85_0.04_160)] px-3 py-1.5 text-xs font-medium text-[oklch(0.4_0.05_160)] transition-all hover:bg-gradient-to-r hover:from-[oklch(0.96_0.02_160)] hover:to-[oklch(0.96_0.02_150)] hover:border-[oklch(0.7_0.08_160)]"
+              className="rounded-xl border border-[oklch(0.85_0.04_160)] px-3 py-1.5 text-xs font-medium text-[oklch(0.4_0.05_160)] transition-all hover:bg-linear-to-r hover:from-[oklch(0.96_0.02_160)] hover:to-[oklch(0.96_0.02_150)] hover:border-[oklch(0.7_0.08_160)]"
             >
               Add to List
             </button>
           )}
         </div>
+      </div>
+      <div className="sticky bottom-0 max-h-[50vh] overflow-auto border-t border-[oklch(0.92_0.02_160)] backdrop-blur-sm bg-white/80 p-4 print:hidden">
         {isOwner ? (
           <SheetEditor
             sheet={sheet}
@@ -116,7 +117,7 @@ export function SheetDetail({
 
 function TagBadge({ name }: { name: string }): React.JSX.Element {
   return (
-    <span className="inline-flex items-center rounded-full bg-gradient-to-r from-[oklch(0.94_0.04_160)] to-[oklch(0.94_0.04_150)] px-3 py-1 text-xs font-medium text-[oklch(0.4_0.08_160)]">
+    <span className="inline-flex items-center rounded-full bg-linear-to-r from-[oklch(0.94_0.04_160)] to-[oklch(0.94_0.04_150)] px-3 py-1 text-xs font-medium text-[oklch(0.4_0.08_160)]">
       {name}
     </span>
   );
