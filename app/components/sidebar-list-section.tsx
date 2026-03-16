@@ -31,6 +31,7 @@ import type { ListWithItems } from "@/be/list/get-lists";
 import { reorderListItem } from "@/app/actions/reorder-list-item";
 import { updateListOrder } from "@/app/actions/update-list-order";
 import { EditListDialog } from "./list-dialogs";
+import { useSidebar } from "./sidebar-provider";
 
 export function SidebarListSection({
   list,
@@ -43,6 +44,7 @@ export function SidebarListSection({
   currentListId: string | null;
   listPageId: string | undefined;
 }): React.JSX.Element {
+  const { setIsOpen } = useSidebar();
   const [isExpanded, setIsExpanded] = useState(
     currentListId === list.id || listPageId === list.id,
   );
@@ -137,6 +139,7 @@ export function SidebarListSection({
         </button>
         <Link
           href={`/list/${list.id}`}
+          onClick={() => setIsOpen(false)}
           className="flex flex-1 items-center gap-2 rounded-xl px-2 py-1.5 text-sm font-medium text-[oklch(0.35_0.04_160)] hover:bg-[oklch(0.96_0.02_160)] transition-colors"
         >
           <span className="truncate">{list.name}</span>
@@ -177,6 +180,7 @@ export function SidebarListSection({
                   currentSlug={currentSlug}
                   currentListId={currentListId}
                   onArrowClick={handleArrowClick}
+                  onCloseSidebar={() => setIsOpen(false)}
                 />
               ))}
             </ul>
@@ -208,6 +212,7 @@ function SortableListItem({
   currentSlug,
   currentListId,
   onArrowClick,
+  onCloseSidebar,
 }: {
   item: SortableItem;
   listId: string;
@@ -216,6 +221,7 @@ function SortableListItem({
   currentSlug: string | undefined;
   currentListId: string | null;
   onArrowClick: (sheetId: string, direction: "up" | "down") => void;
+  onCloseSidebar: () => void;
 }): React.JSX.Element {
   const {
     attributes,
@@ -240,7 +246,7 @@ function SortableListItem({
         className={cn(
           "flex items-center gap-1 rounded-xl px-2 py-1.5 text-sm transition-all",
           currentSlug === item.sheetSlug && currentListId === listId
-            ? "bg-gradient-to-r from-[oklch(0.94_0.04_160)] to-[oklch(0.94_0.04_150)] text-[oklch(0.3_0.06_160)] shadow-sm"
+            ? "bg-linear-to-r from-[oklch(0.94_0.04_160)] to-[oklch(0.94_0.04_150)] text-[oklch(0.3_0.06_160)] shadow-sm"
             : "text-[oklch(0.4_0.04_160)] hover:bg-[oklch(0.96_0.02_160)]",
         )}
       >
@@ -257,6 +263,7 @@ function SortableListItem({
         {/* Link */}
         <Link
           href={`/sheet/${item.sheetSlug}?list=${listId}`}
+          onClick={onCloseSidebar}
           className="flex-1"
         >
           <div className="flex items-center justify-between">

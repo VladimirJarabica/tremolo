@@ -7,6 +7,7 @@ import type { GetListsData } from "@/be/list/get-lists";
 import { CreateListDialog } from "./list-dialogs";
 import { SidebarListSection } from "./sidebar-list-section";
 import Link from "next/link";
+import { useSidebar } from "./sidebar-provider";
 
 export function SheetList({
   lists,
@@ -17,6 +18,7 @@ export function SheetList({
 }): React.JSX.Element {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { setIsOpen } = useSidebar();
   const currentListId = searchParams.get("list");
   const currentSlug = pathname.startsWith("/sheet/")
     ? pathname.replace("/sheet/", "")
@@ -36,6 +38,7 @@ export function SheetList({
         <div className="p-3 border-b border-[oklch(0.92_0.02_160)]">
           <Link
             href="/"
+            onClick={() => setIsOpen(false)}
             className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-[oklch(0.4_0.05_160)] hover:bg-[oklch(0.96_0.02_160)] transition-colors"
           >
             <Music2 className="h-4 w-4 text-[oklch(0.55_0.18_160)]" />
@@ -53,7 +56,7 @@ export function SheetList({
               <button
                 type="button"
                 onClick={() => setShowCreateDialog(true)}
-                className="rounded-lg p-1.5 text-[oklch(0.5_0.06_160)] hover:bg-gradient-to-r hover:from-[oklch(0.96_0.02_160)] hover:to-[oklch(0.96_0.02_150)] hover:text-[oklch(0.45_0.12_160)] transition-all"
+                className="rounded-lg p-1.5 text-[oklch(0.5_0.06_160)] hover:bg-linear-to-r hover:from-[oklch(0.96_0.02_160)] hover:to-[oklch(0.96_0.02_150)] hover:text-[oklch(0.45_0.12_160)] transition-all"
                 title="Create new list"
               >
                 <Plus className="h-4 w-4" />
@@ -80,7 +83,6 @@ export function SheetList({
           </div>
         )}
       </div>
-
       <CreateListDialog
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
