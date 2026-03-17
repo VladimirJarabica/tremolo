@@ -45,3 +45,9 @@ export const SCALE_OPTIONS: { value: ScaleType; label: string }[] = [
   { value: Scale.Ebm, label: "Eb minor" },
   { value: Scale.Abm, label: "Ab minor" },
 ];
+
+export const TIMES_IN_SECONDS = {
+  HOUR: 60 * 60,
+  MINUTE: 60,
+  WEEK: 60 * 60 * 24 * 7,
+};

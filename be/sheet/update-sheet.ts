@@ -9,6 +9,7 @@ import {
   type ApiResponseData,
 } from "@/be/response";
 import { createSheetSlug } from "./create-sheet-slug";
+import { deleteCacheKey } from "../db/cache";
 
 export async function updateSheet(
   input: UpdateSheetInput,
@@ -20,7 +21,17 @@ export async function updateSheet(
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);
   }
 
-  const { sheetId, content, title, author, source, meter, tempo, scale, tagIds } = parsed.data;
+  const {
+    sheetId,
+    content,
+    title,
+    author,
+    source,
+    meter,
+    tempo,
+    scale,
+    tagIds,
+  } = parsed.data;
 
   try {
     // Get current sheet to check if title changed
@@ -73,6 +84,8 @@ export async function updateSheet(
           .execute();
       }
     }
+
+    await deleteCacheKey(`getSheetBySlug:${currentSheet.slug}`);
 
     return apiSuccess({ id: sheet.id, slug: sheet.slug });
   } catch {

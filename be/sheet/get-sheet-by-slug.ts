@@ -1,5 +1,8 @@
 import { db } from "@/be/db";
-import { getSheetBySlugSchema, type GetSheetBySlugInput } from "./validation-schema";
+import {
+  getSheetBySlugSchema,
+  type GetSheetBySlugInput,
+} from "./validation-schema";
 import {
   apiError,
   ApiErrorCode,
@@ -7,6 +10,7 @@ import {
   type ApiResponse,
   type ApiResponseData,
 } from "@/be/response";
+import { cached } from "../db/cache";
 
 export async function getSheetBySlug(input: GetSheetBySlugInput): Promise<
   ApiResponse<{
@@ -30,42 +34,44 @@ export async function getSheetBySlug(input: GetSheetBySlugInput): Promise<
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);
   }
 
-  try {
-    const sheet = await db
-      .selectFrom("Sheet")
-      .select([
-        "id",
-        "slug",
-        "title",
-        "author",
-        "source",
-        "content",
-        "meter",
-        "tempo",
-        "scale",
-        "userId",
-        "createdAt",
-        "updatedAt",
-      ])
-      .where("slug", "=", parsed.data.slug)
-      .where("deletedAt", "is", null)
-      .executeTakeFirst();
+  return await cached(async () => {
+    try {
+      const sheet = await db
+        .selectFrom("Sheet")
+        .select([
+          "id",
+          "slug",
+          "title",
+          "author",
+          "source",
+          "content",
+          "meter",
+          "tempo",
+          "scale",
+          "userId",
+          "createdAt",
+          "updatedAt",
+        ])
+        .where("slug", "=", parsed.data.slug)
+        .where("deletedAt", "is", null)
+        .executeTakeFirst();
 
-    if (!sheet) {
-      return apiError(ApiErrorCode.NOT_FOUND);
+      if (!sheet) {
+        return apiError(ApiErrorCode.NOT_FOUND);
+      }
+
+      const tags = await db
+        .selectFrom("_SheetToTag")
+        .innerJoin("Tag", "_SheetToTag.B", "Tag.id")
+        .select(["Tag.id", "Tag.name"])
+        .where("_SheetToTag.A", "=", sheet.id)
+        .execute();
+
+      return apiSuccess({ ...sheet, tags });
+    } catch {
+      return apiError(ApiErrorCode.INTERNAL_ERROR);
     }
-
-    const tags = await db
-      .selectFrom("_SheetToTag")
-      .innerJoin("Tag", "_SheetToTag.B", "Tag.id")
-      .select(["Tag.id", "Tag.name"])
-      .where("_SheetToTag.A", "=", sheet.id)
-      .execute();
-
-    return apiSuccess({ ...sheet, tags });
-  } catch {
-    return apiError(ApiErrorCode.INTERNAL_ERROR);
-  }
+  }, `getSheetBySlug:${input.slug}`);
 }
 
 export type SheetBySlug = ApiResponseData<typeof getSheetBySlug>;
