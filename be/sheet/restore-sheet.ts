@@ -8,6 +8,8 @@ import {
   type ApiResponse,
   type ApiResponseData,
 } from "@/be/response";
+import { deleteCacheKey } from "@/be/db/cache";
+import { ALL_SHEETS_CACHE_KEY } from "./get-all-sheets";
 
 export async function restoreSheet(
   input: DeleteSheetInput,
@@ -32,6 +34,8 @@ export async function restoreSheet(
     if (!sheet) {
       return apiError(ApiErrorCode.NOT_FOUND);
     }
+
+    await deleteCacheKey(ALL_SHEETS_CACHE_KEY);
 
     return apiSuccess({ id: sheet.id });
   } catch {

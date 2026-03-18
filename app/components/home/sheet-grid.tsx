@@ -14,7 +14,7 @@ import { useSearchParamsState } from "@/app/hooks/use-search-params-state";
 import type { SheetItem } from "@/be/sheet/get-all-sheets";
 import { Pagination } from "./pagination";
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 20;
 
 const tempoRanges = {
   slow: { min: 0, max: 80 },

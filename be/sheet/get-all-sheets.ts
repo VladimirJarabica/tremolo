@@ -1,4 +1,6 @@
 import { db } from "@/be/db";
+import { cached } from "@/be/db/cache";
+import { TIMES_IN_SECONDS } from "@/lib/constants";
 
 export type SheetItem = {
   id: string;
@@ -12,7 +14,9 @@ export type SheetItem = {
   createdAt: Date;
 };
 
-export async function getAllSheets(): Promise<SheetItem[]> {
+export const ALL_SHEETS_CACHE_KEY = "getAllSheets";
+
+async function fetchAllSheets(): Promise<SheetItem[]> {
   const sheets = await db
     .selectFrom("Sheet")
     .select([
@@ -59,4 +63,8 @@ export async function getAllSheets(): Promise<SheetItem[]> {
     tags: tagsBySheetId.get(sheet.id) ?? [],
     createdAt: sheet.createdAt,
   }));
+}
+
+export async function getAllSheets(): Promise<SheetItem[]> {
+  return cached(fetchAllSheets, ALL_SHEETS_CACHE_KEY, TIMES_IN_SECONDS.HOUR);
 }

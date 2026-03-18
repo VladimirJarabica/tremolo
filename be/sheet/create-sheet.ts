@@ -9,6 +9,8 @@ import {
   type ApiResponseData,
 } from "@/be/response";
 import { createSheetSlug } from "./create-sheet-slug";
+import { deleteCacheKey } from "@/be/db/cache";
+import { ALL_SHEETS_CACHE_KEY } from "./get-all-sheets";
 
 export async function createSheet(
   input: CreateSheetInput,
@@ -53,6 +55,8 @@ export async function createSheet(
         .values(tagIds.map((tagId) => ({ A: sheet.id, B: tagId })))
         .execute();
     }
+
+    await deleteCacheKey(ALL_SHEETS_CACHE_KEY);
 
     return apiSuccess({ id: sheet.id, slug: sheet.slug });
   } catch (error) {

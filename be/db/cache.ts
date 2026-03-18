@@ -1,6 +1,7 @@
 "use server";
 import { TIMES_IN_SECONDS } from "@/lib/constants";
 import { Redis } from "ioredis";
+import { parse, stringify } from "superjson";
 
 const redisClient = new Redis(process.env.REDIS_URL!);
 
@@ -13,15 +14,14 @@ export async function cached<V>(
 ) {
   const key = getKey(originalKey);
   const value = await redisClient.get(key);
-  const parsedValue = value ? JSON.parse(value) : undefined;
 
-  if (parsedValue) {
-    return parsedValue as V;
+  if (value) {
+    return parse<V>(value);
   }
 
   const newValue = await fn();
 
-  await redisClient.setex(key, seconds, JSON.stringify(newValue));
+  await redisClient.setex(key, seconds, stringify(newValue));
   return newValue;
 }
 

@@ -9,7 +9,8 @@ import {
   type ApiResponseData,
 } from "@/be/response";
 import { createSheetSlug } from "./create-sheet-slug";
-import { deleteCacheKey } from "../db/cache";
+import { deleteCacheKey } from "@/be/db/cache";
+import { ALL_SHEETS_CACHE_KEY } from "./get-all-sheets";
 
 export async function updateSheet(
   input: UpdateSheetInput,
@@ -85,7 +86,7 @@ export async function updateSheet(
       }
     }
 
-    await deleteCacheKey(`getSheetBySlug:${currentSheet.slug}`);
+    await deleteCacheKey([`getSheetBySlug:${currentSheet.slug}`, ALL_SHEETS_CACHE_KEY]);
 
     return apiSuccess({ id: sheet.id, slug: sheet.slug });
   } catch {
