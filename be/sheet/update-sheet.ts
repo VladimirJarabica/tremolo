@@ -86,7 +86,14 @@ export async function updateSheet(
       }
     }
 
-    await deleteCacheKey([`getSheetBySlug:${currentSheet.slug}`, ALL_SHEETS_CACHE_KEY]);
+    const cacheKeys = [`getSheetBySlug:${currentSheet.slug}`, ALL_SHEETS_CACHE_KEY];
+
+    // Also delete new slug cache in case a 404 was cached there previously
+    if (newSlug !== currentSheet.slug) {
+      cacheKeys.push(`getSheetBySlug:${newSlug}`);
+    }
+
+    await deleteCacheKey(cacheKeys);
 
     return apiSuccess({ id: sheet.id, slug: sheet.slug });
   } catch {
