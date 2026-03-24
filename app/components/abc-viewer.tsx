@@ -176,7 +176,7 @@ export function AbcViewer({
 
   if (error !== null) {
     return (
-      <div className="flex h-full items-center justify-center">
+      <div className="flex items-center justify-center">
         <div className="text-center">
           <p className="text-lg text-[oklch(0.577_0.245_27.325)]">
             Failed to render sheet
@@ -190,7 +190,7 @@ export function AbcViewer({
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex flex-col">
       {/* Sheet music notation */}
       <div
         ref={notationRef}

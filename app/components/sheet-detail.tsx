@@ -44,6 +44,15 @@ export function SheetDetail({
     setIsEditing(false);
   }, [props.sheet.id, props.sheet.slug]);
 
+  // Find all lists containing this sheet
+  const containingLists = lists
+    .map((list) => ({
+      name: list.name,
+      id: list.id,
+      item: list.items.find((i) => i.sheetId === sheet.id),
+    }))
+    .filter((l) => l.item !== undefined);
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-auto p-6">
@@ -52,6 +61,20 @@ export function SheetDetail({
           listId={listId}
           initialTranspose={initialTranspose}
         />
+        {/* Lists containing this sheet */}
+        {containingLists.length > 0 && (
+          <div className="mt-4 flex flex-wrap items-center gap-2 print:hidden">
+            {containingLists.map((list) => (
+              <ListBadge
+                key={list.id}
+                name={list.name}
+                transpose={list.item!.transpose}
+                listId={list.id}
+                sheetSlug={sheet.slug}
+              />
+            ))}
+          </div>
+        )}
         {/* Tags section under the sheet */}
         <div className="mt-4 flex flex-wrap items-center gap-2 print:hidden">
           {sheet.tags.map((tag) => (
@@ -120,6 +143,35 @@ function TagBadge({ name }: { name: string }): React.JSX.Element {
     <span className="inline-flex items-center rounded-full bg-linear-to-r from-[oklch(0.94_0.04_160)] to-[oklch(0.94_0.04_150)] px-3 py-1 text-xs font-medium text-[oklch(0.4_0.08_160)]">
       {name}
     </span>
+  );
+}
+
+function ListBadge({
+  name,
+  transpose,
+  listId,
+  sheetSlug,
+}: {
+  name: string;
+  transpose: number;
+  listId: string;
+  sheetSlug: string;
+}): React.JSX.Element {
+  const transposeLabel =
+    transpose === 0 ? null : transpose > 0 ? `+${transpose}` : `${transpose}`;
+
+  return (
+    <a
+      href={`/sheet/${sheetSlug}?list=${listId}`}
+      className="inline-flex items-center gap-1.5 rounded-full border border-[oklch(0.85_0.04_160)] bg-white px-3 py-1 text-xs font-medium text-[oklch(0.4_0.05_160)] transition-colors hover:bg-[oklch(0.97_0.02_160)] hover:border-[oklch(0.7_0.06_160)]"
+    >
+      <span>{name}</span>
+      {transposeLabel !== null && (
+        <span className="rounded bg-[oklch(0.95_0.03_160)] px-1.5 py-0.5 text-[10px] text-[oklch(0.45_0.06_160)]">
+          {transposeLabel}
+        </span>
+      )}
+    </a>
   );
 }
 
