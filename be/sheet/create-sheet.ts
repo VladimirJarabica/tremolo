@@ -56,7 +56,10 @@ export async function createSheet(
         .execute();
     }
 
-    await deleteCacheKey(ALL_SHEETS_CACHE_KEY);
+    await deleteCacheKey([
+      ALL_SHEETS_CACHE_KEY,
+      `getSheetBySlug:${slug}`,
+    ]);
 
     return apiSuccess({ id: sheet.id, slug: sheet.slug });
   } catch (error) {

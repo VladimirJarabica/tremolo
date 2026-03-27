@@ -71,6 +71,7 @@ export function SheetDetail({
                 transpose={list.item!.transpose}
                 listId={list.id}
                 sheetSlug={sheet.slug}
+                isActive={listId === list.id}
               />
             ))}
           </div>
@@ -151,11 +152,13 @@ function ListBadge({
   transpose,
   listId,
   sheetSlug,
+  isActive,
 }: {
   name: string;
   transpose: number;
   listId: string;
   sheetSlug: string;
+  isActive: boolean;
 }): React.JSX.Element {
   const transposeLabel =
     transpose === 0 ? null : transpose > 0 ? `+${transpose}` : `${transpose}`;
@@ -163,11 +166,21 @@ function ListBadge({
   return (
     <a
       href={`/sheet/${sheetSlug}?list=${listId}`}
-      className="inline-flex items-center gap-1.5 rounded-full border border-[oklch(0.85_0.04_160)] bg-white px-3 py-1 text-xs font-medium text-[oklch(0.4_0.05_160)] transition-colors hover:bg-[oklch(0.97_0.02_160)] hover:border-[oklch(0.7_0.06_160)]"
+      className={
+        isActive
+          ? "inline-flex items-center gap-1.5 rounded-full border border-[oklch(0.7_0.08_160)] bg-[oklch(0.94_0.04_160)] px-3 py-1 text-xs font-medium text-[oklch(0.35_0.08_160)]"
+          : "inline-flex items-center gap-1.5 rounded-full border border-[oklch(0.85_0.04_160)] bg-white px-3 py-1 text-xs font-medium text-[oklch(0.4_0.05_160)] transition-colors hover:bg-[oklch(0.97_0.02_160)] hover:border-[oklch(0.7_0.06_160)]"
+      }
     >
       <span>{name}</span>
       {transposeLabel !== null && (
-        <span className="rounded bg-[oklch(0.95_0.03_160)] px-1.5 py-0.5 text-[10px] text-[oklch(0.45_0.06_160)]">
+        <span
+          className={
+            isActive
+              ? "rounded bg-[oklch(0.85_0.06_160)] px-1.5 py-0.5 text-[10px] text-[oklch(0.3_0.08_160)]"
+              : "rounded bg-[oklch(0.95_0.03_160)] px-1.5 py-0.5 text-[10px] text-[oklch(0.45_0.06_160)]"
+          }
+        >
           {transposeLabel}
         </span>
       )}
