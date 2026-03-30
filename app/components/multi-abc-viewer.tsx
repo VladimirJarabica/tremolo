@@ -103,7 +103,7 @@ export function MultiAbcViewer({
       {/* Sheet music */}
       <div
         ref={containerRef}
-        className="abc-container min-h-0 flex-1 overflow-auto rounded-lg bg-white p-4"
+        className="abc-container min-h-0 flex-1 overflow-auto rounded-lg bg-white p-4 print:overflow-visible print:bg-transparent"
       >
         {containerIds.map((id) => (
           <div key={id} id={id} className="mb-6 last:mb-0" />

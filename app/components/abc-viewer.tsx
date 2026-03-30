@@ -194,7 +194,7 @@ export function AbcViewer({
       {/* Sheet music notation */}
       <div
         ref={notationRef}
-        className="abc-container min-h-0 rounded-2xl border border-[oklch(0.92_0.02_160)] bg-white/90 backdrop-blur-sm p-4 shadow-sm"
+        className="abc-container min-h-0 rounded-2xl border border-[oklch(0.92_0.02_160)] bg-white/90 backdrop-blur-sm p-4 shadow-sm print:border-none print:shadow-none print:bg-transparent"
       />
 
       {/* Source */}
