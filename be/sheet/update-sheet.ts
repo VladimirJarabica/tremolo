@@ -32,7 +32,6 @@ export async function updateSheet(
     meter,
     tempo,
     scale,
-    tagIds,
   } = parsed.data;
 
   try {
@@ -74,17 +73,6 @@ export async function updateSheet(
 
     if (!sheet) {
       return apiError(ApiErrorCode.NOT_FOUND);
-    }
-
-    if (tagIds !== undefined) {
-      await db.deleteFrom("_SheetToTag").where("A", "=", sheetId).execute();
-
-      if (tagIds.length > 0) {
-        await db
-          .insertInto("_SheetToTag")
-          .values(tagIds.map((tagId) => ({ A: sheetId, B: tagId })))
-          .execute();
-      }
     }
 
     const cacheKeys = [

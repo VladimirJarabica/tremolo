@@ -33,7 +33,6 @@ export async function getSheetBySlug(input: GetSheetBySlugInput): Promise<
     userId: string;
     createdAt: Date;
     updatedAt: Date;
-    tags: { id: string; name: string }[];
   }>
 > {
   const { user } = await getUserContext();
@@ -70,14 +69,7 @@ export async function getSheetBySlug(input: GetSheetBySlugInput): Promise<
         return apiError(ApiErrorCode.NOT_FOUND);
       }
 
-      const tags = await db
-        .selectFrom("_SheetToTag")
-        .innerJoin("Tag", "_SheetToTag.B", "Tag.id")
-        .select(["Tag.id", "Tag.name"])
-        .where("_SheetToTag.A", "=", sheet.id)
-        .execute();
-
-      return apiSuccess({ ...sheet, tags });
+      return apiSuccess(sheet);
     } catch {
       return apiError(ApiErrorCode.INTERNAL_ERROR);
     }

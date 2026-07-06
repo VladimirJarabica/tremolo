@@ -9,7 +9,6 @@ export const createSheetSchema = z.object({
   meter: z.enum(Meter),
   tempo: z.number().int().positive(),
   scale: z.enum(Scale),
-  tagIds: z.array(z.string()).optional(),
 });
 
 export type CreateSheetInput = z.infer<typeof createSheetSchema>;
@@ -23,7 +22,6 @@ export const updateSheetSchema = z.object({
   meter: z.enum(Meter).optional(),
   tempo: z.number().int().positive().optional(),
   scale: z.enum(Scale).optional(),
-  tagIds: z.array(z.string()).optional(),
 });
 
 export type UpdateSheetInput = z.infer<typeof updateSheetSchema>;
@@ -67,7 +65,6 @@ export const getPublicSheetsSchema = z.object({
   tempoRange: z.enum(["slow", "medium", "fast"]).optional(),
   scale: z.enum(Scale).optional(),
   search: z.string().max(200).optional(),
-  tagIds: z.array(z.string()).optional(),
 });
 
 export type GetPublicSheetsInput = z.infer<typeof getPublicSheetsSchema>;

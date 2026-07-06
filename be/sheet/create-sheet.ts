@@ -23,7 +23,7 @@ export async function createSheet(
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);
   }
 
-  const { content, title, author, source, meter, tempo, scale, tagIds } =
+  const { content, title, author, source, meter, tempo, scale } =
     parsed.data;
   const sheetTitle = title ?? "Untitled";
 
@@ -50,13 +50,6 @@ export async function createSheet(
 
     if (!sheet) {
       return apiError(ApiErrorCode.FAILED_TO_CREATE);
-    }
-
-    if (tagIds && tagIds.length > 0) {
-      await db
-        .insertInto("_SheetToTag")
-        .values(tagIds.map((tagId) => ({ A: sheet.id, B: tagId })))
-        .execute();
     }
 
     await deleteCacheKey([

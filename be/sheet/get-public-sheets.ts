@@ -23,7 +23,6 @@ export type PublicSheetItem = {
   meter: Meter;
   tempo: number;
   scale: Scale;
-  tags: { id: string; name: string }[];
   createdAt: Date;
 };
 
@@ -33,7 +32,7 @@ export async function getPublicSheets(input?: GetPublicSheetsInput) {
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);
   }
 
-  const { page, orderBy, meter, tempoRange, scale, search, tagIds } =
+  const { page, orderBy, meter, tempoRange, scale, search } =
     parsed.data;
   const { user } = await getUserContext();
 
@@ -98,15 +97,6 @@ export async function getPublicSheets(input?: GetPublicSheetsInput) {
       );
     }
 
-    if (tagIds && tagIds.length > 0) {
-      countQuery = countQuery
-        .innerJoin("_SheetToTag", "Sheet.id", "_SheetToTag.A")
-        .where("_SheetToTag.B", "in", tagIds);
-      dataQuery = dataQuery
-        .innerJoin("_SheetToTag", "Sheet.id", "_SheetToTag.A")
-        .where("_SheetToTag.B", "in", tagIds);
-    }
-
     // Get total count
     const countResult = await countQuery.executeTakeFirst();
     const total = Number(countResult?.count ?? 0);
@@ -119,26 +109,6 @@ export async function getPublicSheets(input?: GetPublicSheetsInput) {
       .offset(offset)
       .execute();
 
-    // Fetch tags for each sheet
-    const sheetIds = sheets.map((s) => s.id);
-    const tagRelations =
-      sheetIds.length > 0
-        ? await db
-            .selectFrom("_SheetToTag")
-            .innerJoin("Tag", "_SheetToTag.B", "Tag.id")
-            .select(["_SheetToTag.A as sheetId", "Tag.id", "Tag.name"])
-            .where("_SheetToTag.A", "in", sheetIds)
-            .execute()
-        : [];
-
-    // Group tags by sheet id
-    const tagsBySheetId = new Map<string, { id: string; name: string }[]>();
-    for (const rel of tagRelations) {
-      const existing = tagsBySheetId.get(rel.sheetId) ?? [];
-      existing.push({ id: rel.id, name: rel.name });
-      tagsBySheetId.set(rel.sheetId, existing);
-    }
-
     // Build final result
     const items: PublicSheetItem[] = sheets.map((sheet) => ({
       id: sheet.id,
@@ -148,7 +118,6 @@ export async function getPublicSheets(input?: GetPublicSheetsInput) {
       meter: sheet.meter,
       tempo: sheet.tempo,
       scale: sheet.scale,
-      tags: tagsBySheetId.get(sheet.id) ?? [],
       createdAt: sheet.createdAt,
     }));
 

@@ -22,14 +22,8 @@ export async function hardDeleteSheet(
   }
 
   try {
-    // Delete tag relations and the sheet in one transaction. The userId filter
-    // guarantees we never touch a sheet the caller does not own.
+    // The userId filter guarantees we never touch a sheet the caller does not own.
     const sheet = await db.transaction().execute(async (trx) => {
-      await trx
-        .deleteFrom("_SheetToTag")
-        .where("A", "=", parsed.data.sheetId)
-        .execute();
-
       return trx
         .deleteFrom("Sheet")
         .where("id", "=", parsed.data.sheetId)

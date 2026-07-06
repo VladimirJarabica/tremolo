@@ -78,7 +78,6 @@ export async function getListWithSheets(input: GetListInput) {
           userId: item.userId,
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
-          tags: [],
         } satisfies SheetDetail,
       })),
     });

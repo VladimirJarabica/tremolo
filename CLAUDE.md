@@ -7,8 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Tremolo is a web application for creating and managing music sheets using ABC notation (https://abcnotation.com/). Users authenticate via Supabase and own their sheets and lists. ABC content is rendered and played back client-side with `abcjs`.
 
 ### Core Data Entities (`be/db/schema.prisma`)
-- **Sheet**: `id`, `slug` (unique), `title`, `author?`, `source?`, `content` (ABC), `meter`, `tempo`, `scale`, `userId`, `deletedAt?` (soft-delete), `tags` (many-to-many via `_SheetToTag`), `listItems`.
-- **Tag**: `id`, `name` (unique, **global** — shared across users, so names collide).
+- **Sheet**: `id`, `slug` (unique), `title`, `author?`, `source?`, `content` (ABC), `meter`, `tempo`, `scale`, `userId`, `deletedAt?` (soft-delete), `listItems`.
 - **List**: `id`, `name`, `sheetIdsOrder` (`String[]`, denormalized ordering), `userId`, `items`.
 - **ListItem**: `transpose`, composite PK `@@id([listId, sheetId])` — the source of truth for list membership.
 - **User**: `id`, `email` (unique), `authId?` (Supabase, unique), `deletedAt?`.
@@ -89,7 +88,7 @@ be/
     get-user.ts        # getCurrentUser — link/create User from Supabase identity
     guards.ts          # getUserContext / requireUser / requireSheetOwnership
     auth-error.ts      # AuthError + AuthErrorCode
-  sheet/ tag/ list/    # Entity BE functions + validation-schema.ts
+  sheet/ list/    # Entity BE functions + validation-schema.ts
   response.ts          # ApiResponse types, apiSuccess/apiError/paginatedApiSuccess
 app/
   (app)/               # Authenticated route group (layout = AppShell + sidebar)
@@ -112,7 +111,7 @@ proxy.ts               # Next.js 16 middleware (Supabase session refresh)
 - UUID primary keys via `gen_random_uuid()`.
 - All models have `createdAt` and `updatedAt` timestamps. **Updates must set `updatedAt: new Date()` manually** in `.set()` — the DB does not auto-update it.
 - Soft-delete via `deletedAt DateTime?` on `Sheet` and `User`; filter reads with `.where("deletedAt","is",null)`.
-- Many-to-many relations use Prisma implicit join tables (e.g. `_SheetToTag`).
+- Many-to-many relations use Prisma implicit join tables (prefixed with `_`).
 - `ListItem` uses a composite PK `@@id([listId, sheetId])`; ordering is additionally stored denormalized in `List.sheetIdsOrder`.
 - **Foreign-key columns are not auto-indexed** — add `@@index([userId])` (and on `listId`/`sheetId`) when adding relations that are queried/joined.
 

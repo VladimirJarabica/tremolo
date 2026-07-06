@@ -9,13 +9,11 @@ import { AddToListDialog } from "./add-to-list-dialog";
 import { SheetEditor } from "./sheet-editor";
 
 export function SheetDetail({
-  allTags,
   lists,
   currentUserId,
   ...props
 }: {
   sheet: SheetBySlug;
-  allTags: { id: string; name: string }[];
   lists: GetListsData;
   currentUserId: string | null;
 }): React.JSX.Element {
@@ -76,29 +74,22 @@ export function SheetDetail({
             ))}
           </div>
         )}
-        {/* Tags section under the sheet */}
-        <div className="mt-4 flex flex-wrap items-center gap-2 print:hidden">
-          {sheet.tags.map((tag) => (
-            <TagBadge key={tag.id} name={tag.name} />
-          ))}
-          {sheet.tags.length === 0 && (
-            <span className="text-sm text-[oklch(0.5_0.03_160)]">No tags</span>
-          )}
-          {isOwner && (
+        {/* Add to list */}
+        {isOwner && (
+          <div className="mt-4 flex flex-wrap items-center gap-2 print:hidden">
             <button
               onClick={() => setShowAddToList(true)}
               className="rounded-xl border border-[oklch(0.85_0.04_160)] px-3 py-1.5 text-xs font-medium text-[oklch(0.4_0.05_160)] transition-all hover:bg-linear-to-r hover:from-[oklch(0.96_0.02_160)] hover:to-[oklch(0.96_0.02_150)] hover:border-[oklch(0.7_0.08_160)]"
             >
               Add to List
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
       <div className="sticky bottom-0 max-h-[50vh] overflow-auto border-t border-[oklch(0.92_0.02_160)] backdrop-blur-sm bg-white/80 p-4 print:hidden">
         {isOwner ? (
           <SheetEditor
             sheet={sheet}
-            allTags={allTags}
             isEditing={isEditing}
             setIsEditing={setIsEditing}
             updateContent={(content) =>
@@ -136,14 +127,6 @@ export function SheetDetail({
         onOpenChange={setShowAddToList}
       />
     </div>
-  );
-}
-
-function TagBadge({ name }: { name: string }): React.JSX.Element {
-  return (
-    <span className="inline-flex items-center rounded-full bg-linear-to-r from-[oklch(0.94_0.04_160)] to-[oklch(0.94_0.04_150)] px-3 py-1 text-xs font-medium text-[oklch(0.4_0.08_160)]">
-      {name}
-    </span>
   );
 }
 

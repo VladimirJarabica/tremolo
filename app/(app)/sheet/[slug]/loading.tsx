@@ -13,13 +13,6 @@ export default function SheetLoading(): React.JSX.Element {
           <div className="h-4 w-full animate-pulse rounded bg-zinc-200" />
           <div className="h-4 w-3/4 animate-pulse rounded bg-zinc-200" />
         </div>
-
-        {/* Tags skeleton */}
-        <div className="mt-4 flex gap-2">
-          <div className="h-6 w-16 animate-pulse rounded-full bg-zinc-200" />
-          <div className="h-6 w-20 animate-pulse rounded-full bg-zinc-200" />
-          <div className="h-6 w-14 animate-pulse rounded-full bg-zinc-200" />
-        </div>
       </div>
 
       {/* Editor skeleton */}

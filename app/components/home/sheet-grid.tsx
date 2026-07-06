@@ -9,7 +9,6 @@ import { useDebouncedCallback } from "@tanstack/react-pacer";
 import { useQuery } from "@tanstack/react-query";
 
 import { getAllSheets } from "@/app/actions/get-all-sheets";
-import { getTags } from "@/app/actions/get-tags";
 import { useSearchParamsState } from "@/app/hooks/use-search-params-state";
 import type { SheetItem } from "@/be/sheet/get-all-sheets";
 import { Pagination } from "./pagination";
@@ -39,14 +38,6 @@ export function SheetGrid(): React.JSX.Element {
   const [page, setPage] = useSearchParamsState<string>("page", "1", {
     serialize: (v) => (v === "1" ? null : v),
   });
-  const [selectedTags, setSelectedTags] = useSearchParamsState<string[]>(
-    "tagIds",
-    [],
-    {
-      serialize: (v) => (v.length > 0 ? v.join(",") : null),
-      deserialize: (v) => (v ? v.split(",") : []),
-    },
-  );
 
   // Debounced search
   const debouncedSetSearch = useDebouncedCallback(setSearch, { wait: 500 });
@@ -63,13 +54,6 @@ export function SheetGrid(): React.JSX.Element {
     () => (sheetsResult?.success ? sheetsResult.data : []),
     [sheetsResult],
   );
-
-  const { data: tagsResult } = useQuery({
-    queryKey: ["tags"],
-    queryFn: getTags,
-  });
-
-  const tags = tagsResult?.success ? tagsResult.data : [];
 
   // Fuse instance for search
   const fuse = useMemo(
@@ -108,13 +92,6 @@ export function SheetGrid(): React.JSX.Element {
       result = result.filter((s) => s.scale === scale);
     }
 
-    // Filter by tags (AND logic)
-    if (selectedTags.length > 0) {
-      result = result.filter((s) =>
-        selectedTags.every((tagId) => s.tags.some((t) => t.id === tagId)),
-      );
-    }
-
     // Sort
     result = [...result].sort((a, b) => {
       if (orderBy === "title") {
@@ -124,7 +101,7 @@ export function SheetGrid(): React.JSX.Element {
     });
 
     return result;
-  }, [sheets, search, meter, tempoRange, scale, selectedTags, orderBy, fuse]);
+  }, [sheets, search, meter, tempoRange, scale, orderBy, fuse]);
 
   // Paginated slice
   const pageNum = parseInt(page, 10) || 1;
@@ -139,18 +116,7 @@ export function SheetGrid(): React.JSX.Element {
     if (pageNum !== 1) {
       setPage("1");
     }
-  }, [search, meter, tempoRange, scale, selectedTags, orderBy]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const toggleTag = useCallback(
-    (tagId: string) => {
-      setSelectedTags(
-        selectedTags.includes(tagId)
-          ? selectedTags.filter((t) => t !== tagId)
-          : [...selectedTags, tagId],
-      );
-    },
-    [selectedTags, setSelectedTags],
-  );
+  }, [search, meter, tempoRange, scale, orderBy]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const clearFilters = useCallback(() => {
     setSearchInput("");
@@ -158,7 +124,6 @@ export function SheetGrid(): React.JSX.Element {
     setMeter("");
     setTempoRange("");
     setScale("");
-    setSelectedTags([]);
     setOrderBy("createdAt");
     setPage("1");
   }, [
@@ -166,13 +131,11 @@ export function SheetGrid(): React.JSX.Element {
     setMeter,
     setTempoRange,
     setScale,
-    setSelectedTags,
     setOrderBy,
     setPage,
   ]);
 
-  const hasFilters =
-    search || meter || tempoRange || scale || selectedTags.length > 0;
+  const hasFilters = search || meter || tempoRange || scale;
 
   if (sheetsLoading) {
     return (
@@ -299,26 +262,6 @@ export function SheetGrid(): React.JSX.Element {
             </optgroup>
           </select>
 
-          {/* Tag filter */}
-          {tags.length > 0 && (
-            <div className="flex flex-wrap max-w-62 items-center gap-1">
-              {tags.map((tag) => (
-                <button
-                  key={tag.id}
-                  type="button"
-                  onClick={() => toggleTag(tag.id)}
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium transition-all ${
-                    selectedTags.includes(tag.id)
-                      ? "bg-gradient-to-r from-[oklch(0.55_0.18_160)] to-[oklch(0.5_0.18_150)] text-white shadow-md shadow-[oklch(0.55_0.18_160/0.25)]"
-                      : "bg-white/80 text-[oklch(0.4_0.05_160)] border border-[oklch(0.92_0.02_160)] shadow-sm hover:border-[oklch(0.7_0.08_160)] hover:shadow-md"
-                  }`}
-                >
-                  {tag.name}
-                </button>
-              ))}
-            </div>
-          )}
-
           {/* Clear filters */}
           {hasFilters && (
             <button
@@ -391,23 +334,6 @@ function SheetListItem({ sheet }: { sheet: SheetItem }): React.JSX.Element {
           {formatScale(sheet.scale)}
         </span>
       </div>
-      {sheet.tags.length > 0 && (
-        <div className="hidden shrink-0 items-center gap-1.5 sm:flex">
-          {sheet.tags.slice(0, 2).map((tag) => (
-            <span
-              key={tag.id}
-              className="inline-flex items-center rounded-full bg-gradient-to-r from-[oklch(0.94_0.04_160)] to-[oklch(0.94_0.04_150)] px-2.5 py-0.5 text-xs font-medium text-[oklch(0.4_0.08_160)]"
-            >
-              {tag.name}
-            </span>
-          ))}
-          {sheet.tags.length > 2 && (
-            <span className="text-xs text-[oklch(0.5_0.03_160)]">
-              +{sheet.tags.length - 2}
-            </span>
-          )}
-        </div>
-      )}
       <span className="shrink-0 text-xs text-[oklch(0.5_0.03_160)]">
         {format(sheet.createdAt, "d. MMM yyyy")}
       </span>

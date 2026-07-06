@@ -4,10 +4,8 @@ import { useRouter } from "next/navigation";
 import { createSheet } from "@/app/actions/create-sheet";
 import { updateSheet } from "@/app/actions/update-sheet";
 import { deleteSheet } from "@/app/actions/delete-sheet";
-import { createTag } from "@/app/actions/create-tag";
-import { TagSelector } from "./tag-selector";
 import type { SheetBySlug } from "@/be/sheet/get-sheet-by-slug";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Meter, Scale, type Scale as ScaleType } from "@/be/db/enums";
 import { METER_OPTIONS, SCALE_OPTIONS } from "@/lib/constants";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -22,12 +20,10 @@ export function SheetEditor({
   updateTempo,
   updateScale,
   onCancel,
-  allTags,
   isEditing,
   setIsEditing,
 }: {
   sheet: SheetBySlug;
-  allTags: { id: string; name: string }[];
   isEditing: boolean;
   setIsEditing: (value: boolean) => void;
   updateContent: (content: string) => void;
@@ -40,14 +36,37 @@ export function SheetEditor({
   onCancel: () => void;
 }): React.JSX.Element {
   const router = useRouter();
-  const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
-    sheet.tags.map((t) => t.id),
-  );
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [metadataExpanded, setMetadataExpanded] = useState(true);
 
+  // Latest-handler ref so the keydown listener can be attached once per
+  // isEditing toggle without capturing a stale handleSave.
+  const saveRef = useRef<() => void>(() => {});
+  useEffect(() => {
+    saveRef.current = handleSave;
+  });
+
+  // Cmd/Ctrl+S saves while editing. No-op when not editing.
+  useEffect(() => {
+    if (!isEditing) return;
+    function onKeyDown(event: KeyboardEvent): void {
+      if (
+        (event.metaKey || event.ctrlKey) &&
+        event.key.toLowerCase() === "s"
+      ) {
+        event.preventDefault();
+        saveRef.current();
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isEditing]);
+
   async function handleSave(): Promise<void> {
+    if (isSaving) return;
     setIsSaving(true);
     try {
       const result = await updateSheet({
@@ -59,7 +78,6 @@ export function SheetEditor({
         meter: sheet.meter as Meter,
         tempo: sheet.tempo,
         scale: sheet.scale as ScaleType,
-        tagIds: selectedTagIds,
       });
       if (result.success) {
         setIsEditing(false);
@@ -97,16 +115,7 @@ export function SheetEditor({
 
   function handleCancel(): void {
     onCancel();
-    setSelectedTagIds(sheet.tags.map((t) => t.id));
     setIsEditing(false);
-  }
-
-  async function handleCreateTag(name: string): Promise<string | null> {
-    const result = await createTag({ name });
-    if (result.success) {
-      return result.data.id;
-    }
-    return null;
   }
 
   if (!isEditing) {
@@ -224,12 +233,6 @@ export function SheetEditor({
                 </select>
               </div>
             </div>
-            <TagSelector
-              allTags={allTags}
-              selectedIds={selectedTagIds}
-              onChange={setSelectedTagIds}
-              onCreateTag={handleCreateTag}
-            />
           </div>
         )}
       </div>

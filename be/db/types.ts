@@ -36,16 +36,6 @@ export type Sheet = {
     createdAt: Generated<Timestamp>;
     updatedAt: Generated<Timestamp>;
 };
-export type SheetToTag = {
-    A: string;
-    B: string;
-};
-export type Tag = {
-    id: Generated<string>;
-    name: string;
-    createdAt: Generated<Timestamp>;
-    updatedAt: Generated<Timestamp>;
-};
 export type User = {
     id: Generated<string>;
     email: string;
@@ -55,10 +45,8 @@ export type User = {
     updatedAt: Generated<Timestamp>;
 };
 export type DB = {
-    _SheetToTag: SheetToTag;
     List: List;
     ListItem: ListItem;
     Sheet: Sheet;
-    Tag: Tag;
     User: User;
 };
