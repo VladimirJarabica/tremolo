@@ -1,6 +1,14 @@
 import { db } from "@/be/db";
+import { getUserContext } from "@/be/auth/guards";
 import { cached } from "@/be/db/cache";
 import { TIMES_IN_SECONDS } from "@/lib/constants";
+import {
+  apiError,
+  ApiErrorCode,
+  apiSuccess,
+  type ApiResponse,
+  type ApiResponseData,
+} from "@/be/response";
 
 export type SheetItem = {
   id: string;
@@ -14,9 +22,11 @@ export type SheetItem = {
   createdAt: Date;
 };
 
-export const ALL_SHEETS_CACHE_KEY = "getAllSheets";
+// Cache key is user-scoped: each user's listing is cached independently so one
+// user's sheets can never be served to another.
+export const allSheetsCacheKey = (userId: string) => `getAllSheets:${userId}`;
 
-async function fetchAllSheets(): Promise<SheetItem[]> {
+async function fetchAllSheets(userId: string): Promise<SheetItem[]> {
   const sheets = await db
     .selectFrom("Sheet")
     .select([
@@ -30,6 +40,7 @@ async function fetchAllSheets(): Promise<SheetItem[]> {
       "createdAt",
     ])
     .where("deletedAt", "is", null)
+    .where("userId", "=", userId)
     .orderBy("createdAt", "desc")
     .execute();
 
@@ -65,6 +76,18 @@ async function fetchAllSheets(): Promise<SheetItem[]> {
   }));
 }
 
-export async function getAllSheets(): Promise<SheetItem[]> {
-  return cached(fetchAllSheets, ALL_SHEETS_CACHE_KEY, TIMES_IN_SECONDS.HOUR);
+export async function getAllSheets(): Promise<ApiResponse<SheetItem[]>> {
+  try {
+    const { user } = await getUserContext();
+    const sheets = await cached(
+      () => fetchAllSheets(user.id),
+      allSheetsCacheKey(user.id),
+      TIMES_IN_SECONDS.HOUR,
+    );
+    return apiSuccess(sheets);
+  } catch {
+    return apiError(ApiErrorCode.INTERNAL_ERROR);
+  }
 }
+
+export type GetAllSheetsData = ApiResponseData<typeof getAllSheets>;

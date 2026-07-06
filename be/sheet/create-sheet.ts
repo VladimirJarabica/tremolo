@@ -10,7 +10,8 @@ import {
 } from "@/be/response";
 import { createSheetSlug } from "./create-sheet-slug";
 import { deleteCacheKey } from "@/be/db/cache";
-import { ALL_SHEETS_CACHE_KEY } from "./get-all-sheets";
+import { allSheetsCacheKey } from "./get-all-sheets";
+import { sheetBySlugCacheKey } from "./get-sheet-by-slug";
 
 export async function createSheet(
   input: CreateSheetInput,
@@ -45,7 +46,7 @@ export async function createSheet(
       .returning(["id", "slug"])
       .executeTakeFirst();
 
-    await deleteCacheKey(`getSheetBySlug:${slug}`);
+    await deleteCacheKey(sheetBySlugCacheKey(user.id, slug));
 
     if (!sheet) {
       return apiError(ApiErrorCode.FAILED_TO_CREATE);
@@ -58,7 +59,10 @@ export async function createSheet(
         .execute();
     }
 
-    await deleteCacheKey([ALL_SHEETS_CACHE_KEY, `getSheetBySlug:${slug}`]);
+    await deleteCacheKey([
+      allSheetsCacheKey(user.id),
+      sheetBySlugCacheKey(user.id, slug),
+    ]);
 
     return apiSuccess({ id: sheet.id, slug: sheet.slug });
   } catch (error) {

@@ -1,4 +1,5 @@
 import { db } from "@/be/db";
+import { getUserContext } from "@/be/auth/guards";
 import {
   paginatedApiSuccess,
   apiError,
@@ -34,13 +35,15 @@ export async function getPublicSheets(input?: GetPublicSheetsInput) {
 
   const { page, orderBy, meter, tempoRange, scale, search, tagIds } =
     parsed.data;
+  const { user } = await getUserContext();
 
   try {
     // Build the base query for counting
     let countQuery = db
       .selectFrom("Sheet")
       .select((eb) => eb.fn.count<number>("id").as("count"))
-      .where("deletedAt", "is", null);
+      .where("deletedAt", "is", null)
+      .where("userId", "=", user.id);
 
     // Build the base query for data
     let dataQuery = db
@@ -55,7 +58,8 @@ export async function getPublicSheets(input?: GetPublicSheetsInput) {
         "scale",
         "createdAt",
       ])
-      .where("deletedAt", "is", null);
+      .where("deletedAt", "is", null)
+      .where("userId", "=", user.id);
 
     // Apply filters to both queries
     if (meter) {

@@ -1,4 +1,5 @@
 import { db } from "@/be/db";
+import { requireSheetOwnership } from "@/be/auth/guards";
 import { getSheetSchema, type GetSheetInput } from "./validation-schema";
 import {
   apiError,
@@ -24,6 +25,8 @@ export async function getSheet(input: GetSheetInput): Promise<
     tags: { id: string; name: string }[];
   }>
 > {
+  const { user } = await requireSheetOwnership(input.sheetId);
+
   const parsed = getSheetSchema.safeParse(input);
   if (!parsed.success) {
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);
@@ -46,6 +49,7 @@ export async function getSheet(input: GetSheetInput): Promise<
         "updatedAt",
       ])
       .where("id", "=", parsed.data.sheetId)
+      .where("userId", "=", user.id)
       .where("deletedAt", "is", null)
       .executeTakeFirst();
 

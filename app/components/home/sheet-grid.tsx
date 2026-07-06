@@ -55,10 +55,14 @@ export function SheetGrid(): React.JSX.Element {
   }, [searchInput, debouncedSetSearch]);
 
   // Fetch data with React Query
-  const { data: sheets = [], isLoading: sheetsLoading } = useQuery({
+  const { data: sheetsResult, isLoading: sheetsLoading } = useQuery({
     queryKey: ["sheets"],
     queryFn: getAllSheets,
   });
+  const sheets = useMemo(
+    () => (sheetsResult?.success ? sheetsResult.data : []),
+    [sheetsResult],
+  );
 
   const { data: tagsResult } = useQuery({
     queryKey: ["tags"],

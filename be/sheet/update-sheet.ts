@@ -10,7 +10,8 @@ import {
 } from "@/be/response";
 import { createSheetSlug } from "./create-sheet-slug";
 import { deleteCacheKey } from "@/be/db/cache";
-import { ALL_SHEETS_CACHE_KEY } from "./get-all-sheets";
+import { allSheetsCacheKey } from "./get-all-sheets";
+import { sheetBySlugCacheKey } from "./get-sheet-by-slug";
 
 export async function updateSheet(
   input: UpdateSheetInput,
@@ -86,11 +87,14 @@ export async function updateSheet(
       }
     }
 
-    const cacheKeys = [`getSheetBySlug:${currentSheet.slug}`, ALL_SHEETS_CACHE_KEY];
+    const cacheKeys = [
+      sheetBySlugCacheKey(user.id, currentSheet.slug),
+      allSheetsCacheKey(user.id),
+    ];
 
     // Also delete new slug cache in case a 404 was cached there previously
     if (newSlug !== currentSheet.slug) {
-      cacheKeys.push(`getSheetBySlug:${newSlug}`);
+      cacheKeys.push(sheetBySlugCacheKey(user.id, newSlug));
     }
 
     await deleteCacheKey(cacheKeys);

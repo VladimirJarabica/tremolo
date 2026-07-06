@@ -1,4 +1,5 @@
 import { db } from "@/be/db";
+import { getUserContext } from "@/be/auth/guards";
 import {
   apiError,
   ApiErrorCode,
@@ -10,11 +11,14 @@ import {
 export async function getDeletedSheets(): Promise<
   ApiResponse<{ id: string; content: string; createdAt: Date; updatedAt: Date; deletedAt: Date | null }[]>
 > {
+  const { user } = await getUserContext();
+
   try {
     const sheets = await db
       .selectFrom("Sheet")
       .selectAll()
       .where("deletedAt", "is not", null)
+      .where("userId", "=", user.id)
       .orderBy("deletedAt", "desc")
       .execute();
 

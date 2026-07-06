@@ -1,4 +1,5 @@
 import { db } from "@/be/db";
+import { getUserContext } from "@/be/auth/guards";
 import {
   getSheetBySlugSchema,
   type GetSheetBySlugInput,
@@ -11,6 +12,11 @@ import {
   type ApiResponseData,
 } from "@/be/response";
 import { cached } from "../db/cache";
+
+// Cache key is user-scoped so a sheet cached for one owner is never handed to
+// another user querying the same slug.
+export const sheetBySlugCacheKey = (userId: string, slug: string) =>
+  `getSheetBySlug:${userId}:${slug}`;
 
 export async function getSheetBySlug(input: GetSheetBySlugInput): Promise<
   ApiResponse<{
@@ -29,6 +35,8 @@ export async function getSheetBySlug(input: GetSheetBySlugInput): Promise<
     tags: { id: string; name: string }[];
   }>
 > {
+  const { user } = await getUserContext();
+
   const parsed = getSheetBySlugSchema.safeParse(input);
   if (!parsed.success) {
     return apiError(ApiErrorCode.INVALID_INPUT, parsed.error);
@@ -53,6 +61,7 @@ export async function getSheetBySlug(input: GetSheetBySlugInput): Promise<
           "updatedAt",
         ])
         .where("slug", "=", parsed.data.slug)
+        .where("userId", "=", user.id)
         .where("deletedAt", "is", null)
         .executeTakeFirst();
 
@@ -71,7 +80,7 @@ export async function getSheetBySlug(input: GetSheetBySlugInput): Promise<
     } catch {
       return apiError(ApiErrorCode.INTERNAL_ERROR);
     }
-  }, `getSheetBySlug:${input.slug}`);
+  }, sheetBySlugCacheKey(user.id, parsed.data.slug));
 }
 
 export type SheetBySlug = ApiResponseData<typeof getSheetBySlug>;

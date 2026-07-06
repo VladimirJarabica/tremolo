@@ -9,7 +9,7 @@ import {
   type ApiResponseData,
 } from "@/be/response";
 import { deleteCacheKey } from "@/be/db/cache";
-import { ALL_SHEETS_CACHE_KEY } from "./get-all-sheets";
+import { allSheetsCacheKey } from "./get-all-sheets";
 
 export async function deleteSheet(
   input: DeleteSheetInput,
@@ -38,7 +38,7 @@ export async function deleteSheet(
       return apiError(ApiErrorCode.NOT_FOUND);
     }
 
-    await deleteCacheKey(ALL_SHEETS_CACHE_KEY);
+    await deleteCacheKey(allSheetsCacheKey(user.id));
 
     return apiSuccess({ id: sheet.id });
   } catch {
