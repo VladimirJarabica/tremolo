@@ -1,6 +1,30 @@
 import type { Meter, Scale } from "@/be/db/enums";
 import { SheetDetail } from "@/be/sheet/get-sheet";
 
+/**
+ * abcjs renders header fields (T:/C:/S:) as DOM textContent, but the ABC body
+ * supports directives (%%text, annotations) that it writes into the DOM — and
+ * abcjs is not a sanitization boundary. User content is sanitized before it is
+ * interpolated into the ABC string:
+ *  - `<`/`>` (HTML tag delimiters) have no legitimate use in ABC notation, so
+ *    stripping them neutralizes any <script>/<img onerror> payload.
+ *  - Control chars (except the \n/\r/\t ABC needs) and DEL are removed.
+ * Header fields additionally drop `"`/`'` (quotes never appear in a title or
+ * author and could enable attribute breakout). Lengths are capped so a
+ * malicious sheet can't flood the DOM.
+ */
+const CONTROL_CHARS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
+
+const sanitizeHeader = (value: string, maxLen: number): string =>
+  value
+    .replace(/[\r\n]+/g, " ")
+    .replace(/[<>"']/g, "")
+    .replace(CONTROL_CHARS, "")
+    .slice(0, maxLen);
+
+const sanitizeAbcBody = (value: string, maxLen: number): string =>
+  value.replace(/[<>]/g, "").replace(CONTROL_CHARS, "").slice(0, maxLen);
+
 const meterToAbc: Record<Meter, string> = {
   m_4_4: "4/4",
   m_3_4: "3/4",
@@ -51,17 +75,20 @@ export const getAbcNotationFromSheet = (
   sheet: SheetDetail,
   options?: { index?: number; hideSource?: boolean },
 ) => {
+  const content = sanitizeAbcBody(sheet.content, 100_000);
   const lines = [
     `X:${options?.index ?? 1}`,
-    `T:${sheet.title}`,
-    ...(sheet.author ? [`C:${sheet.author}`] : []),
-    ...(sheet.source && !options?.hideSource ? [`S:${sheet.source}`] : []),
+    `T:${sanitizeHeader(sheet.title, 200)}`,
+    ...(sheet.author ? [`C:${sanitizeHeader(sheet.author, 200)}`] : []),
+    ...(sheet.source && !options?.hideSource
+      ? [`S:${sanitizeHeader(sheet.source, 500)}`]
+      : []),
     `M:${meterToAbc[sheet.meter as Meter]}`,
     `Q:1/4=${sheet.tempo}`,
     `K:${scaleToAbc[sheet.scale as Scale]}`,
     "L:1/8",
-    sheet.content.includes("clef=bass") ? "V:1 clef=treble" : null,
-    sheet.content,
+    content.includes("clef=bass") ? "V:1 clef=treble" : null,
+    content,
   ].filter(Boolean) as string[];
   return lines.join("\n");
 };

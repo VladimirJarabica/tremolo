@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -105,12 +105,13 @@ export function EditListDialog({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Reset name when list changes
-  useState(() => {
+  // Sync name when the target list changes (or the dialog re-opens for it).
+  useEffect(() => {
     if (list) {
       setName(list.name);
+      setError(null);
     }
-  });
+  }, [list]);
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
@@ -152,11 +153,6 @@ export function EditListDialog({
     setError(null);
     onOpenChange(false);
   };
-
-  // Update name when list prop changes
-  if (list && name !== list.name && !isLoading) {
-    setName(list.name);
-  }
 
   if (!list) return <></>;
 

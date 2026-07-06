@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { format } from "date-fns";
 import { getDeletedSheets } from "@/app/actions/get-deleted-sheets";
 import { restoreSheet } from "@/app/actions/restore-sheet";
 import { hardDeleteSheet } from "@/app/actions/hard-delete-sheet";
@@ -57,7 +58,7 @@ function TrashItem({
       <div>
         <div className="font-medium">{title || "Untitled"}</div>
         <div className="text-sm text-zinc-500">
-          Deleted {deletedAt.toLocaleDateString()}
+          Deleted {format(deletedAt, "d. MMM yyyy")}
         </div>
       </div>
       <div className="flex gap-2">

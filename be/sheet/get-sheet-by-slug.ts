@@ -1,5 +1,6 @@
 import { db } from "@/be/db";
 import { getUserContext } from "@/be/auth/guards";
+import { TIMES_IN_SECONDS } from "@/lib/constants";
 import {
   getSheetBySlugSchema,
   type GetSheetBySlugInput,
@@ -80,7 +81,7 @@ export async function getSheetBySlug(input: GetSheetBySlugInput): Promise<
     } catch {
       return apiError(ApiErrorCode.INTERNAL_ERROR);
     }
-  }, sheetBySlugCacheKey(user.id, parsed.data.slug));
+  }, sheetBySlugCacheKey(user.id, parsed.data.slug), TIMES_IN_SECONDS.HOUR, (result) => result.success);
 }
 
 export type SheetBySlug = ApiResponseData<typeof getSheetBySlug>;

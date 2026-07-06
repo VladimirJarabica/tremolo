@@ -11,6 +11,7 @@ export async function cached<V>(
   fn: () => Promise<V>,
   originalKey: string,
   seconds: number = TIMES_IN_SECONDS.HOUR,
+  shouldCache: (value: V) => boolean = () => true,
 ) {
   const key = getKey(originalKey);
   const value = await redisClient.get(key);
@@ -21,7 +22,11 @@ export async function cached<V>(
 
   const newValue = await fn();
 
-  await redisClient.setex(key, seconds, stringify(newValue));
+  // Only write through when shouldCache allows — e.g. to avoid caching error
+  // responses (NOT_FOUND) that would mask a sheet created seconds later.
+  if (shouldCache(newValue)) {
+    await redisClient.setex(key, seconds, stringify(newValue));
+  }
   return newValue;
 }
 

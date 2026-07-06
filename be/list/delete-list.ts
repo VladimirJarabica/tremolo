@@ -20,19 +20,28 @@ export async function deleteList(
   }
 
   try {
-    // Delete list items first
-    await db
-      .deleteFrom("ListItem")
-      .where("listId", "=", parsed.data.listId)
-      .execute();
+    // Delete items only if the list belongs to the caller (the ListItem delete
+    // is scoped by a user-owned List subquery), then delete the list itself.
+    // Both run in a transaction so a failure leaves no partial state.
+    const list = await db.transaction().execute(async (trx) => {
+      await trx
+        .deleteFrom("ListItem")
+        .where("listId", "in", (eb) =>
+          eb
+            .selectFrom("List")
+            .select("List.id")
+            .where("List.id", "=", parsed.data.listId)
+            .where("List.userId", "=", user.id),
+        )
+        .execute();
 
-    // Delete list
-    const list = await db
-      .deleteFrom("List")
-      .where("id", "=", parsed.data.listId)
-      .where("userId", "=", user.id)
-      .returning(["id"])
-      .executeTakeFirst();
+      return trx
+        .deleteFrom("List")
+        .where("id", "=", parsed.data.listId)
+        .where("userId", "=", user.id)
+        .returning(["id"])
+        .executeTakeFirst();
+    });
 
     if (!list) {
       return apiError(ApiErrorCode.NOT_FOUND);

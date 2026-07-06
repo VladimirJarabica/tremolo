@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { cn } from "@/lib/utils";
 import { SheetList } from "./sheet-list";
 import { Header } from "./header";
@@ -40,7 +41,10 @@ export function AppShell({
             isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           )}
         >
-          <SheetList lists={lists} isLoggedIn={user !== null} />
+          {/* Suspense boundary required for useSearchParams() inside SheetList */}
+          <Suspense fallback={null}>
+            <SheetList lists={lists} isLoggedIn={user !== null} />
+          </Suspense>
         </aside>
 
         {/* Main content */}
