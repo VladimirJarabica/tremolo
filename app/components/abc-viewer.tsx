@@ -10,6 +10,38 @@ import { updateListItemTranspose } from "@/app/actions/update-list-item-transpos
 import { wrapBars, calculateBarsPerLine } from "@/app/utils/abc-wrap";
 import { BarsPerLineSlider } from "@/app/components/bars-per-line-slider";
 
+/**
+ * Per-sheet transpose persisted in the browser for the bare (non-list) view.
+ * When a sheet is viewed inside a list, the DB ListItem.transpose is the source
+ * of truth and these helpers are not used. Keyed by sheet id (stable across
+ * renames; slug is not). All access is try/catch-guarded so private mode,
+ * quota errors, or disabled storage never throw into the UI.
+ */
+const TRANSPOSE_STORAGE_PREFIX = "tremolo:transpose:";
+
+function transposeStorageKey(sheetId: string): string {
+  return `${TRANSPOSE_STORAGE_PREFIX}${sheetId}`;
+}
+
+function readStoredTranspose(sheetId: string): number | null {
+  try {
+    const raw = window.localStorage.getItem(transposeStorageKey(sheetId));
+    if (raw === null) return null;
+    const value = Number.parseInt(raw, 10);
+    return Number.isNaN(value) ? null : value;
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredTranspose(sheetId: string, value: number): void {
+  try {
+    window.localStorage.setItem(transposeStorageKey(sheetId), String(value));
+  } catch {
+    // Ignore storage errors (private mode, quota, disabled storage).
+  }
+}
+
 export function AbcViewer({
   sheet,
   listId,
@@ -79,14 +111,31 @@ export function AbcViewer({
     { wait: 1000 },
   );
 
+  // Target transpose for the current context: in a list, the DB
+  // ListItem.transpose (initialTranspose); in the bare view, a value
+  // previously persisted to localStorage (falling back to initialTranspose).
+  // Computed during render but consumed only as the effect dependency, so the
+  // localStorage read never touches SSR output — hydration stays consistent
+  // via the useState(initialTranspose) seed above, and the effect updates the
+  // state after mount.
+  const targetTranspose = listId
+    ? initialTranspose
+    : (readStoredTranspose(sheet.id) ?? initialTranspose);
+
   useEffect(() => {
-    setTranspose(initialTranspose);
-  }, [initialTranspose]);
+    setTranspose(targetTranspose);
+  }, [targetTranspose]);
 
   function handleTransposeChange(delta: number): void {
     const newTranspose = transpose + delta;
     setTranspose(newTranspose);
-    debouncedSave.maybeExecute(newTranspose);
+    if (listId) {
+      // List context: persist to DB (debounced).
+      debouncedSave.maybeExecute(newTranspose);
+    } else {
+      // Bare view: persist to this browser.
+      writeStoredTranspose(sheet.id, newTranspose);
+    }
   }
 
   function handleBarsPerLineChange(

@@ -85,9 +85,15 @@ sheet view.
 
 - **Init:** keep seeding `transpose` state from `initialTranspose` (unchanged)
   so SSR and first paint match the server value — avoids a hydration mismatch.
-  Then, in a `useEffect`, when there is **no `listId`**, read
-  `tremolo:transpose:{sheet.id}`; if present and parseable, `setTranspose(value)`.
-  This effect re-runs when `sheet.id` changes.
+  Compute a `targetTranspose` during render: `listId ? initialTranspose :
+  (readStoredTranspose(sheet.id) ?? initialTranspose)`. A simple effect
+  `setTranspose(targetTranspose)` on `[targetTranspose]` applies it after mount.
+  The localStorage read is confined to the dep value (never the rendered output),
+  so SSR output stays consistent and the effect updates state post-mount.
+- **Lint note:** `react-hooks/set-state-in-effect` flags complex effect bodies
+  (conditional + function calls) but accepts a single `setTranspose(value)`
+  mirroring a dep. Precomputing `targetTranspose` keeps the effect structurally
+  simple and lint-clean — HEAD's original transpose effect used the same shape.
 - **On transpose change (`handleTransposeChange`):**
   - If `listId` present → existing debounced server save (unchanged).
   - If no `listId` → write `localStorage` and update local state. No server call.
