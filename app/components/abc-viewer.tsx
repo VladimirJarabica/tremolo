@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import abcjs from "abcjs";
-import { Check } from "lucide-react";
+import { Check, RotateCcw } from "lucide-react";
 import { useDebouncer } from "@tanstack/react-pacer";
 import { SheetDetail } from "@/be/sheet/get-sheet";
 import { getAbcNotationFromSheet } from "../utils/abc-notation";
@@ -126,16 +126,23 @@ export function AbcViewer({
     setTranspose(targetTranspose);
   }, [targetTranspose]);
 
-  function handleTransposeChange(delta: number): void {
-    const newTranspose = transpose + delta;
-    setTranspose(newTranspose);
+  function applyTranspose(value: number): void {
+    setTranspose(value);
     if (listId) {
       // List context: persist to DB (debounced).
-      debouncedSave.maybeExecute(newTranspose);
+      debouncedSave.maybeExecute(value);
     } else {
       // Bare view: persist to this browser.
-      writeStoredTranspose(sheet.id, newTranspose);
+      writeStoredTranspose(sheet.id, value);
     }
+  }
+
+  function handleTransposeChange(delta: number): void {
+    applyTranspose(transpose + delta);
+  }
+
+  function handleTransposeReset(): void {
+    applyTranspose(0);
   }
 
   function handleBarsPerLineChange(
@@ -314,6 +321,17 @@ export function AbcViewer({
                 </svg>
               </button>
             </div>
+            {/* Reset — only shown when transposed */}
+            {transpose !== 0 && (
+              <button
+                onClick={handleTransposeReset}
+                title="Reset to 0"
+                aria-label="Reset transpose to 0"
+                className="rounded-lg p-1.5 text-[oklch(0.5_0.06_160)] hover:bg-[oklch(0.96_0.02_160)] hover:text-[oklch(0.45_0.05_160)] transition-colors"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+              </button>
+            )}
             {/* Saved indicator */}
             {showSaved && (
               <span className="flex items-center gap-1 text-xs font-medium text-[oklch(0.6_0.2_145)] animate-in fade-in slide-in-from-left-2 duration-200">
