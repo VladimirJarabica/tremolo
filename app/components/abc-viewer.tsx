@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import abcjs from "abcjs";
-import { Check, RotateCcw } from "lucide-react";
+import { Check, RotateCcw, Volume1, Volume2, VolumeX } from "lucide-react";
 import { useDebouncer } from "@tanstack/react-pacer";
 import { SheetDetail } from "@/be/sheet/get-sheet";
+import { Slider } from "@/components/ui/slider";
 import { getAbcNotationFromSheet } from "../utils/abc-notation";
 import { updateListItemTranspose } from "@/app/actions/update-list-item-transpose";
 import { wrapBars, calculateBarsPerLine } from "@/app/utils/abc-wrap";
@@ -42,6 +43,56 @@ function writeStoredTranspose(sheetId: string, value: number): void {
   }
 }
 
+/**
+ * Player volume is a global playback preference (not per-sheet), persisted in
+ * the browser. Stored as 0–100 and mapped to abcjs' `soundFontVolumeMultiplier`
+ * (100 == abcjs default loudness). try/catch-guarded like the transpose helpers.
+ */
+const VOLUME_STORAGE_KEY = "tremolo:volume";
+const VOLUME_DEFAULT = 100;
+
+function readStoredVolume(): number | null {
+  try {
+    const raw = window.localStorage.getItem(VOLUME_STORAGE_KEY);
+    if (raw === null) return null;
+    const value = Number.parseInt(raw, 10);
+    if (Number.isNaN(value)) return null;
+    return Math.min(100, Math.max(0, value));
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredVolume(value: number): void {
+  try {
+    window.localStorage.setItem(VOLUME_STORAGE_KEY, String(value));
+  } catch {
+    // Ignore storage errors (private mode, quota, disabled storage).
+  }
+}
+
+/**
+ * abcjs' SynthController keeps playback state (current position, playing flag,
+ * loaded flag) and an internal midi buffer that are not in its public TS
+ * interface but exist at runtime. We mirror the built-in `setWarp` flow:
+ * capture position + play state, re-prime with new audio options, then resume.
+ * Changing volume re-renders the offline audio buffer, so volume changes are
+ * debounced and only re-prime once audio has already been loaded.
+ */
+interface AbcjsSynthRuntime {
+  options: abcjs.SynthOptions;
+  isLoaded: boolean;
+  isStarted: boolean;
+  percent: number;
+  midiBuffer: { duration: number };
+  go(): Promise<unknown>;
+  play(): Promise<unknown>;
+  pause(): void;
+  seek(percent: number): void;
+  setProgress(percent: number, totalTime: number): void;
+  destroy(): void;
+}
+
 export function AbcViewer({
   sheet,
   listId,
@@ -59,6 +110,11 @@ export function AbcViewer({
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [isAutomatic, setIsAutomatic] = useState(true);
   const [manualBarsPerLine, setManualBarsPerLine] = useState(4);
+
+  const [volume, setVolume] = useState(VOLUME_DEFAULT);
+  const volumeRef = useRef(volume);
+  const previousVolumeRef = useRef(VOLUME_DEFAULT);
+  const synthControlRef = useRef<AbcjsSynthRuntime | null>(null);
 
   const abcContent = getAbcNotationFromSheet(sheet, { hideSource: true });
 
@@ -126,6 +182,16 @@ export function AbcViewer({
     setTranspose(targetTranspose);
   }, [targetTranspose]);
 
+  // Restore previously saved volume after mount (kept out of useState's
+  // initializer so SSR output stays consistent — mirrors the transpose pattern).
+  useEffect(() => {
+    const stored = readStoredVolume();
+    if (stored !== null) {
+      volumeRef.current = stored;
+      setVolume(stored);
+    }
+  }, []);
+
   function applyTranspose(value: number): void {
     setTranspose(value);
     if (listId) {
@@ -151,6 +217,62 @@ export function AbcViewer({
   ): void {
     setIsAutomatic(automatic);
     setManualBarsPerLine(manualValue);
+  }
+
+  // Re-prime the synth with a new volume. Mirrors abcjs' built-in `setWarp`:
+  // capture play state + position, re-prime, then resume. If audio hasn't been
+  // loaded yet we just update the options so the value is applied when playback
+  // first starts — avoiding an unnecessary re-prime.
+  const applyVolumeToSynth = (value: number): void => {
+    const synth = synthControlRef.current;
+    if (synth === null) {
+      return;
+    }
+    synth.options = synth.options ?? {};
+    synth.options.soundFontVolumeMultiplier = value / 100;
+
+    if (!synth.isLoaded) {
+      return;
+    }
+
+    const wasPlaying = synth.isStarted;
+    const startPercent = synth.percent ?? 0;
+
+    synth.destroy();
+    synth.isStarted = false;
+    void synth.go().then(() => {
+      synth.setProgress(startPercent, synth.midiBuffer.duration * 1000);
+      if (wasPlaying) {
+        void synth.play().then(() => {
+          synth.seek(startPercent);
+        });
+      } else {
+        synth.seek(startPercent);
+      }
+    });
+  };
+
+  // Volume changes rebuild the offline audio buffer, so debounce to avoid
+  // thrashing while dragging the slider.
+  const debouncedApplyVolume = useDebouncer(
+    (value: number) => applyVolumeToSynth(value),
+    { wait: 200 },
+  );
+
+  function handleVolumeChange(value: number): void {
+    volumeRef.current = value;
+    setVolume(value);
+    writeStoredVolume(value);
+    debouncedApplyVolume.maybeExecute(value);
+  }
+
+  function toggleMute(): void {
+    if (volume === 0) {
+      handleVolumeChange(previousVolumeRef.current || VOLUME_DEFAULT);
+    } else {
+      previousVolumeRef.current = volume;
+      handleVolumeChange(0);
+    }
   }
 
   useEffect(() => {
@@ -188,6 +310,7 @@ export function AbcViewer({
 
         // Setup audio controls
         synthControl = new abcjs.synth.SynthController();
+        synthControlRef.current = synthControl as unknown as AbcjsSynthRuntime;
         synthControl.load(audioRef.current!, null, {
           displayLoop: false,
           displayRestart: false,
@@ -204,10 +327,14 @@ export function AbcViewer({
 
         const containsBassCleff = abcContent.includes("clef=bass");
 
-        // The visualObj already contains transposed notes from renderAbc
+        // The visualObj already contains transposed notes from renderAbc.
+        // `soundFontVolumeMultiplier` is baked into the offline audio buffer
+        // during prime, so it is read from the ref to pick up the latest value
+        // without re-rendering the notation on every volume change.
         synthControl.setTune(visualObj[0], false, {
           midiTranspose: transpose,
           chordsOff: containsBassCleff,
+          soundFontVolumeMultiplier: volumeRef.current / 100,
         });
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to render sheet");
@@ -219,6 +346,7 @@ export function AbcViewer({
     // Cleanup
     return () => {
       synthControl?.pause();
+      synthControlRef.current = null;
     };
   }, [abcContent, transpose, sheet.content, containerWidth, barsPerLine]);
 
@@ -234,9 +362,7 @@ export function AbcViewer({
     return (
       <div className="flex items-center justify-center">
         <div className="text-center">
-          <p className="text-lg text-destructive">
-            Failed to render sheet
-          </p>
+          <p className="text-lg text-destructive">Failed to render sheet</p>
           <p className="mt-2 text-sm text-muted-foreground">
             Verify your input
           </p>
@@ -344,10 +470,42 @@ export function AbcViewer({
                 Auto-saves to list
               </span>
             )}
-
-            {/* Audio player - full width on mobile */}
           </div>
-          <div ref={audioRef} className="abcjs-audio max-w-2xl flex-1" />
+
+          {/* Audio player + volume — grouped as a single flex item */}
+          <div className="flex flex-1 justify-end items-center gap-3">
+            <div ref={audioRef} className="abcjs-audio max-w-2xl flex-1" />
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={toggleMute}
+                title={volume === 0 ? "Unmute" : "Mute"}
+                aria-label={volume === 0 ? "Unmute" : "Mute"}
+                className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              >
+                {volume === 0 ? (
+                  <VolumeX className="h-4 w-4" />
+                ) : volume < 50 ? (
+                  <Volume1 className="h-4 w-4" />
+                ) : (
+                  <Volume2 className="h-4 w-4" />
+                )}
+              </button>
+              <Slider
+                value={[volume]}
+                min={0}
+                max={100}
+                step={5}
+                onValueChange={(values) => handleVolumeChange(values[0] ?? 0)}
+                aria-label="Volume"
+                className="w-24"
+              />
+              <span className="min-w-8 text-center font-mono text-xs tabular-nums text-muted-foreground">
+                {volume}
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Bars per line slider */}
