@@ -81,7 +81,7 @@ export function MultiAbcViewer({
 
   if (items.length === 0) {
     return (
-      <div className="flex h-full items-center justify-center text-zinc-400">
+      <div className="flex h-full items-center justify-center text-muted-foreground">
         No sheets to display
       </div>
     );
@@ -90,11 +90,11 @@ export function MultiAbcViewer({
   return (
     <div className="flex h-full flex-col">
       {/* Controls */}
-      <div className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 print:hidden">
+      <div className="flex items-center justify-between border-b border-border px-4 py-3 print:hidden">
         <BarsPerLineSlider value={barsPerLine} onChange={handleSliderChange} />
         <button
           onClick={() => window.print()}
-          className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+          className="rounded-md border border-input bg-card px-3 py-1.5 text-sm font-medium text-secondary-foreground hover:bg-muted"
         >
           Print
         </button>
@@ -103,7 +103,7 @@ export function MultiAbcViewer({
       {/* Sheet music */}
       <div
         ref={containerRef}
-        className="abc-container min-h-0 flex-1 overflow-auto rounded-lg bg-white p-4 print:overflow-visible print:bg-transparent"
+        className="abc-container min-h-0 flex-1 overflow-auto rounded-lg bg-card p-4 print:overflow-visible print:bg-transparent"
       >
         {containerIds.map((id) => (
           <div key={id} id={id} className="mb-6 last:mb-0" />

@@ -49,14 +49,14 @@ export function ListActionsMenu({
             <Pencil className="mr-2 h-4 w-4" />
             Edit name
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleDelete} className="text-red-600">
+          <DropdownMenuItem onClick={handleDelete} className="text-destructive">
             <Trash2 className="mr-2 h-4 w-4" />
             Delete list
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {error && <span className="text-sm text-red-500">{error}</span>}
+      {error && <span className="text-sm text-destructive">{error}</span>}
 
       <EditListDialog
         list={list}

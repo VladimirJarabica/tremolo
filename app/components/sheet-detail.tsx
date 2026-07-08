@@ -79,14 +79,14 @@ export function SheetDetail({
           <div className="mt-4 flex flex-wrap items-center gap-2 print:hidden">
             <button
               onClick={() => setShowAddToList(true)}
-              className="rounded-xl border border-[oklch(0.85_0.04_160)] px-3 py-1.5 text-xs font-medium text-[oklch(0.4_0.05_160)] transition-all hover:bg-linear-to-r hover:from-[oklch(0.96_0.02_160)] hover:to-[oklch(0.96_0.02_150)] hover:border-[oklch(0.7_0.08_160)]"
+              className="rounded-xl border border-input px-3 py-1.5 text-xs font-medium text-muted-foreground transition-all hover:bg-muted hover:border-primary/40"
             >
               Add to List
             </button>
           </div>
         )}
       </div>
-      <div className="sticky bottom-0 max-h-[50vh] overflow-auto border-t border-[oklch(0.92_0.02_160)] backdrop-blur-sm bg-white/80 p-4 print:hidden">
+      <div className="sticky bottom-0 max-h-[50vh] overflow-auto border-t border-border backdrop-blur-sm bg-card/80 p-4 print:hidden">
         {isOwner ? (
           <SheetEditor
             sheet={sheet}
@@ -151,8 +151,8 @@ function ListBadge({
       href={`/sheet/${sheetSlug}?list=${listId}`}
       className={
         isActive
-          ? "inline-flex items-center gap-1.5 rounded-full border border-[oklch(0.7_0.08_160)] bg-[oklch(0.94_0.04_160)] px-3 py-1 text-xs font-medium text-[oklch(0.35_0.08_160)]"
-          : "inline-flex items-center gap-1.5 rounded-full border border-[oklch(0.85_0.04_160)] bg-white px-3 py-1 text-xs font-medium text-[oklch(0.4_0.05_160)] transition-colors hover:bg-[oklch(0.97_0.02_160)] hover:border-[oklch(0.7_0.06_160)]"
+          ? "inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-accent px-3 py-1 text-xs font-medium text-secondary-foreground"
+          : "inline-flex items-center gap-1.5 rounded-full border border-input bg-card px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:border-primary/40"
       }
     >
       <span>{name}</span>
@@ -160,8 +160,8 @@ function ListBadge({
         <span
           className={
             isActive
-              ? "rounded bg-[oklch(0.85_0.06_160)] px-1.5 py-0.5 text-[10px] text-[oklch(0.3_0.08_160)]"
-              : "rounded bg-[oklch(0.95_0.03_160)] px-1.5 py-0.5 text-[10px] text-[oklch(0.45_0.06_160)]"
+              ? "rounded bg-accent px-1.5 py-0.5 text-[10px] text-secondary-foreground"
+              : "rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground"
           }
         >
           {transposeLabel}
@@ -173,7 +173,7 @@ function ListBadge({
 
 export function EmptyState(): React.JSX.Element {
   return (
-    <div className="flex h-full items-center justify-center text-[oklch(0.5_0.03_160)]">
+    <div className="flex h-full items-center justify-center text-muted-foreground">
       <div className="text-center">
         <p className="text-lg">Select a sheet or create a new one</p>
       </div>

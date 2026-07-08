@@ -129,7 +129,7 @@ export function SidebarListSection({
         <button
           type="button"
           onClick={() => setIsExpanded((prev) => !prev)}
-          className="rounded-lg px-1 py-1.5 text-[oklch(0.5_0.06_160)] hover:bg-[oklch(0.94_0.04_160)] transition-colors"
+          className="rounded-lg px-1 py-1.5 text-muted-foreground hover:bg-accent transition-colors"
         >
           {isExpanded ? (
             <ChevronDown className="h-3.5 w-3.5" />
@@ -140,10 +140,10 @@ export function SidebarListSection({
         <Link
           href={`/list/${list.id}`}
           onClick={() => setIsOpen(false)}
-          className="flex flex-1 items-center gap-2 rounded-xl px-2 py-1.5 text-sm font-medium text-[oklch(0.35_0.04_160)] hover:bg-[oklch(0.96_0.02_160)] transition-colors"
+          className="flex flex-1 items-center gap-2 rounded-xl px-2 py-1.5 text-sm font-medium text-secondary-foreground hover:bg-muted transition-colors"
         >
           <span className="truncate">{list.name}</span>
-          <span className="ml-auto text-xs font-medium px-1.5 py-0.5 rounded-md bg-[oklch(0.94_0.02_160)] text-[oklch(0.5_0.04_160)]">{items.length}</span>
+          <span className="ml-auto text-xs font-medium px-1.5 py-0.5 rounded-md bg-muted text-muted-foreground">{items.length}</span>
         </Link>
         <button
           type="button"
@@ -151,7 +151,7 @@ export function SidebarListSection({
             e.stopPropagation();
             setIsEditing(true);
           }}
-          className="rounded-lg p-1 text-[oklch(0.5_0.04_160)] opacity-0 transition-all hover:bg-[oklch(0.94_0.04_160)] hover:text-[oklch(0.4_0.08_160)] group-hover:opacity-100"
+          className="rounded-lg p-1 text-muted-foreground opacity-0 transition-all hover:bg-accent hover:text-muted-foreground group-hover:opacity-100"
           title="Edit list"
         >
           <Pencil className="h-3 w-3" />
@@ -169,7 +169,7 @@ export function SidebarListSection({
             items={items.map((i) => i.sheetId)}
             strategy={verticalListSortingStrategy}
           >
-            <ul className="ml-4 mt-1 space-y-0.5 border-l-2 border-[oklch(0.92_0.03_160)] pl-3">
+            <ul className="ml-4 mt-1 space-y-0.5 border-l-2 border-border pl-3">
               {items.map((item, index) => (
                 <SortableListItem
                   key={item.sheetId}
@@ -246,14 +246,14 @@ function SortableListItem({
         className={cn(
           "flex items-center gap-1 rounded-xl px-2 py-1.5 text-sm transition-all",
           currentSlug === item.sheetSlug && currentListId === listId
-            ? "bg-linear-to-r from-[oklch(0.94_0.04_160)] to-[oklch(0.94_0.04_150)] text-[oklch(0.3_0.06_160)] shadow-sm"
-            : "text-[oklch(0.4_0.04_160)] hover:bg-[oklch(0.96_0.02_160)]",
+            ? "bg-accent text-secondary-foreground shadow-sm"
+            : "text-muted-foreground hover:bg-muted",
         )}
       >
         {/* Drag handle */}
         <button
           type="button"
-          className="cursor-grab text-[oklch(0.7_0.02_160)] hover:text-[oklch(0.5_0.08_160)] transition-colors"
+          className="cursor-grab text-muted-foreground/60 hover:text-muted-foreground transition-colors"
           {...attributes}
           {...listeners}
         >
@@ -269,7 +269,7 @@ function SortableListItem({
           <div className="flex items-center justify-between">
             <span className="truncate">{item.sheetTitle || "Untitled"}</span>
             {item.transpose !== 0 && (
-              <span className="text-xs font-medium px-1.5 py-0.5 rounded-md bg-[oklch(0.94_0.04_160)] text-[oklch(0.45_0.08_160)]">
+              <span className="text-xs font-medium px-1.5 py-0.5 rounded-md bg-accent text-muted-foreground">
                 {item.transpose > 0 ? "+" : ""}
                 {item.transpose}
               </span>
@@ -286,8 +286,8 @@ function SortableListItem({
             className={cn(
               "rounded p-0.5 transition-colors",
               isFirst
-                ? "text-[oklch(0.9_0.01_160)]"
-                : "text-[oklch(0.7_0.02_160)] hover:bg-[oklch(0.94_0.04_160)] hover:text-[oklch(0.5_0.08_160)]",
+                ? "text-muted-foreground/40"
+                : "text-muted-foreground/60 hover:bg-accent hover:text-muted-foreground",
             )}
             title="Move up"
           >
@@ -300,8 +300,8 @@ function SortableListItem({
             className={cn(
               "rounded p-0.5 transition-colors",
               isLast
-                ? "text-[oklch(0.9_0.01_160)]"
-                : "text-[oklch(0.7_0.02_160)] hover:bg-[oklch(0.94_0.04_160)] hover:text-[oklch(0.5_0.08_160)]",
+                ? "text-muted-foreground/40"
+                : "text-muted-foreground/60 hover:bg-accent hover:text-muted-foreground",
             )}
             title="Move down"
           >

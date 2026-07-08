@@ -35,13 +35,13 @@ export function SheetList({
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-auto">
         {/* Home Link */}
-        <div className="p-3 border-b border-[oklch(0.92_0.02_160)]">
+        <div className="p-3 border-b border-border">
           <Link
             href="/"
             onClick={() => setIsOpen(false)}
-            className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-[oklch(0.4_0.05_160)] hover:bg-[oklch(0.96_0.02_160)] transition-colors"
+            className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
           >
-            <Music2 className="h-4 w-4 text-[oklch(0.55_0.18_160)]" />
+            <Music2 className="h-4 w-4 text-primary" />
             All Sheets
           </Link>
         </div>
@@ -50,13 +50,13 @@ export function SheetList({
         {isLoggedIn && (
           <div className="p-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="px-2 text-xs font-semibold uppercase tracking-wide text-[oklch(0.5_0.04_160)]">
+              <span className="px-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Lists
               </span>
               <button
                 type="button"
                 onClick={() => setShowCreateDialog(true)}
-                className="rounded-lg p-1.5 text-[oklch(0.5_0.06_160)] hover:bg-linear-to-r hover:from-[oklch(0.96_0.02_160)] hover:to-[oklch(0.96_0.02_150)] hover:text-[oklch(0.45_0.12_160)] transition-all"
+                className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-primary transition-all"
                 title="Create new list"
               >
                 <Plus className="h-4 w-4" />
@@ -64,7 +64,7 @@ export function SheetList({
             </div>
 
             {lists.length === 0 ? (
-              <div className="mt-2 px-2 text-center text-sm text-[oklch(0.55_0.03_160)]">
+              <div className="mt-2 px-2 text-center text-sm text-muted-foreground">
                 No lists yet
               </div>
             ) : (

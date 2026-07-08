@@ -118,7 +118,7 @@ export function ListDetail({
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-zinc-900">
+        <h1 className="text-2xl font-semibold text-foreground">
           {initialList.name}
         </h1>
         <div className="flex items-center gap-2">
@@ -134,7 +134,7 @@ export function ListDetail({
       </div>
 
       {items.length === 0 ? (
-        <p className="text-center text-zinc-500">No sheets in this list</p>
+        <p className="text-center text-muted-foreground">No sheets in this list</p>
       ) : (
         <DndContext
           sensors={sensors}

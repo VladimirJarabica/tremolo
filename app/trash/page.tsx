@@ -9,12 +9,12 @@ export default async function TrashPage(): Promise<React.JSX.Element> {
   const sheets = result.success ? result.data : [];
 
   return (
-    <div className="flex h-screen flex-col bg-white">
-      <header className="flex h-14 items-center justify-between border-b border-zinc-200 px-4">
+    <div className="flex h-screen flex-col bg-card">
+      <header className="flex h-14 items-center justify-between border-b border-border px-4">
         <h1 className="text-xl font-semibold">Trash</h1>
         <Link
           href="/"
-          className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
+          className="rounded-lg border border-input px-4 py-2 text-sm font-medium text-secondary-foreground transition-colors hover:bg-muted"
         >
           Back to Sheets
         </Link>
@@ -22,7 +22,7 @@ export default async function TrashPage(): Promise<React.JSX.Element> {
 
       <main className="flex-1 overflow-auto p-6">
         {sheets.length === 0 ? (
-          <div className="text-center text-zinc-500">
+          <div className="text-center text-muted-foreground">
             <p>Trash is empty</p>
           </div>
         ) : (
@@ -54,10 +54,10 @@ function TrashItem({
   const title = getPreviewTitle(content);
 
   return (
-    <li className="flex items-center justify-between rounded-lg border border-zinc-200 p-4">
+    <li className="flex items-center justify-between rounded-lg border border-border p-4">
       <div>
         <div className="font-medium">{title || "Untitled"}</div>
-        <div className="text-sm text-zinc-500">
+        <div className="text-sm text-muted-foreground">
           Deleted {format(deletedAt, "d. MMM yyyy")}
         </div>
       </div>
@@ -87,7 +87,7 @@ function RestoreButton({ sheetId }: { sheetId: string }): React.JSX.Element {
     >
       <button
         type="submit"
-        className="rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+        className="rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
       >
         Restore
       </button>
@@ -105,7 +105,7 @@ function HardDeleteButton({ sheetId }: { sheetId: string }): React.JSX.Element {
     >
       <button
         type="submit"
-        className="rounded-lg border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+        className="rounded-lg border border-destructive px-3 py-1.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
       >
         Delete Forever
       </button>

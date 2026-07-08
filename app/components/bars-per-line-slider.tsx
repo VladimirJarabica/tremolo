@@ -35,13 +35,13 @@ export function BarsPerLineSlider({
           checked={isAutomatic}
           onCheckedChange={handleAutomaticChange}
         />
-        <Label htmlFor="automatic" className="text-sm text-[oklch(0.5_0.04_160)]">
+        <Label htmlFor="automatic" className="text-sm text-muted-foreground">
           Automatic
         </Label>
       </div>
 
       <div className="flex flex-1 items-center gap-3">
-        <span className="text-sm text-[oklch(0.5_0.04_160)]">Bars per line:</span>
+        <span className="text-sm text-muted-foreground">Bars per line:</span>
         <Slider
           value={[value]}
           onValueChange={([val]) => handleManualChange(val)}
@@ -50,7 +50,7 @@ export function BarsPerLineSlider({
           step={1}
           className="w-32"
         />
-        <span className="min-w-6 text-center text-sm font-medium text-[oklch(0.35_0.04_160)]">
+        <span className="min-w-6 text-center text-sm font-medium text-secondary-foreground">
           {value}
         </span>
       </div>

@@ -224,7 +224,7 @@ export function AbcViewer({
 
   if (!sheet.content.trim()) {
     return (
-      <div className="flex h-full items-center justify-center text-[oklch(0.5_0.03_160)]">
+      <div className="flex h-full items-center justify-center text-muted-foreground">
         No content to preview
       </div>
     );
@@ -234,10 +234,10 @@ export function AbcViewer({
     return (
       <div className="flex items-center justify-center">
         <div className="text-center">
-          <p className="text-lg text-[oklch(0.577_0.245_27.325)]">
+          <p className="text-lg text-destructive">
             Failed to render sheet
           </p>
-          <p className="mt-2 text-sm text-[oklch(0.5_0.04_160)]">
+          <p className="mt-2 text-sm text-muted-foreground">
             Verify your input
           </p>
         </div>
@@ -250,19 +250,19 @@ export function AbcViewer({
       {/* Sheet music notation */}
       <div
         ref={notationRef}
-        className="abc-container min-h-0 rounded-2xl border border-[oklch(0.92_0.02_160)] bg-white/90 backdrop-blur-sm p-4 shadow-sm print:border-none print:shadow-none print:bg-transparent"
+        className="abc-container min-h-0 rounded-2xl border border-border bg-card/90 backdrop-blur-sm p-4 shadow-sm print:border-none print:shadow-none print:bg-transparent"
       />
 
       {/* Source */}
       {sheet.source !== null && (
-        <div className="mt-2 text-sm text-[oklch(0.5_0.04_160)] flex gap-1">
+        <div className="mt-2 text-sm text-muted-foreground flex gap-1">
           Source:
           {isSourceLink ? (
             <a
               href={sheet.source}
               target="_blank"
               rel="noopener noreferrer"
-              className="block truncate text-[oklch(0.55_0.18_160)] hover:underline"
+              className="block truncate text-primary hover:underline"
             >
               {sheet.source}
             </a>
@@ -273,17 +273,17 @@ export function AbcViewer({
       )}
 
       {/* Controls bar */}
-      <div className="mt-4 space-y-3 rounded-2xl border border-[oklch(0.92_0.02_160)] backdrop-blur-sm bg-white/80 px-4 py-3 shadow-sm print:hidden">
+      <div className="mt-4 space-y-3 rounded-2xl border border-border backdrop-blur-sm bg-card/80 px-4 py-3 shadow-sm print:hidden">
         <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Transpose controls */}
           <div className="flex items-center gap-2 justify-between flex-row">
-            <span className="text-xs font-semibold uppercase tracking-wide text-[oklch(0.5_0.04_160)]">
+            <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Transpose
             </span>
-            <div className="flex items-center rounded-xl bg-white shadow-sm ring-1 ring-[oklch(0.92_0.02_160)]">
+            <div className="flex items-center rounded-xl bg-card shadow-sm ring-1 ring-border">
               <button
                 onClick={() => handleTransposeChange(-1)}
-                className="rounded-l-xl px-3 py-1.5 text-[oklch(0.45_0.05_160)] hover:bg-[oklch(0.96_0.02_160)] transition-colors"
+                className="rounded-l-xl px-3 py-1.5 text-muted-foreground hover:bg-muted transition-colors"
               >
                 <svg
                   className="h-4 w-4"
@@ -299,12 +299,12 @@ export function AbcViewer({
                   />
                 </svg>
               </button>
-              <span className="min-w-10 border-x border-[oklch(0.92_0.02_160)] px-2 py-1.5 text-center font-mono text-sm font-medium text-[oklch(0.35_0.04_160)]">
+              <span className="min-w-10 border-x border-border px-2 py-1.5 text-center font-mono text-sm font-medium text-secondary-foreground">
                 {transpose > 0 ? `+${transpose}` : transpose}
               </span>
               <button
                 onClick={() => handleTransposeChange(1)}
-                className="rounded-r-xl px-3 py-1.5 text-[oklch(0.45_0.05_160)] hover:bg-[oklch(0.96_0.02_160)] transition-colors"
+                className="rounded-r-xl px-3 py-1.5 text-muted-foreground hover:bg-muted transition-colors"
               >
                 <svg
                   className="h-4 w-4"
@@ -327,20 +327,20 @@ export function AbcViewer({
                 onClick={handleTransposeReset}
                 title="Reset to 0"
                 aria-label="Reset transpose to 0"
-                className="rounded-lg p-1.5 text-[oklch(0.5_0.06_160)] hover:bg-[oklch(0.96_0.02_160)] hover:text-[oklch(0.45_0.05_160)] transition-colors"
+                className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-muted-foreground transition-colors"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
               </button>
             )}
             {/* Saved indicator */}
             {showSaved && (
-              <span className="flex items-center gap-1 text-xs font-medium text-[oklch(0.6_0.2_145)] animate-in fade-in slide-in-from-left-2 duration-200">
+              <span className="flex items-center gap-1 text-xs font-medium text-success animate-in fade-in slide-in-from-left-2 duration-200">
                 <Check className="h-3 w-3" />
                 Saved
               </span>
             )}
             {listId && !showSaved && (
-              <span className="text-xs text-[oklch(0.5_0.04_160)]">
+              <span className="text-xs text-muted-foreground">
                 Auto-saves to list
               </span>
             )}
@@ -358,7 +358,7 @@ export function AbcViewer({
           />
           <button
             onClick={() => window.print()}
-            className="rounded-xl border border-[oklch(0.85_0.04_160)] bg-white px-4 py-2 text-sm font-medium text-[oklch(0.4_0.05_160)] hover:bg-gradient-to-r hover:from-[oklch(0.96_0.02_160)] hover:to-[oklch(0.96_0.02_150)] hover:border-[oklch(0.7_0.08_160)] transition-all"
+            className="rounded-xl border border-input bg-card px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:border-primary/40 transition-all"
           >
             Print
           </button>

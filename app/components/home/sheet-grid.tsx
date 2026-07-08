@@ -139,7 +139,7 @@ export function SheetGrid(): React.JSX.Element {
 
   if (sheetsLoading) {
     return (
-      <div className="flex h-full items-center justify-center text-[oklch(0.5_0.03_160)]">
+      <div className="flex h-full items-center justify-center text-muted-foreground">
         Loading...
       </div>
     );
@@ -148,29 +148,29 @@ export function SheetGrid(): React.JSX.Element {
   return (
     <div className="flex h-full flex-col">
       {/* Filters */}
-      <div className="border-b border-[oklch(0.92_0.02_160)] backdrop-blur-sm bg-white/60 p-4 sticky top-14 z-10">
+      <div className="border-b border-border backdrop-blur-sm bg-card/60 p-4 sticky top-14 z-10">
         <div className="flex flex-wrap items-center gap-3">
           {/* Search */}
           <div className="relative flex-1 min-w-[200px] max-w-md">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[oklch(0.5_0.06_160)]" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search by title or author..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 py-2 pl-10 pr-4 text-sm text-[oklch(0.25_0.02_160)] placeholder:text-[oklch(0.55_0.03_160)] shadow-sm focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all"
+              className="w-full rounded-xl border border-border bg-card/80 py-2 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground shadow-sm focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none transition-all"
             />
           </div>
 
           {/* Order */}
-          <div className="flex rounded-xl border border-[oklch(0.92_0.02_160)] overflow-hidden shadow-sm bg-white/80">
+          <div className="flex rounded-xl border border-border overflow-hidden shadow-sm bg-card/80">
             <button
               type="button"
               onClick={() => setOrderBy("title")}
               className={`px-3 py-2 text-sm font-medium transition-all ${
                 orderBy === "title"
-                  ? "bg-gradient-to-r from-[oklch(0.55_0.18_160)] to-[oklch(0.5_0.18_150)] text-white shadow-sm"
-                  : "bg-transparent text-[oklch(0.45_0.04_160)] hover:bg-[oklch(0.96_0.02_160)]"
+                  ? "bg-brand-gradient text-primary-foreground shadow-sm"
+                  : "bg-transparent text-muted-foreground hover:bg-muted"
               }`}
             >
               Name
@@ -180,8 +180,8 @@ export function SheetGrid(): React.JSX.Element {
               onClick={() => setOrderBy("createdAt")}
               className={`px-3 py-2 text-sm font-medium transition-all ${
                 orderBy === "title"
-                  ? "bg-transparent text-[oklch(0.45_0.04_160)] hover:bg-[oklch(0.96_0.02_160)]"
-                  : "bg-gradient-to-r from-[oklch(0.55_0.18_160)] to-[oklch(0.5_0.18_150)] text-white shadow-sm"
+                  ? "bg-transparent text-muted-foreground hover:bg-muted"
+                  : "bg-brand-gradient text-primary-foreground shadow-sm"
               }`}
             >
               Date
@@ -192,7 +192,7 @@ export function SheetGrid(): React.JSX.Element {
           <select
             value={meter}
             onChange={(e) => setMeter(e.target.value)}
-            className="rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 px-3 py-2 text-sm text-[oklch(0.35_0.04_160)] shadow-sm focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all cursor-pointer"
+            className="rounded-xl border border-border bg-card/80 px-3 py-2 text-sm text-secondary-foreground shadow-sm focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none transition-all cursor-pointer"
           >
             <option value="">All meters</option>
             <option value="m_4_4">4/4</option>
@@ -207,7 +207,7 @@ export function SheetGrid(): React.JSX.Element {
           <select
             value={tempoRange}
             onChange={(e) => setTempoRange(e.target.value)}
-            className="rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 px-3 py-2 text-sm text-[oklch(0.35_0.04_160)] shadow-sm focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all cursor-pointer"
+            className="rounded-xl border border-border bg-card/80 px-3 py-2 text-sm text-secondary-foreground shadow-sm focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none transition-all cursor-pointer"
           >
             <option value="">All tempos</option>
             <option value="slow">Slow (up to 80)</option>
@@ -219,7 +219,7 @@ export function SheetGrid(): React.JSX.Element {
           <select
             value={scale}
             onChange={(e) => setScale(e.target.value)}
-            className="rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 px-3 py-2 text-sm text-[oklch(0.35_0.04_160)] shadow-sm focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all cursor-pointer"
+            className="rounded-xl border border-border bg-card/80 px-3 py-2 text-sm text-secondary-foreground shadow-sm focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none transition-all cursor-pointer"
           >
             <option value="">All scales</option>
             <optgroup label="Major - Sharps">
@@ -267,7 +267,7 @@ export function SheetGrid(): React.JSX.Element {
             <button
               type="button"
               onClick={clearFilters}
-              className="flex items-center gap-1 rounded-xl px-3 py-2 text-sm text-[oklch(0.45_0.05_160)] hover:bg-[oklch(0.96_0.02_160)] transition-colors"
+              className="flex items-center gap-1 rounded-xl px-3 py-2 text-sm text-muted-foreground hover:bg-muted transition-colors"
             >
               <X className="h-4 w-4" />
               Clear
@@ -275,7 +275,7 @@ export function SheetGrid(): React.JSX.Element {
           )}
 
           {/* Count */}
-          <span className="ml-auto text-sm font-medium text-[oklch(0.45_0.05_160)]">
+          <span className="ml-auto text-sm font-medium text-muted-foreground">
             {filtered.length} sheets
           </span>
         </div>
@@ -284,7 +284,7 @@ export function SheetGrid(): React.JSX.Element {
       {/* Sheet list */}
       <div className="overflow-auto p-4">
         {paginated.length === 0 ? (
-          <div className="flex h-full items-center justify-center text-[oklch(0.5_0.03_160)]">
+          <div className="flex h-full items-center justify-center text-muted-foreground">
             No sheets found
           </div>
         ) : (
@@ -311,30 +311,30 @@ function SheetListItem({ sheet }: { sheet: SheetItem }): React.JSX.Element {
   return (
     <Link
       href={`/sheet/${sheet.slug}`}
-      className="group flex items-center gap-4 rounded-2xl border border-[oklch(0.92_0.02_160)] bg-white/80 backdrop-blur-sm px-5 py-4 shadow-sm transition-all hover:shadow-lg hover:shadow-[oklch(0.55_0.12_160/0.1)] hover:border-[oklch(0.85_0.04_160)] hover:bg-white"
+      className="group flex items-center gap-4 rounded-2xl border border-border bg-card/80 backdrop-blur-sm px-5 py-4 shadow-sm transition-all hover:shadow-lg hover:shadow-primary/10 hover:border-input hover:bg-card"
     >
       <div className="min-w-0 flex-1">
-        <h3 className="truncate font-semibold text-[oklch(0.25_0.03_160)] group-hover:text-[oklch(0.45_0.18_160)] transition-colors">
+        <h3 className="truncate font-semibold text-foreground group-hover:text-primary transition-colors">
           {sheet.title || "Untitled"}
         </h3>
         {sheet.author && (
-          <p className="mt-0.5 truncate text-sm text-[oklch(0.5_0.04_160)]">
+          <p className="mt-0.5 truncate text-sm text-muted-foreground">
             {sheet.author}
           </p>
         )}
       </div>
-      <div className="flex shrink-0 items-center gap-3 text-xs text-[oklch(0.45_0.04_160)] font-medium">
-        <span className="px-2 py-1 rounded-lg bg-[oklch(0.96_0.02_160)]">
+      <div className="flex shrink-0 items-center gap-3 text-xs text-muted-foreground font-medium">
+        <span className="px-2 py-1 rounded-lg bg-muted">
           {formatMeter(sheet.meter)}
         </span>
-        <span className="px-2 py-1 rounded-lg bg-[oklch(0.96_0.02_160)]">
+        <span className="px-2 py-1 rounded-lg bg-muted">
           {sheet.tempo} BPM
         </span>
-        <span className="px-2 py-1 rounded-lg bg-[oklch(0.96_0.02_160)]">
+        <span className="px-2 py-1 rounded-lg bg-muted">
           {formatScale(sheet.scale)}
         </span>
       </div>
-      <span className="shrink-0 text-xs text-[oklch(0.5_0.03_160)]">
+      <span className="shrink-0 text-xs text-muted-foreground">
         {format(sheet.createdAt, "d. MMM yyyy")}
       </span>
     </Link>

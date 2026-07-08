@@ -50,7 +50,7 @@ export function TempoInput({
 
   return (
     <div className="flex items-center gap-2">
-      <label htmlFor="tempo" className="text-sm font-medium text-[oklch(0.45_0.05_160)]">
+      <label htmlFor="tempo" className="text-sm font-medium text-muted-foreground">
         Tempo
       </label>
       <input
@@ -65,9 +65,9 @@ export function TempoInput({
             e.currentTarget.blur();
           }
         }}
-        className="w-20 rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 px-3 py-2 text-sm text-[oklch(0.3_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm"
+        className="w-20 rounded-xl border border-border bg-card/80 px-3 py-2 text-sm text-secondary-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none transition-all shadow-sm"
       />
-      <span className="text-sm text-[oklch(0.5_0.04_160)]">BPM</span>
+      <span className="text-sm text-muted-foreground">BPM</span>
     </div>
   );
 }

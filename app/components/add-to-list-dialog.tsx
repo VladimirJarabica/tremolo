@@ -94,7 +94,7 @@ export function AddToListDialog({
         </DialogHeader>
 
         {lists.length === 0 ? (
-          <div className="py-4 text-center text-sm text-zinc-500">
+          <div className="py-4 text-center text-sm text-muted-foreground">
             No lists yet. Create a list first.
           </div>
         ) : (
@@ -106,11 +106,11 @@ export function AddToListDialog({
                     type="button"
                     onClick={() => handleToggle(list.id, list.isMember)}
                     disabled={isLoading}
-                    className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-zinc-100 disabled:opacity-50"
+                    className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-muted disabled:opacity-50"
                   >
                     <span>{list.name}</span>
                     {list.isMember ? (
-                      <span className="text-xs text-zinc-500">
+                      <span className="text-xs text-muted-foreground">
                         {list.currentTranspose !== 0
                           ? `(${list.currentTranspose > 0 ? "+" : ""}${list.currentTranspose})`
                           : "✓"}
@@ -120,7 +120,7 @@ export function AddToListDialog({
                 </li>
               ))}
             </ul>
-            {error && <p className="text-sm text-red-500">{error}</p>}
+            {error && <p className="text-sm text-destructive">{error}</p>}
             <DialogFooter>
               <Button type="button" variant="outline" onClick={handleClose}>
                 Cancel

@@ -70,7 +70,7 @@ export function CreateListDialog({
               autoFocus
             />
           </div>
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && <p className="text-sm text-destructive">{error}</p>}
           <DialogFooter>
             <Button
               type="button"
@@ -174,7 +174,7 @@ export function EditListDialog({
               autoFocus
             />
           </div>
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && <p className="text-sm text-destructive">{error}</p>}
           <DialogFooter className="flex-col gap-2 sm:flex-row">
             <Button
               type="button"

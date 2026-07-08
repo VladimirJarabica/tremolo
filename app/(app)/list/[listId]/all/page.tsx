@@ -20,12 +20,12 @@ export default async function ListAllPage({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="border-b border-zinc-200 bg-white px-4 py-3 print:hidden">
+      <div className="border-b border-border bg-card px-4 py-3 print:hidden">
         <div className="mx-auto flex max-w-4xl items-center gap-4">
           <Button variant="ghost" size="sm" asChild>
             <Link href={`/list/${listId}`}>← Back to list</Link>
           </Button>
-          <h1 className="text-lg font-semibold text-zinc-900">{list.name}</h1>
+          <h1 className="text-lg font-semibold text-foreground">{list.name}</h1>
         </div>
       </div>
       <div className="flex-1 p-4">

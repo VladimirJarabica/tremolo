@@ -32,8 +32,11 @@
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-secondary: var(--secondary);
+  --color-primary-end: var(--primary-end);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  --color-success-foreground: var(--success-foreground);
+  --color-success: var(--success);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -58,7 +61,11 @@
   --popover-foreground: oklch(0.2 0.02 160);
   /* Primary: Emerald-green gradient */
   --primary: oklch(0.55 0.2 160);
+  --primary-end: oklch(0.5 0.18 150);
   --primary-foreground: oklch(0.99 0 0);
+  /* Success: positive feedback (Saved checkmark, autosave status) */
+  --success: oklch(0.6 0.2 145);
+  --success-foreground: oklch(0.99 0 0);
   --secondary: oklch(0.96 0.02 160);
   --secondary-foreground: oklch(0.35 0.08 160);
   --muted: oklch(0.96 0.015 160);
@@ -88,37 +95,45 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  /* Forest Mist — dark: keeps the emerald brand identity (the prior block
+     was achromatic grey and discarded the green entirely). */
+  --background: oklch(0.16 0.012 160);
+  --foreground: oklch(0.96 0.005 160);
+  --card: oklch(0.205 0.014 160);
+  --card-foreground: oklch(0.96 0.005 160);
+  --popover: oklch(0.205 0.014 160);
+  --popover-foreground: oklch(0.96 0.005 160);
+  /* Primary: brighter emerald so it reads on a dark surface */
+  --primary: oklch(0.7 0.16 160);
+  --primary-end: oklch(0.66 0.15 150);
+  --primary-foreground: oklch(0.16 0.03 160);
+  --success: oklch(0.72 0.17 150);
+  --success-foreground: oklch(0.16 0.03 150);
+  --secondary: oklch(0.26 0.015 160);
+  --secondary-foreground: oklch(0.92 0.01 160);
+  --muted: oklch(0.26 0.015 160);
+  --muted-foreground: oklch(0.72 0.02 160);
+  /* Accent: green-tinted selection surface */
+  --accent: oklch(0.3 0.05 160);
+  --accent-foreground: oklch(0.94 0.02 160);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --border: oklch(0.7 0.02 160 / 16%);
+  --input: oklch(0.7 0.02 160 / 22%);
+  --ring: oklch(0.7 0.16 160);
+  --chart-1: oklch(0.7 0.16 160);
+  --chart-2: oklch(0.66 0.15 150);
+  --chart-3: oklch(0.6 0.13 170);
+  --chart-4: oklch(0.75 0.11 140);
+  --chart-5: oklch(0.78 0.1 180);
+  /* Sidebar - sits between background and card */
+  --sidebar: oklch(0.18 0.012 160);
+  --sidebar-foreground: oklch(0.95 0.005 160);
+  --sidebar-primary: oklch(0.7 0.16 160);
+  --sidebar-primary-foreground: oklch(0.16 0.03 160);
+  --sidebar-accent: oklch(0.3 0.05 160);
+  --sidebar-accent-foreground: oklch(0.94 0.02 160);
+  --sidebar-border: oklch(0.7 0.02 160 / 16%);
+  --sidebar-ring: oklch(0.7 0.16 160);
 }
 
 @layer base {
@@ -134,6 +149,44 @@
       oklch(0.99 0.006 150) 100%
     );
     background-attachment: fixed;
+  }
+  /* Dark body gradient — matches the light one's geometry, deep forest tone. */
+  .dark body {
+    background: linear-gradient(
+      135deg,
+      oklch(0.17 0.012 160) 0%,
+      oklch(0.16 0.015 140) 50%,
+      oklch(0.17 0.01 150) 100%
+    );
+    background-attachment: fixed;
+  }
+}
+
+/*
+ * Brand gradient — the single source of truth for the emerald button/logo
+ * gradient. Replaces inline `from-[oklch(...)] to-[oklch(...)]` literals so a
+ * re-theme only touches the tokens above.
+ */
+.bg-brand-gradient {
+  background-image: linear-gradient(
+    to right,
+    var(--primary),
+    var(--primary-end)
+  );
+}
+
+/*
+ * Notation theming: abcjs draws every glyph with fill="currentColor" (and
+ * the <style> it injects sets no colors), so the ink simply follows the
+ * inherited text color — dark in light mode, light in dark mode. No filter is
+ * needed; in fact inverting the SVG would double-negate currentColor back to
+ * black-on-dark (the original dark-mode bug).
+ *
+ * Print is always black-on-white paper regardless of the active theme:
+ */
+@media print {
+  .abc-container {
+    color: black;
   }
 }
 
@@ -158,16 +211,16 @@
   height: 36px;
   padding: 6px;
   border-radius: 12px;
-  border: 1px solid oklch(0.92 0.02 160);
-  background: white;
-  color: oklch(0.45 0.06 160);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--muted-foreground);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .abcjs-btn:hover {
-  background: oklch(0.96 0.02 160);
-  border-color: oklch(0.85 0.04 160);
+  background: var(--muted);
+  border-color: var(--input);
 }
 
 .abcjs-btn:active {
@@ -183,15 +236,15 @@
 .abcjs-midi-start.abcjs-btn {
   background: linear-gradient(
     to right,
-    oklch(0.55 0.18 160),
-    oklch(0.5 0.18 150)
+    var(--primary),
+    var(--primary-end)
   );
   border-color: transparent;
   margin-right: 8px;
-  color: white;
+  color: var(--primary-foreground);
   width: 45px;
   padding-right: 10px;
-  box-shadow: 0 4px 12px oklch(0.55 0.18 160 / 0.3);
+  box-shadow: 0 4px 12px color-mix(in oklch, var(--primary) 30%, transparent);
 
   > svg:last-of-type {
     display: none;
@@ -199,13 +252,13 @@
 }
 
 .abcjs-midi-start.abcjs-btn:hover {
-  box-shadow: 0 6px 16px oklch(0.55 0.18 160 / 0.4);
+  box-shadow: 0 6px 16px color-mix(in oklch, var(--primary) 40%, transparent);
 }
 
 .abcjs-midi-loop.abcjs-btn[aria-pressed="true"] {
-  background: oklch(0.94 0.06 150);
-  border-color: oklch(0.55 0.18 160);
-  color: oklch(0.45 0.18 160);
+  background: var(--accent);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 .abcjs-midi-progress-background {
@@ -213,7 +266,7 @@
   min-width: 80px;
   height: 8px;
   border-radius: 4px;
-  background: oklch(0.94 0.02 160);
+  background: var(--muted);
   border: none;
   cursor: pointer;
   position: relative;
@@ -228,17 +281,17 @@
   border-radius: 50%;
   background: linear-gradient(
     to right,
-    oklch(0.55 0.18 160),
-    oklch(0.5 0.18 150)
+    var(--primary),
+    var(--primary-end)
   );
-  box-shadow: 0 2px 6px oklch(0.55 0.18 160 / 0.4);
+  box-shadow: 0 2px 6px color-mix(in oklch, var(--primary) 40%, transparent);
 }
 
 .abcjs-midi-clock {
   font-size: 0.875rem;
   font-weight: 500;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  color: oklch(0.4 0.05 160);
+  color: var(--muted-foreground);
   min-width: 40px;
 }
 
@@ -247,7 +300,7 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 0.75rem;
-  color: oklch(0.5 0.04 160);
+  color: var(--muted-foreground);
 }
 
 .abcjs-tempo-wrapper label {
@@ -260,18 +313,18 @@
   width: 50px;
   padding: 2px 6px;
   border-radius: 8px;
-  border: 1px solid oklch(0.92 0.02 160);
-  background: white;
+  border: 1px solid var(--border);
+  background: var(--card);
   font-size: 0.75rem;
   font-weight: 500;
-  color: oklch(0.4 0.05 160);
+  color: var(--muted-foreground);
   text-align: center;
 }
 
 .abcjs-midi-tempo:focus {
   outline: none;
-  border-color: oklch(0.55 0.18 160);
-  box-shadow: 0 0 0 2px oklch(0.55 0.18 160 / 0.2);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in oklch, var(--primary) 20%, transparent);
 }
 
 .abcjs-loading-svg {

@@ -58,7 +58,7 @@ export function SortableListCard({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "rounded-lg border border-zinc-200 bg-white p-4",
+        "rounded-lg border border-border bg-card p-4",
         isDragging && "opacity-50",
       )}
     >
@@ -66,7 +66,7 @@ export function SortableListCard({
         {/* Drag handle */}
         <button
           type="button"
-          className="cursor-grab text-zinc-300 hover:text-zinc-500"
+          className="cursor-grab text-muted-foreground/60 hover:text-muted-foreground"
           {...attributes}
           {...listeners}
         >
@@ -78,30 +78,30 @@ export function SortableListCard({
           href={`/sheet/${item.sheetSlug}?list=${listId}`}
           className="flex-1"
         >
-          <div className="font-medium text-zinc-900">
+          <div className="font-medium text-foreground">
             {item.sheetTitle || "Untitled"}
           </div>
         </Link>
 
         {/* Metadata badges */}
-        <div className="flex items-center gap-2 text-xs text-zinc-500">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
           {item.meter && (
-            <span className="rounded bg-zinc-100 px-2 py-1">
+            <span className="rounded bg-muted px-2 py-1">
               {item.meter.replace("m_", "").replace("_", "/")}
             </span>
           )}
           {item.tempo && (
-            <span className="rounded bg-zinc-100 px-2 py-1">
+            <span className="rounded bg-muted px-2 py-1">
               {item.tempo} BPM
             </span>
           )}
           {item.scale && (
-            <span className="rounded bg-zinc-100 px-2 py-1">
+            <span className="rounded bg-muted px-2 py-1">
               {item.scale}
             </span>
           )}
           {item.transpose !== 0 && (
-            <span className="rounded bg-blue-100 px-2 py-1 text-blue-700">
+            <span className="rounded bg-accent px-2 py-1 text-accent-foreground">
               {item.transpose > 0 ? "+" : ""}
               {item.transpose}
             </span>
@@ -117,8 +117,8 @@ export function SortableListCard({
             className={cn(
               "rounded p-0.5",
               isFirst
-                ? "text-zinc-200"
-                : "text-zinc-300 hover:bg-zinc-100 hover:text-zinc-500",
+                ? "text-muted-foreground/40"
+                : "text-muted-foreground/60 hover:bg-muted hover:text-muted-foreground",
             )}
             title="Move up"
           >
@@ -131,8 +131,8 @@ export function SortableListCard({
             className={cn(
               "rounded p-0.5",
               isLast
-                ? "text-zinc-200"
-                : "text-zinc-300 hover:bg-zinc-100 hover:text-zinc-500",
+                ? "text-muted-foreground/40"
+                : "text-muted-foreground/60 hover:bg-muted hover:text-muted-foreground",
             )}
             title="Move down"
           >
@@ -144,7 +144,7 @@ export function SortableListCard({
         <button
           type="button"
           onClick={() => onRemove(item.sheetId)}
-          className="rounded p-1 text-zinc-300 hover:bg-red-50 hover:text-red-500"
+          className="rounded p-1 text-muted-foreground/60 hover:bg-destructive/10 hover:text-destructive"
           title="Remove from list"
         >
           <X className="h-4 w-4" />
