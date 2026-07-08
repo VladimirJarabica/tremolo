@@ -138,9 +138,11 @@ an explicit error instead of silently defaulting.
 - **`onChange`:** update `tempoInput` only. Empty string and partial numerics
   (e.g. `"12"`) are allowed and do **not** propagate to the parent's `sheet`
   until committed. This is what stops the fighting.
-- **Sync from prop:** when `props.sheet.tempo` changes (sheet switch via
-  `useEffect` reset in `sheet-detail.tsx`, or Cancel), re-seed `tempoInput` from
-  the prop so the field reflects the canonical value.
+- **Sync from prop:** re-seed `tempoInput` from `sheet.tempo` when the sheet
+  changes or when (re)entering edit mode — implemented as a render-time
+  "adjust state on prop change" block keyed on `{ sheet.id, isEditing }`, not an
+  effect (so it never fights the user's typing and stays lint-clean; the key
+  intentionally excludes `sheet.tempo`).
 - **`onBlur`:** hard fallback to `120`. If `tempoInput` is empty, `NaN`, or
   `<= 0`, set `tempoInput = "120"` and call `updateTempo(120)`. Otherwise parse
   and commit via `updateTempo`.

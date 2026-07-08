@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { Meter, Scale, type Scale as ScaleType } from "@/be/db/enums";
 import { METER_OPTIONS, SCALE_OPTIONS } from "@/lib/constants";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { TempoInput } from "./tempo-input";
 
 export function SheetEditor({
   sheet,
@@ -201,20 +202,11 @@ export function SheetEditor({
                   ))}
                 </select>
               </div>
-              <div className="flex items-center gap-2">
-                <label htmlFor="tempo" className="text-sm font-medium text-[oklch(0.45_0.05_160)]">
-                  Tempo
-                </label>
-                <input
-                  id="tempo"
-                  type="number"
-                  min={1}
-                  value={sheet.tempo}
-                  onChange={(e) => updateTempo(parseInt(e.target.value, 10) || 120)}
-                  className="w-20 rounded-xl border border-[oklch(0.92_0.02_160)] bg-white/80 px-3 py-2 text-sm text-[oklch(0.3_0.03_160)] focus:border-[oklch(0.6_0.18_160)] focus:ring-2 focus:ring-[oklch(0.6_0.18_160/0.2)] focus:outline-none transition-all shadow-sm"
-                />
-                <span className="text-sm text-[oklch(0.5_0.04_160)]">BPM</span>
-              </div>
+              <TempoInput
+                originalTempo={sheet.tempo}
+                id={sheet.id}
+                onUpdate={updateTempo}
+              />
               <div className="flex items-center gap-2">
                 <label htmlFor="scale" className="text-sm font-medium text-[oklch(0.45_0.05_160)]">
                   Key
