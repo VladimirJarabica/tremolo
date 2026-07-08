@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -101,17 +101,22 @@ export function EditListDialog({
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
 }): React.JSX.Element {
-  const [name, setName] = useState("");
+  const [name, setName] = useState(list?.name ?? "");
+  const [prevListId, setPrevListId] = useState(list?.id);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Sync name when the target list changes (or the dialog re-opens for it).
-  useEffect(() => {
-    if (list) {
-      setName(list.name);
-      setError(null);
-    }
-  }, [list]);
+  // Reset the form when the target list changes. Adjusting state during render
+  // (not in an effect) is the React-recommended pattern for "reset state when a
+  // prop changes": react.dev/learn/you-might-not-need-an-effect. It also avoids
+  // clobbering an in-progress edit on an unrelated parent re-render (the `list`
+  // prop is a fresh object at the call sites, so a `[list]` effect would fire
+  // every render). React discards this render's output and retries immediately.
+  if (list !== null && list.id !== prevListId) {
+    setPrevListId(list.id);
+    setName(list.name);
+    setError(null);
+  }
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
