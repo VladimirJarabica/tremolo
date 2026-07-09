@@ -80,9 +80,11 @@ export function SheetEditor({
     };
   }, [isEditing]);
 
-  // Restore the caret after a snippet is inserted via the toolbar (the
-  // controlled value updates on the next render, so the selection is applied
-  // once the new value is committed to the DOM).
+  // Restore focus + caret to the textarea after a snippet is inserted via
+  // the toolbar. Deferred to a macrotask so it runs *after* any menu/trigger
+  // focus management (e.g. a Radix dropdown closing and returning focus to
+  // its trigger) — ensuring the textarea ends up focused. The controlled
+  // value has already been committed to the DOM by the time this fires.
   useEffect(() => {
     const textarea = textareaRef.current;
     const pending = pendingSelectionRef.current;
@@ -90,8 +92,11 @@ export function SheetEditor({
       return;
     }
     pendingSelectionRef.current = null;
-    textarea.focus();
-    textarea.setSelectionRange(pending.start, pending.end);
+    const handle = window.setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(pending.start, pending.end);
+    }, 0);
+    return () => window.clearTimeout(handle);
   });
 
   // Insert a snippet at the textarea caret. When `wrap` is set, an existing
