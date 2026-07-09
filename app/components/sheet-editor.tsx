@@ -4,11 +4,13 @@ import { useRouter } from "next/navigation";
 import { updateSheet } from "@/app/actions/update-sheet";
 import { deleteSheet } from "@/app/actions/delete-sheet";
 import type { SheetBySlug } from "@/be/sheet/get-sheet-by-slug";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Meter, type Scale as ScaleType } from "@/be/db/enums";
 import { METER_OPTIONS, SCALE_OPTIONS } from "@/lib/constants";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { TempoInput } from "./tempo-input";
+import { getQuickChordRoots } from "@/app/utils/diatonic-chords";
+import { ChordButton } from "./chord-button";
 
 export function SheetEditor({
   sheet,
@@ -40,6 +42,22 @@ export function SheetEditor({
   const [isDeleting, setIsDeleting] = useState(false);
   const [metadataExpanded, setMetadataExpanded] = useState(true);
 
+  // Refs for snippet insertion: track the textarea and a caret position to
+  // restore after the controlled value updates.
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const pendingSelectionRef = useRef<{ start: number; end: number } | null>(
+    null,
+  );
+
+  // Quick chord roots for the sheet's key (diatonic roots minus the
+  // diminished one, tonic-first), recomputed when the key changes.
+  const chordRoots = useMemo(
+    () => getQuickChordRoots(sheet.scale as ScaleType),
+    [sheet.scale],
+  );
+  const keyLabel =
+    SCALE_OPTIONS.find((o) => o.value === sheet.scale)?.label ?? sheet.scale;
+
   // Latest-handler ref so the keydown listener can be attached once per
   // isEditing toggle without capturing a stale handleSave.
   const saveRef = useRef<() => void>(() => {});
@@ -51,10 +69,7 @@ export function SheetEditor({
   useEffect(() => {
     if (!isEditing) return;
     function onKeyDown(event: KeyboardEvent): void {
-      if (
-        (event.metaKey || event.ctrlKey) &&
-        event.key.toLowerCase() === "s"
-      ) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
         event.preventDefault();
         saveRef.current();
       }
@@ -64,6 +79,58 @@ export function SheetEditor({
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [isEditing]);
+
+  // Restore the caret after a snippet is inserted via the toolbar (the
+  // controlled value updates on the next render, so the selection is applied
+  // once the new value is committed to the DOM).
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    const pending = pendingSelectionRef.current;
+    if (textarea === null || pending === null) {
+      return;
+    }
+    pendingSelectionRef.current = null;
+    textarea.focus();
+    textarea.setSelectionRange(pending.start, pending.end);
+  });
+
+  // Insert a snippet at the textarea caret. When `wrap` is set, an existing
+  // selection is surrounded by before/after (e.g. "[", "]"); otherwise the
+  // snippet is inserted at the caret without disturbing surrounding content.
+  function insertSnippet(
+    before: string,
+    after: string,
+    options?: { wrap?: boolean },
+  ): void {
+    const textarea = textareaRef.current;
+    const value = sheet.content;
+    if (textarea === null) {
+      updateContent(value + before + after);
+      return;
+    }
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = value.slice(start, end);
+    const hasSelection = selected.length > 0;
+    const wrap = options?.wrap === true;
+
+    let newValue: string;
+    let caret: number;
+    if (wrap && hasSelection) {
+      newValue =
+        value.slice(0, start) + before + selected + after + value.slice(end);
+      caret = start + before.length + selected.length + after.length;
+    } else if (wrap) {
+      newValue = value.slice(0, start) + before + after + value.slice(end);
+      caret = start + before.length;
+    } else {
+      newValue = value.slice(0, start) + before + after + value.slice(start);
+      caret = start + before.length + after.length;
+    }
+
+    pendingSelectionRef.current = { start: caret, end: caret };
+    updateContent(newValue);
+  }
 
   async function handleSave(): Promise<void> {
     if (isSaving) return;
@@ -148,7 +215,11 @@ export function SheetEditor({
           className="flex w-full items-center justify-between p-3 text-left text-sm font-medium text-muted-foreground hover:bg-muted rounded-xl transition-colors"
         >
           <span className="flex items-center gap-2">
-            {metadataExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            {metadataExpanded ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
             {sheet.title || "Untitled"}
             <span className="text-muted-foreground font-normal">
               • {sheet.author || "No author"}
@@ -185,7 +256,10 @@ export function SheetEditor({
             </div>
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-2">
-                <label htmlFor="meter" className="text-sm font-medium text-muted-foreground">
+                <label
+                  htmlFor="meter"
+                  className="text-sm font-medium text-muted-foreground"
+                >
                   Meter
                 </label>
                 <select
@@ -207,7 +281,10 @@ export function SheetEditor({
                 onUpdate={updateTempo}
               />
               <div className="flex items-center gap-2">
-                <label htmlFor="scale" className="text-sm font-medium text-muted-foreground">
+                <label
+                  htmlFor="scale"
+                  className="text-sm font-medium text-muted-foreground"
+                >
                   Key
                 </label>
                 <select
@@ -228,8 +305,50 @@ export function SheetEditor({
         )}
       </div>
 
+      {/* Quick helpers toolbar */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Insert
+        </span>
+        <button
+          type="button"
+          onClick={() => insertSnippet("[", "]", { wrap: true })}
+          aria-label="Insert note chord brackets"
+          title="Wrap selected notes as a chord (e.g. [CEG])"
+          className="rounded-lg border border-input bg-card px-2.5 py-1 font-mono text-xs font-medium text-muted-foreground transition-all hover:border-primary/40 hover:bg-muted hover:text-foreground"
+        >
+          [ ]
+        </button>
+        <button
+          type="button"
+          onClick={() => insertSnippet("|", "")}
+          aria-label="Insert bar line"
+          title="Insert bar line"
+          className="rounded-lg border border-input bg-card px-2.5 py-1 font-mono text-xs font-medium text-muted-foreground transition-all hover:border-primary/40 hover:bg-muted hover:text-foreground"
+        >
+          |
+        </button>
+
+        <span aria-hidden="true" className="mx-1 h-4 w-px self-center bg-border" />
+
+        <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Chords{" "}
+          <span className="font-normal normal-case text-muted-foreground/70">
+            {keyLabel}
+          </span>
+        </span>
+        {chordRoots.map((root) => (
+          <ChordButton
+            key={root}
+            root={root}
+            onSelect={(symbol) => insertSnippet(`"${symbol}"`, "")}
+          />
+        ))}
+      </div>
+
       {/* Textarea - always visible */}
       <textarea
+        ref={textareaRef}
         value={sheet.content}
         onChange={(e) => updateContent(e.target.value)}
         className="min-h-32 flex-1 w-full rounded-xl border border-border bg-card/80 p-3 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none transition-all shadow-sm"
