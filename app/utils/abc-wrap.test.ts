@@ -99,31 +99,62 @@ describe("wrapBars", () => {
     const result = wrapBars("CDE||FGA|:Bcd", 2);
     expect(result).toBe("CDE||FGA|:\nBcd");
   });
+
+  it("wraps each voice independently so multi-voice staves stay aligned", () => {
+    const abc = [
+      "%%score { 1 2 }",
+      "V:1 clef=treble",
+      "G2B2G2|D4D2|G2B2G2|D4,D2|G2F2G2|",
+      "V:2 clef=bass",
+      '"G"G,,2[G,B,D]2[G,B,D]2|D,2[G,B,D]2[G,B,D]2|G,,2[G,B,D]2[G,B,D]2|D,2[G,B,D]2[G,B,D]2|G,,2[G,B,D]2[G,B,D]2|',
+    ].join("\n");
+
+    const result = wrapBars(abc, 2);
+
+    // Directive / header lines are preserved verbatim.
+    expect(result).toContain("%%score { 1 2 }");
+    expect(result).toContain("V:1 clef=treble");
+    expect(result).toContain("V:2 clef=bass");
+
+    // Both voices break at the same bar index (2 bars/line → 3 lines for 5 bars),
+    // and pipes inside chords like [G,B,D] are never mistaken for bar lines.
+    expect(result.split("\n")).toEqual([
+      "%%score { 1 2 }",
+      "V:1 clef=treble",
+      "G2B2G2|D4D2|",
+      "G2B2G2|D4,D2|",
+      "G2F2G2|",
+      "V:2 clef=bass",
+      '"G"G,,2[G,B,D]2[G,B,D]2|D,2[G,B,D]2[G,B,D]2|',
+      "G,,2[G,B,D]2[G,B,D]2|D,2[G,B,D]2[G,B,D]2|",
+      "G,,2[G,B,D]2[G,B,D]2|",
+    ]);
+  });
 });
 
 describe("calculateBarsPerLine", () => {
-  it("returns 1 for width < 400", () => {
-    expect(calculateBarsPerLine(399)).toBe(1);
-    expect(calculateBarsPerLine(300)).toBe(1);
+  it("returns 4 for width < 700", () => {
+    expect(calculateBarsPerLine(399)).toBe(4);
+    expect(calculateBarsPerLine(699)).toBe(4);
   });
 
-  it("returns 2 for width 400-549", () => {
-    expect(calculateBarsPerLine(400)).toBe(2);
-    expect(calculateBarsPerLine(549)).toBe(2);
+  it("returns 5 for width 700-849", () => {
+    expect(calculateBarsPerLine(700)).toBe(5);
+    expect(calculateBarsPerLine(849)).toBe(5);
   });
 
-  it("returns 3 for width 550-699", () => {
-    expect(calculateBarsPerLine(550)).toBe(3);
-    expect(calculateBarsPerLine(699)).toBe(3);
+  it("returns 6 for width 850-999", () => {
+    expect(calculateBarsPerLine(850)).toBe(6);
+    expect(calculateBarsPerLine(999)).toBe(6);
   });
 
-  it("returns 4 for width 700-849", () => {
-    expect(calculateBarsPerLine(700)).toBe(4);
-    expect(calculateBarsPerLine(849)).toBe(4);
+  it("returns 7 for width 1000-1499", () => {
+    expect(calculateBarsPerLine(1000)).toBe(7);
+    expect(calculateBarsPerLine(1499)).toBe(7);
   });
 
-  it("returns 5 for width >= 850", () => {
-    expect(calculateBarsPerLine(850)).toBe(5);
-    expect(calculateBarsPerLine(1000)).toBe(5);
+  it("returns 8 for width >= 1500", () => {
+    expect(calculateBarsPerLine(1500)).toBe(8);
+    expect(calculateBarsPerLine(2000)).toBe(8);
   });
 });

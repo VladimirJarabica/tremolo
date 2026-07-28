@@ -18,7 +18,11 @@ export function NewSheetButton(): React.JSX.Element {
     setIsCreating(true);
     try {
       const result = await createSheet({
-        content: `CDE`,
+        content: `%%score { 1 2 }
+V:1 clef=treble
+G2B2G2
+V:2 clef=bass
+"G"G,,2[G,B,D]2[G,B,D]2`,
         title: "New Tune",
         meter: Meter.m_2_4,
         tempo: 120,
