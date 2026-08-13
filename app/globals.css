@@ -77,6 +77,17 @@
   --border: oklch(0.92 0.02 160);
   --input: oklch(0.92 0.02 160);
   --ring: oklch(0.55 0.2 160);
+  /*
+   * Pitch-trainer keyboard "off" (unselected) key surfaces. Fixed greys, not
+   * theme tokens, so the keyboard keeps its white/black identity in both
+   * themes (see app/components/pitch-trainer/piano-keyboard.tsx). Applied via
+   * inline `style` because (a) Tailwind v4 strips authored class rules added
+   * here, and (b) inline styles beat its preflight `button { background-color:
+   * transparent }`. Values defined as custom properties so they compile
+   * reliably like the other tokens above.
+   */
+  --piano-off-white: oklch(0.82 0.006 160);
+  --piano-off-black: oklch(38.288% 0.00004 271.152);
   /* Charts - green/emerald theme */
   --chart-1: oklch(0.6 0.18 160);
   --chart-2: oklch(0.55 0.2 150);
@@ -234,11 +245,7 @@
 }
 
 .abcjs-midi-start.abcjs-btn {
-  background: linear-gradient(
-    to right,
-    var(--primary),
-    var(--primary-end)
-  );
+  background: linear-gradient(to right, var(--primary), var(--primary-end));
   border-color: transparent;
   margin-right: 8px;
   color: var(--primary-foreground);
@@ -279,11 +286,7 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: linear-gradient(
-    to right,
-    var(--primary),
-    var(--primary-end)
-  );
+  background: linear-gradient(to right, var(--primary), var(--primary-end));
   box-shadow: 0 2px 6px color-mix(in oklch, var(--primary) 40%, transparent);
 }
 

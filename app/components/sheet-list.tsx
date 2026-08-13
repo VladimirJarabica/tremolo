@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Plus, Music2 } from "lucide-react";
+import { Plus, Music2, Ear } from "lucide-react";
 import type { GetListsData } from "@/be/list/get-lists";
 import { CreateListDialog } from "./list-dialogs";
 import { SidebarListSection } from "./sidebar-list-section";
 import Link from "next/link";
 import { useSidebar } from "./sidebar-provider";
+import { cn } from "@/lib/utils";
 
 export function SheetList({
   lists,
@@ -34,17 +35,35 @@ export function SheetList({
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-auto">
-        {/* Home Link */}
-        <div className="p-3 border-b border-border">
+        {/* Primary nav links */}
+        <nav className="p-3 border-b border-border">
           <Link
             href="/"
             onClick={() => setIsOpen(false)}
-            className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
+            className={cn(
+              "flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
+              pathname === "/"
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:bg-muted",
+            )}
           >
             <Music2 className="h-4 w-4 text-primary" />
             All Sheets
           </Link>
-        </div>
+          <Link
+            href="/trainer"
+            onClick={() => setIsOpen(false)}
+            className={cn(
+              "mt-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
+              pathname.startsWith("/trainer")
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:bg-muted",
+            )}
+          >
+            <Ear className="h-4 w-4 text-primary" />
+            Pitch Trainer
+          </Link>
+        </nav>
 
         {/* Lists Section */}
         {isLoggedIn && (
