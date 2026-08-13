@@ -11,15 +11,23 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const VOLUME_STORAGE_KEY = "tremolo:volume";
 const VOLUME_DEFAULT = 100;
 
-function readStoredVolume(): number {
+function readStoredVolume(): number | null {
   try {
     const raw = window.localStorage.getItem(VOLUME_STORAGE_KEY);
-    if (raw === null) return VOLUME_DEFAULT;
+    if (raw === null) return null;
     const value = Number.parseInt(raw, 10);
-    if (Number.isNaN(value)) return VOLUME_DEFAULT;
+    if (Number.isNaN(value)) return null;
     return Math.min(100, Math.max(0, value));
   } catch {
-    return VOLUME_DEFAULT;
+    return null;
+  }
+}
+
+function writeStoredVolume(value: number): void {
+  try {
+    window.localStorage.setItem(VOLUME_STORAGE_KEY, String(value));
+  } catch {
+    // Ignore storage errors (private mode, quota, disabled storage).
   }
 }
 
@@ -40,12 +48,43 @@ export function useNotePlayer(): {
   play: (abc: string) => Promise<void>;
   stop: () => void;
   isPlaying: boolean;
+  /** Master volume 0–100, shared with the sheet player via `tremolo:volume`. */
+  volume: number;
+  setVolume: (value: number) => void;
 } {
   const renderElRef = useRef<HTMLDivElement | null>(null);
   const bufferRef = useRef<abcjs.MidiBuffer | null>(null);
   const lastAbcRef = useRef<string>("");
   const endTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolumeState] = useState<number>(VOLUME_DEFAULT);
+  // Ref mirror of `volume` so `play` reads the latest level without being a
+  // dependency (and without re-reading localStorage). Kept in sync in the
+  // restore effect and `setVolume`.
+  const volumeRef = useRef<number>(VOLUME_DEFAULT);
+
+  // Restore the previously saved volume after mount (kept out of the useState
+  // initializer so SSR output stays consistent — mirrors {@link AbcViewer}).
+  // The ref write alongside setState is what makes this an external-sync
+  // effect rather than a flagged pure state derivation.
+  useEffect(() => {
+    const stored = readStoredVolume();
+    if (stored !== null) {
+      volumeRef.current = stored;
+      setVolumeState(stored);
+    }
+  }, []);
+
+  const setVolume = useCallback((value: number): void => {
+    const clamped = Math.min(100, Math.max(0, Math.round(value)));
+    volumeRef.current = clamped;
+    writeStoredVolume(clamped);
+    setVolumeState(clamped);
+    // The buffer is initialised with a volume multiplier, so force a re-init on
+    // the next play to make the new level take effect (even when replaying the
+    // same note).
+    lastAbcRef.current = "";
+  }, []);
 
   // Lazily create a single off-screen container for rendering ABC to a
   // visualObj. abcjs sizes via the element, so it needs a real (hidden) node.
@@ -124,7 +163,7 @@ export function useNotePlayer(): {
           }
           await buffer.init({
             visualObj,
-            options: { soundFontVolumeMultiplier: readStoredVolume() / 100 },
+            options: { soundFontVolumeMultiplier: volumeRef.current / 100 },
           });
           lastAbcRef.current = abc;
         }
@@ -164,5 +203,5 @@ export function useNotePlayer(): {
     };
   }, []);
 
-  return { play, stop, isPlaying };
+  return { play, stop, isPlaying, volume, setVolume };
 }

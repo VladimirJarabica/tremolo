@@ -10,7 +10,9 @@ import {
   Sparkles,
   Target,
   Trophy,
+  Volume1,
   Volume2,
+  VolumeX,
   X,
 } from "lucide-react";
 import {
@@ -22,6 +24,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { cn } from "@/lib/utils";
+import { Slider } from "@/components/ui/slider";
 import { useNotePlayer } from "./use-note-player";
 import { PianoKeyboard } from "./piano-keyboard";
 import {
@@ -218,8 +221,25 @@ export function PitchTrainer(): React.JSX.Element {
     bestStreak: 0,
   });
 
-  const { play, isPlaying } = useNotePlayer();
+  const { play, isPlaying, volume, setVolume } = useNotePlayer();
   const autoAdvanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const previousVolumeRef = useRef(100);
+
+  const handleVolumeChange = useCallback(
+    (value: number): void => {
+      setVolume(value);
+    },
+    [setVolume],
+  );
+
+  const toggleMute = useCallback((): void => {
+    if (volume === 0) {
+      setVolume(previousVolumeRef.current || 100);
+    } else {
+      previousVolumeRef.current = volume;
+      setVolume(0);
+    }
+  }, [volume, setVolume]);
 
   const isValid = notes.length > 1 && octaves.length > 0;
   const answeredNote = current !== null && phase === "answered";
@@ -437,8 +457,8 @@ export function PitchTrainer(): React.JSX.Element {
               />
             </div>
 
-            {/* Primary control */}
-            <div className="mt-4 flex justify-center">
+            {/* Primary control + volume — side by side, centered */}
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
               <button
                 type="button"
                 onClick={handlePrimary}
@@ -462,6 +482,12 @@ export function PitchTrainer(): React.JSX.Element {
                   </>
                 )}
               </button>
+              {/* Volume — shared with the sheet player via the `tremolo:volume` key. */}
+              <VolumeControl
+                volume={volume}
+                onVolumeChange={handleVolumeChange}
+                onToggleMute={toggleMute}
+              />
             </div>
 
             {!isValid && (
@@ -630,5 +656,48 @@ function QuickSelect({
     >
       {children}
     </button>
+  );
+}
+
+/** Compact mute + volume slider, mirroring the sheet player's control. */
+function VolumeControl({
+  volume,
+  onVolumeChange,
+  onToggleMute,
+}: {
+  volume: number;
+  onVolumeChange: (value: number) => void;
+  onToggleMute: () => void;
+}): React.JSX.Element {
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        type="button"
+        onClick={onToggleMute}
+        title={volume === 0 ? "Unmute" : "Mute"}
+        aria-label={volume === 0 ? "Unmute" : "Mute"}
+        className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+      >
+        {volume === 0 ? (
+          <VolumeX className="h-4 w-4" />
+        ) : volume < 50 ? (
+          <Volume1 className="h-4 w-4" />
+        ) : (
+          <Volume2 className="h-4 w-4" />
+        )}
+      </button>
+      <Slider
+        value={[volume]}
+        min={0}
+        max={100}
+        step={5}
+        onValueChange={(values) => onVolumeChange(values[0] ?? 0)}
+        aria-label="Volume"
+        className="w-28 sm:w-32"
+      />
+      <span className="min-w-[2ch] text-center font-mono text-xs tabular-nums text-muted-foreground">
+        {volume}
+      </span>
+    </div>
   );
 }
