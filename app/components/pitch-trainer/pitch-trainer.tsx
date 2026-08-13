@@ -199,7 +199,7 @@ interface Stats {
   bestStreak: number;
 }
 
-const AUTO_ADVANCE_MS = 1600;
+const AUTO_ADVANCE_MS = 1000;
 
 export function PitchTrainer(): React.JSX.Element {
   const {
@@ -314,6 +314,22 @@ export function PitchTrainer(): React.JSX.Element {
     [phase, current, startRound],
   );
 
+  // Before a round starts (idle), the answer keyboard doubles as a
+  // relative-pitch reference: clicking a lit key plays that note in the lowest
+  // selected octave so the user can "anchor" before they begin guessing. Only
+  // keys already in the pool are clickable, so they only ever hear notes that
+  // can actually come up.
+  const anchorPlay = useCallback(
+    (note: NoteName): void => {
+      if (octaves.length === 0) return;
+      const octave = Math.min(...octaves);
+      void play(buildNoteAbc(note, octave));
+    },
+    [octaves, play],
+  );
+
+  const handlePick = current === null ? anchorPlay : handleAnswer;
+
   // Clean up the auto-advance timer on unmount.
   useEffect(() => clearAutoAdvance, [clearAutoAdvance]);
 
@@ -418,10 +434,13 @@ export function PitchTrainer(): React.JSX.Element {
           <section className="rounded-2xl border border-border bg-card/80 backdrop-blur-sm p-4 shadow-sm">
             {/* Reveal area */}
             <div className="rounded-2xl border border-border bg-background/60 p-4">
-              <div className="flex items-center justify-center gap-2 h-7">
+              <div className="flex min-h-7 items-center justify-center gap-2">
                 {current === null ? (
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-center text-sm text-muted-foreground">
                     Press play to begin
+                    <span className="ml-1 text-xs">
+                      — or tap a key below to anchor your relative pitch
+                    </span>
                   </span>
                 ) : phase === "ready" ? (
                   <span
@@ -504,14 +523,18 @@ export function PitchTrainer(): React.JSX.Element {
                 answered={answeredNote}
                 correctNote={answeredNote ? (current?.note ?? null) : null}
                 pickedNote={answeredNote ? selectedAnswer : null}
-                onPick={handleAnswer}
+                onPick={handlePick}
                 className="h-40 sm:h-44"
               />
-              {notes.length === 0 && (
+              {notes.length === 0 ? (
                 <p className="mt-2 text-center text-xs text-muted-foreground">
                   No notes selected — pick some above.
                 </p>
-              )}
+              ) : current === null ? (
+                <p className="mt-2 text-center text-xs text-muted-foreground">
+                  Click a key to hear it, then Start when you&rsquo;re ready.
+                </p>
+              ) : null}
             </div>
           </section>
         </div>

@@ -1,15 +1,30 @@
 "use client";
 
 import abcjs from "abcjs";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 
 /**
  * Volume preference is shared app-wide with {@link AbcViewer} (the sheet
  * player) so a user's volume choice carries over. Stored 0–100; abcjs takes a
- * `soundFontVolumeMultiplier` (0–1+). try/catch-guarded for private mode etc.
+ * `soundFontVolumeMultiplier` (0–1+).
+ *
+ * Backed by a tiny external store consumed via `useSyncExternalStore`: the
+ * React-idiomatic way to read localStorage without a `set-state-in-effect`
+ * (which the project's react-hooks rule flags), and it avoids an SSR/hydration
+ * mismatch (the server snapshot is always the default).
  */
 const VOLUME_STORAGE_KEY = "tremolo:volume";
 const VOLUME_DEFAULT = 100;
+
+const volumeListeners = new Set<() => void>();
+// null until the first client-side read so the snapshot is populated lazily.
+let volumeCache: number | null = null;
 
 function readStoredVolume(): number | null {
   try {
@@ -23,12 +38,33 @@ function readStoredVolume(): number | null {
   }
 }
 
-function writeStoredVolume(value: number): void {
+function subscribeVolume(callback: () => void): () => void {
+  volumeListeners.add(callback);
+  return () => {
+    volumeListeners.delete(callback);
+  };
+}
+
+function getVolumeSnapshot(): number {
+  if (volumeCache === null) {
+    volumeCache = readStoredVolume() ?? VOLUME_DEFAULT;
+  }
+  return volumeCache;
+}
+
+function getVolumeServerSnapshot(): number {
+  return VOLUME_DEFAULT;
+}
+
+function setStoredVolume(value: number): void {
+  const clamped = Math.min(100, Math.max(0, Math.round(value)));
+  volumeCache = clamped;
   try {
-    window.localStorage.setItem(VOLUME_STORAGE_KEY, String(value));
+    window.localStorage.setItem(VOLUME_STORAGE_KEY, String(clamped));
   } catch {
     // Ignore storage errors (private mode, quota, disabled storage).
   }
+  volumeListeners.forEach((listener) => listener());
 }
 
 /**
@@ -57,29 +93,14 @@ export function useNotePlayer(): {
   const lastAbcRef = useRef<string>("");
   const endTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolumeState] = useState<number>(VOLUME_DEFAULT);
-  // Ref mirror of `volume` so `play` reads the latest level without being a
-  // dependency (and without re-reading localStorage). Kept in sync in the
-  // restore effect and `setVolume`.
-  const volumeRef = useRef<number>(VOLUME_DEFAULT);
-
-  // Restore the previously saved volume after mount (kept out of the useState
-  // initializer so SSR output stays consistent — mirrors {@link AbcViewer}).
-  // The ref write alongside setState is what makes this an external-sync
-  // effect rather than a flagged pure state derivation.
-  useEffect(() => {
-    const stored = readStoredVolume();
-    if (stored !== null) {
-      volumeRef.current = stored;
-      setVolumeState(stored);
-    }
-  }, []);
+  const volume = useSyncExternalStore(
+    subscribeVolume,
+    getVolumeSnapshot,
+    getVolumeServerSnapshot,
+  );
 
   const setVolume = useCallback((value: number): void => {
-    const clamped = Math.min(100, Math.max(0, Math.round(value)));
-    volumeRef.current = clamped;
-    writeStoredVolume(clamped);
-    setVolumeState(clamped);
+    setStoredVolume(value);
     // The buffer is initialised with a volume multiplier, so force a re-init on
     // the next play to make the new level take effect (even when replaying the
     // same note).
@@ -163,7 +184,7 @@ export function useNotePlayer(): {
           }
           await buffer.init({
             visualObj,
-            options: { soundFontVolumeMultiplier: volumeRef.current / 100 },
+            options: { soundFontVolumeMultiplier: getVolumeSnapshot() / 100 },
           });
           lastAbcRef.current = abc;
         }
