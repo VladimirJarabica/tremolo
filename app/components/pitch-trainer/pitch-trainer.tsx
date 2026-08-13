@@ -201,6 +201,30 @@ interface Stats {
 
 const AUTO_ADVANCE_MS = 1000;
 
+/**
+ * Keyboard shortcuts for the answer/anchor keyboard. Plain letters C–B hit the
+ * white keys; holding ⌘ (Mac) / Ctrl (Windows) hits the black keys
+ * (C#/Db, D#/Eb, F#/Gb, G#/Ab, A#/Bb). There is no black key between E–F and
+ * B–C, so ⌘E / ⌘B fall through to the browser. Modifier combos call
+ * preventDefault so they don't trigger copy / find / select-all on the trainer.
+ */
+const WHITE_BY_LETTER: Record<string, NoteName> = {
+  c: "C",
+  d: "D",
+  e: "E",
+  f: "F",
+  g: "G",
+  a: "A",
+  b: "B",
+};
+const BLACK_BY_LETTER: Record<string, NoteName> = {
+  c: "C#/Db",
+  d: "D#/Eb",
+  f: "F#/Gb",
+  g: "G#/Ab",
+  a: "A#/Bb",
+};
+
 export function PitchTrainer(): React.JSX.Element {
   const {
     notes,
@@ -328,7 +352,77 @@ export function PitchTrainer(): React.JSX.Element {
     [octaves, play],
   );
 
-  const handlePick = current === null ? anchorPlay : handleAnswer;
+  const handlePick = useCallback(
+    (note: NoteName): void => {
+      if (current === null) {
+        anchorPlay(note);
+      } else {
+        handleAnswer(note);
+      }
+    },
+    [current, anchorPlay, handleAnswer],
+  );
+
+  // --- Keyboard shortcuts (C–B / ⌘+letter) -------------------------------
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showToast = useCallback(
+    (message: string): void => {
+      setToast(message);
+      if (toastTimerRef.current !== null) {
+        clearTimeout(toastTimerRef.current);
+      }
+      toastTimerRef.current = setTimeout(() => {
+        toastTimerRef.current = null;
+        setToast(null);
+      }, 1800);
+    },
+    [],
+  );
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent): void {
+      // Don't hijack typing/selection inside form controls.
+      const target = e.target as HTMLElement | null;
+      if (
+        target !== null &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.tagName === "SELECT" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+      const letter = e.key.toLowerCase();
+      if (!(letter in WHITE_BY_LETTER)) return; // only a–g
+      if (e.altKey) return; // leave Alt+letter combos to the browser
+
+      const black = e.metaKey || e.ctrlKey;
+      if (black && !(letter in BLACK_BY_LETTER)) return; // ⌘E / ⌘B — no black key
+      const note = black ? BLACK_BY_LETTER[letter] : WHITE_BY_LETTER[letter];
+
+      // Stop browser copy/find/select-all/bookmark for the modifier combos.
+      if (black) e.preventDefault();
+
+      if (!noteSet.has(note)) {
+        showToast(`${note} is not available now`);
+        return;
+      }
+      handlePick(note);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [handlePick, noteSet, showToast]);
+
+  // Clear any pending toast timer on unmount.
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current !== null) {
+        clearTimeout(toastTimerRef.current);
+      }
+    };
+  }, []);
 
   // Clean up the auto-advance timer on unmount.
   useEffect(() => clearAutoAdvance, [clearAutoAdvance]);
@@ -535,10 +629,36 @@ export function PitchTrainer(): React.JSX.Element {
                   Click a key to hear it, then Start when you&rsquo;re ready.
                 </p>
               ) : null}
+
+              {/* Keyboard shortcut hint */}
+              <p className="mt-2 flex flex-wrap items-center justify-center gap-1 text-center text-[0.7rem] text-muted-foreground">
+                <span>Keyboard:</span>
+                <Kbd>C</Kbd>
+                <span>–</span>
+                <Kbd>B</Kbd>
+                <span>white keys</span>
+                <span aria-hidden="true">·</span>
+                <Kbd>⌘/Ctrl</Kbd>
+                <span>+</span>
+                <Kbd>C</Kbd>
+                <span>for sharps</span>
+              </p>
             </div>
           </section>
         </div>
       </div>
+
+      {toast !== null && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="pointer-events-none fixed inset-x-0 bottom-6 z-50 flex justify-center px-4"
+        >
+          <p className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background shadow-lg">
+            {toast}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -679,6 +799,19 @@ function QuickSelect({
     >
       {children}
     </button>
+  );
+}
+
+/** Small keyboard-key cap used in the shortcut hint. */
+function Kbd({
+  children,
+}: {
+  children: React.ReactNode;
+}): React.JSX.Element {
+  return (
+    <kbd className="rounded border border-border bg-muted px-1 py-px font-mono text-[0.65rem] text-foreground">
+      {children}
+    </kbd>
   );
 }
 
