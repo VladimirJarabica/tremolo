@@ -73,7 +73,7 @@ export function SightReading(): React.JSX.Element {
       </div>
 
       <div className="flex-1 overflow-auto p-4">
-        <div className="mx-auto max-w-4xl space-y-4">
+        <div className="space-y-4">
           <section className="rounded-2xl border border-border bg-card/80 p-4 shadow-sm backdrop-blur-sm">
             <NoteStrip
               key={runId}
@@ -136,7 +136,7 @@ export function SightReading(): React.JSX.Element {
             </p>
           </section>
 
-          <section className="grid gap-5 rounded-2xl border border-border bg-card/80 p-4 shadow-sm backdrop-blur-sm sm:grid-cols-2">
+          <section className="mx-auto grid max-w-4xl gap-5 rounded-2xl border border-border bg-card/80 p-4 shadow-sm backdrop-blur-sm sm:grid-cols-2">
             <Field label="Range">
               <div className="flex items-center gap-2">
                 <StepSelect
