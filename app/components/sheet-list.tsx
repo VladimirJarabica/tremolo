@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Plus, Music2, Ear } from "lucide-react";
+import { Plus, Music2, Ear, Eye } from "lucide-react";
 import type { GetListsData } from "@/be/list/get-lists";
 import { CreateListDialog } from "./list-dialogs";
 import { SidebarListSection } from "./sidebar-list-section";
@@ -62,6 +62,19 @@ export function SheetList({
           >
             <Ear className="h-4 w-4 text-primary" />
             Pitch Trainer
+          </Link>
+          <Link
+            href="/sight-reading"
+            onClick={() => setIsOpen(false)}
+            className={cn(
+              "mt-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
+              pathname.startsWith("/sight-reading")
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:bg-muted",
+            )}
+          >
+            <Eye className="h-4 w-4 text-primary" />
+            Sight Reading
           </Link>
         </nav>
 
