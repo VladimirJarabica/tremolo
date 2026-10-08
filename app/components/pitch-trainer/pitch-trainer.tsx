@@ -248,6 +248,8 @@ export function PitchTrainer(): React.JSX.Element {
   const { play, isPlaying, volume, setVolume } = useNotePlayer();
   const autoAdvanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const previousVolumeRef = useRef(100);
+  // Recently picked note names, so the picker can avoid long runs of one note.
+  const recentNotesRef = useRef<NoteName[]>([]);
 
   const handleVolumeChange = useCallback(
     (value: number): void => {
@@ -287,8 +289,9 @@ export function PitchTrainer(): React.JSX.Element {
   const startRound = useCallback(() => {
     if (notes.length === 0 || octaves.length === 0) return;
     clearAutoAdvance();
-    const picked = pickRandomNote(notes, octaves);
+    const picked = pickRandomNote(notes, octaves, recentNotesRef.current);
     if (picked === null) return;
+    recentNotesRef.current = [...recentNotesRef.current, picked.note].slice(-3);
     setCurrent(picked);
     setSelectedAnswer(null);
     setPhase("ready");

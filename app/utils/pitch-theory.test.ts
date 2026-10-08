@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import type { NoteName } from "./pitch-theory";
 import {
   buildNoteAbc,
   buildRestAbc,
@@ -231,6 +232,39 @@ describe("pickRandomNote", () => {
       seen.add(`${picked!.note}${picked!.octave}`);
     }
     expect(seen.size).toBe(notes.length * octaves.length);
+  });
+
+  it("excludes a note that appeared twice in the last 3 picks", () => {
+    for (let i = 0; i < 200; i++) {
+      expect(pickRandomNote(["C", "D"], [4], ["C", "D", "C"])!.note).toBe("D");
+      expect(pickRandomNote(["C", "D"], [4], ["D", "C", "C"])!.note).toBe("D");
+    }
+  });
+
+  it("only considers the last 3 picks", () => {
+    const seen = new Set<string>();
+    for (let i = 0; i < 200; i++) {
+      seen.add(pickRandomNote(["C", "D"], [4], ["C", "C", "D", "E", "F"])!.note);
+    }
+    expect(seen).toEqual(new Set(["C", "D"]));
+  });
+
+  it("falls back to the full pool when every note is excluded", () => {
+    expect(pickRandomNote(["C"], [4], ["C", "C"])).toEqual({
+      note: "C",
+      octave: 4,
+    });
+  });
+
+  it("never yields the same note 3 times in a row over a long run", () => {
+    const history: NoteName[] = [];
+    for (let i = 0; i < 1000; i++) {
+      history.push(pickRandomNote(["C", "D"], [4], history)!.note);
+    }
+    history.slice(2).forEach((note, i) => {
+      const triple = [history[i], history[i + 1], note];
+      expect(triple.filter((n) => n === note).length).toBeLessThanOrEqual(2);
+    });
   });
 });
 

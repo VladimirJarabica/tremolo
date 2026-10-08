@@ -179,17 +179,28 @@ export function formatPitch(note: NoteName, octave: number): string {
 /**
  * Picks a uniformly-random note (name) and octave from the supplied pools.
  * Returns `null` if either pool is empty (the caller disables play in that case).
+ *
+ * `recent` holds previously picked note names (oldest first). Any note that
+ * appeared twice within the last 3 picks is excluded, so a note never shows up
+ * more than twice in any 3 consecutive rounds. Falls back to the full pool when
+ * exclusion would leave nothing (single-note pool).
  */
 export function pickRandomNote(
   notes: Iterable<NoteName>,
   octaves: Iterable<number>,
+  recent: readonly NoteName[] = [],
 ): PickedNote | null {
   const noteList = [...notes];
   const octaveList = [...octaves];
   if (noteList.length === 0 || octaveList.length === 0) {
     return null;
   }
-  const note = noteList[Math.floor(Math.random() * noteList.length)]!;
+  const lastThree = recent.slice(-3);
+  const allowed = noteList.filter(
+    (n) => lastThree.filter((r) => r === n).length < 2,
+  );
+  const pool = allowed.length > 0 ? allowed : noteList;
+  const note = pool[Math.floor(Math.random() * pool.length)]!;
   const octave = octaveList[Math.floor(Math.random() * octaveList.length)]!;
   return { note, octave };
 }
